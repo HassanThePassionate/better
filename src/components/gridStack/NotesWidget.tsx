@@ -1,4 +1,5 @@
 import { PlusIcon } from "lucide-react";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface Note {
   id: number;
@@ -26,7 +27,7 @@ export default function NotesWidget({ notes }: NotesWidgetProps) {
       </div>
 
       <div className='p-0'>
-        <div className='divide-y max-h-[calc(3*5rem)] overflow-y-auto'>
+        <ScrollArea className=' h-[calc(3*5rem)] '>
           {notes.map((note) => (
             <div
               key={note.id}
@@ -47,7 +48,7 @@ export default function NotesWidget({ notes }: NotesWidgetProps) {
               </div>
             </div>
           ))}
-        </div>
+        </ScrollArea>
       </div>
     </div>
   );

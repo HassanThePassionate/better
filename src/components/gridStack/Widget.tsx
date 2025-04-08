@@ -7,6 +7,7 @@
 // import TodoCard from "./Todo";
 
 import NotesWidget from "./NotesWidget";
+import SmallNotesWidget from "./SmallNotWidget";
 import Widgets from "./Widgets";
 const notes = [
   {
@@ -49,6 +50,8 @@ const Widget = ({ type }: { type?: string }) => {
         <Widgets size='small' />
       ) : type === "notes" ? (
         <NotesWidget notes={notes} />
+      ) : type === "sm-notes" ? (
+        <SmallNotesWidget notes={notes} />
       ) : null}
     </>
   );

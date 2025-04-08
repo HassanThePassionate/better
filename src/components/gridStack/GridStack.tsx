@@ -20,7 +20,8 @@ export function GridStackComponent() {
   const [items, setItems] = useState([
     { id: 0, width: 3, height: 3, type: "large" },
     { id: 1, width: 3, height: 2, type: "small" },
-    { id: 3, width: 3, height: 3, type: "notes" },
+    { id: 2, width: 3, height: 3, type: "notes" },
+    { id: 3, width: 2, height: 2, type: "sm-notes" },
   ]);
 
   const itemsRef = useRef(new Map());
@@ -61,19 +62,25 @@ export function GridStackComponent() {
                 onClick={() => addWidget(3, 2, "small")}
                 className='focus:bg-background'
               >
-                3x2
+                Small Widget 3x2
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => addWidget(3, 3, "large")}
                 className='focus:bg-background'
               >
-                3x3
+                Large Widget 3x3
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => addWidget(2, 2, "notes")}
+                onClick={() => addWidget(3, 3, "notes")}
                 className='focus:bg-background'
               >
-                2x2
+                Larger Notes 3x3
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => addWidget(2, 2, "sm-notes")}
+                className='focus:bg-background'
+              >
+                Small Notes 2x2
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
