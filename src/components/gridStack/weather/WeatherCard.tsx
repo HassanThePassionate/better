@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Pencil, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
+
+import { Pencil, RefreshCw } from "lucide-react";
 
 // Sample data - in a real app, this would come from an API
 const weatherData = {
@@ -91,7 +91,6 @@ export default function WeatherCard() {
   const [showResults, setShowResults] = useState(false);
   const [isCelsius, setIsCelsius] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [showHourly, setShowHourly] = useState(false);
 
   const filteredCities = cities.filter((city) =>
     city.toLowerCase().includes(searchQuery.toLowerCase())
@@ -131,9 +130,9 @@ export default function WeatherCard() {
 
   return (
     <div className='w-full h-full bg-card rounded-3xl shadow-lg'>
-      <div className='p-6 bg-card  rounded-3xl '>
+      <div className='px-6 py-4 bg-card  rounded-3xl relative'>
         {/* Controls */}
-        <div className='flex justify-end gap-2 mb-2'>
+        <div className='flex justify-end gap-2 mb-2 absolute top-2 right-2'>
           <Button
             variant='ghost'
             size='icon'
@@ -157,8 +156,8 @@ export default function WeatherCard() {
         </div>
 
         {/* City and Edit Section */}
-        <div className='flex items-center mb-1'>
-          {isEditing ? (
+        {isEditing && (
+          <div className='absolute top-4 w-full max-w-[250px] '>
             <div className='relative w-full'>
               <input
                 value={searchQuery}
@@ -183,90 +182,55 @@ export default function WeatherCard() {
                 </div>
               )}
             </div>
-          ) : (
-            <>
-              <h1 className='text-3xl font-bold'>{currentCity}</h1>
-              <Button
-                variant='ghost'
-                size='icon'
-                onClick={handleEditClick}
-                className='h-8 w-8 ml-2'
-              >
-                <Pencil className='h-4 w-4' />
-              </Button>
-            </>
-          )}
+          </div>
+        )}
+        <div className='flex items-center mb-1'>
+          <>
+            <h1 className='text-xl font-bold'>{currentCity}</h1>
+            <Button
+              variant='ghost'
+              size='icon'
+              onClick={handleEditClick}
+              className='h-8 w-8 ml-2'
+            >
+              <Pencil className='h-4 w-4' />
+            </Button>
+          </>
         </div>
 
         {/* Weather Description and Date */}
-        <p className='text-xl font-medium text-gray-800'>
+        <p className='text-base font-medium text-text'>
           {weatherData.description}
         </p>
-        <p className='uppercase text-sm mb-6 text-gray-500'>
-          {weatherData.date}
-        </p>
+        <p className='uppercase text-sm  text-foreground'>{weatherData.date}</p>
 
         {/* Temperature and Measurements */}
-        <div className='flex justify-between items-start mb-6'>
-          <div className='flex items-start'>
-            <div className='text-7xl font-bold leading-none'>
-              {displayTemperature}
-              <span className='text-3xl align-top'>{temperatureUnit}</span>
+        <div className='flex justify-between flex-col items-start '>
+          <div className='flex items-center justify-between'>
+            <div className='flex items-start'>
+              <div className='text-5xl font-bold leading-none'>
+                {displayTemperature}
+                <span className='text-3xl align-top'>{temperatureUnit}</span>
+              </div>
+            </div>
+            <div className='flex-shrink-0'>
+              <img
+                src={`http://openweathermap.org/img/wn/${weatherData.icon}@2x.png`}
+                alt='Weather icon'
+                className='h-20 w-20'
+              />
             </div>
           </div>
 
-          <div className='flex-shrink-0'>
-            <img
-              src={`http://openweathermap.org/img/wn/${weatherData.icon}@2x.png`}
-              alt='Weather icon'
-              className='h-20 w-20'
-            />
-          </div>
-
-          <div className='grid grid-cols-2 gap-x-4 gap-y-1 text-right'>
-            <div className='text-gray-500'>Pressure</div>
+          <div className='grid grid-cols-2 gap-x-4 gap-y-1 mt-1'>
+            <div className='text-foreground'>Pressure</div>
             <div>{weatherData.measurements.pressure}</div>
-            <div className='text-gray-500'>Humidity</div>
+            <div className='text-foreground'>Humidity</div>
             <div>{weatherData.measurements.humidity}</div>
-            <div className='text-gray-500'>Wind speed</div>
+            <div className='text-foreground'>Wind speed</div>
             <div>{weatherData.measurements.windSpeed}</div>
           </div>
         </div>
-
-        <Separator className='my-6' />
-
-        {/* Hourly Forecast Toggle */}
-        <div className='flex justify-between items-center mb-2 '>
-          <h3 className='text-sm font-medium text-gray-700'>Hourly Forecast</h3>
-          <Button
-            variant='ghost'
-            size='sm'
-            onClick={() => setShowHourly(!showHourly)}
-            className='h-6 px-2'
-          >
-            {showHourly ? (
-              <ChevronUp className='h-4 w-4' />
-            ) : (
-              <ChevronDown className='h-4 w-4' />
-            )}
-          </Button>
-        </div>
-
-        {/* Hourly Forecast */}
-        {showHourly && (
-          <div className='grid grid-cols-6 gap-2 '>
-            {weatherData.hourly.map((hour, index) => (
-              <div key={index} className='flex flex-col items-center'>
-                <img
-                  src={`http://openweathermap.org/img/wn/${hour.icon}@2x.png`}
-                  alt='Weather icon'
-                  className='h-12 w-12'
-                />
-                <span className='text-gray-600'>{hour.time}</span>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );

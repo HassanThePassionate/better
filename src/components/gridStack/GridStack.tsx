@@ -19,7 +19,7 @@ let grid: GridStack;
 export function GridStackComponent() {
   const [items, setItems] = useState([
     { id: 0, width: 2, height: 2, type: "sm-weather" },
-    { id: 1, width: 4, height: 4, type: "weather" },
+    { id: 1, width: 3, height: 3, type: "weather" },
     { id: 2, width: 3, height: 3, type: "large" },
     { id: 3, width: 3, height: 2, type: "small" },
     { id: 4, width: 3, height: 3, type: "notes" },
