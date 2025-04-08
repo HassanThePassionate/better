@@ -1,3 +1,6 @@
 .ui-resizable-handle {
   display: none !important;
 }
+.grid-stack-item-content {
+  border-radius: 22px;
+}

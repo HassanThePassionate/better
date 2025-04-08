@@ -8,6 +8,9 @@
 
 import NotesWidget from "./NotesWidget";
 import SmallNotesWidget from "./SmallNotWidget";
+import WeatherCard from "./weather/WeatherCard";
+import WeatherWidget from "./weather/WeatherWidget";
+import WeatherWidgetWide from "./weather/WideWeatherWidget";
 import Widgets from "./Widgets";
 const notes = [
   {
@@ -52,6 +55,12 @@ const Widget = ({ type }: { type?: string }) => {
         <NotesWidget notes={notes} />
       ) : type === "sm-notes" ? (
         <SmallNotesWidget notes={notes} />
+      ) : type === "weather" ? (
+        <WeatherCard />
+      ) : type === "sm-weather" ? (
+        <WeatherWidget cityName='New York' />
+      ) : type === "wide-weather" ? (
+        <WeatherWidgetWide cityName='New York' />
       ) : null}
     </>
   );

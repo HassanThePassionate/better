@@ -18,10 +18,13 @@ let grid: GridStack;
 
 export function GridStackComponent() {
   const [items, setItems] = useState([
-    { id: 0, width: 3, height: 3, type: "large" },
-    { id: 1, width: 3, height: 2, type: "small" },
-    { id: 2, width: 3, height: 3, type: "notes" },
-    { id: 3, width: 2, height: 2, type: "sm-notes" },
+    { id: 0, width: 2, height: 2, type: "sm-weather" },
+    { id: 1, width: 4, height: 4, type: "weather" },
+    { id: 2, width: 3, height: 3, type: "large" },
+    { id: 3, width: 3, height: 2, type: "small" },
+    { id: 4, width: 3, height: 3, type: "notes" },
+    { id: 5, width: 2, height: 2, type: "sm-notes" },
+    { id: 6, width: 4, height: 2, type: "wide-weather" },
   ]);
 
   const itemsRef = useRef(new Map());
@@ -82,6 +85,24 @@ export function GridStackComponent() {
               >
                 Small Notes 2x2
               </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => addWidget(3, 3, "weather")}
+                className='focus:bg-background'
+              >
+                Large Weather 3x3
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => addWidget(2, 2, "sm-weather")}
+                className='focus:bg-background'
+              >
+                Small Weather 2x2
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => addWidget(3, 2, "wide-weather")}
+                className='focus:bg-background'
+              >
+                Wide Weather 3x2
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <Button
@@ -94,7 +115,7 @@ export function GridStackComponent() {
           </Button>
         </div>
 
-        <div className='grid-stack overflow-y-auto max-h-[90vh] h-full !w-full mb-12'>
+        <div className='grid-stack overflow-y-auto max-h-[86vh] h-full !w-full mb-12'>
           {items.map((item) => (
             <div
               className='grid-stack-item  '
