@@ -1,7 +1,7 @@
 const Stats = () => {
   return (
     <>
-      <div className='flex items-center flex-col justify-center gap-2 h-full w-full  bg-card rounded-[10px] py-3 '>
+      <div className='flex items-center flex-col justify-center gap-2 h-full w-full  bg-card rounded-[16px] py-3 '>
         <div className='min-[1600px]:w-12 min-[1600px]:h-12 w-11 h-11 flex items-center justify-center rounded-full bg-green-200'>
           <svg
             xmlns='http://www.w3.org/2000/svg'

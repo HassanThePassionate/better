@@ -53,7 +53,7 @@ export default function SmallCalendar() {
   };
 
   return (
-    <div className=' h-full w-full overflow-hidden  bg-card rounded-[10px] text-text '>
+    <div className=' h-full w-full overflow-hidden  bg-card rounded-[16px] text-text '>
       {/* Right panel - Calendar */}
       <div className='bg-hover text-sm pl-3 font-medium py-2 '>April</div>
       <div className='flex-1 pt-1  p-3'>

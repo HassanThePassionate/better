@@ -24,7 +24,7 @@ const Widget = ({ type }: { type?: string }) => {
       ) : type === "sm-calender" ? (
         <SmallCalendar />
       ) : (
-        <div className='bg-red-500 h-full w-full'>Widget</div>
+        <div className='bg-red-500 h-full w-full rounded-[16px]'>Widget</div>
       )}
     </>
   );

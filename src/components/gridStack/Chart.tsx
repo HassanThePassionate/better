@@ -1,7 +1,7 @@
 const Chart = () => {
   return (
-    <div className=' !px-3 gap-2 bg-card rounded-[10px] py-3'>
-      <div className='absolute top-0 left-0 w-20 h-20 bg-gradient-to-br dark:from-purple-500/90 from-purple-500/60 to-[#dadada] dark:to-[#181D21] rounded-full flex items-center justify-center blur-2xl'></div>
+    <div className='h-full w-full flex flex-col overflow-hidden !px-3 gap-2 bg-card rounded-[16px] py-3'>
+      <div className='absolute top-0 left-0 w-20 h-20  bg-gradient-to-br dark:from-purple-500/90 from-purple-500/60 to-[#dadada] dark:to-[#181D21] rounded-full flex items-center justify-center blur-2xl'></div>
       <div className='relative flex flex-col gap-2'>
         <div className='flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 text-white'>
           <svg

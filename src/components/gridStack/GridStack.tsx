@@ -76,6 +76,12 @@ export function GridStackComponent() {
                 Clock
               </DropdownMenuItem>
               <DropdownMenuItem
+                onClick={() => addWidget(2, 2, "chart")}
+                className='focus:bg-background'
+              >
+                Chart
+              </DropdownMenuItem>
+              <DropdownMenuItem
                 onClick={() => addWidget(2, 2, "sm-calender")}
                 className='focus:bg-background'
               >

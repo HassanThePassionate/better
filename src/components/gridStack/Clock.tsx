@@ -26,7 +26,7 @@ export default function DigitalClock() {
   const seconds = String(time.getSeconds()).padStart(2, "0");
 
   return (
-    <div className='flex flex-col items-center justify-center bg-card h-full w-full   rounded-[10px]'>
+    <div className='flex flex-col items-center justify-center bg-card h-full w-full   rounded-[16px]'>
       <div className='mb-2 flex justify-end w-full'>
         <div className='bg-background border border-border rounded px-3 py-1'>
           <p className='text-text text-sm font-mono'>{dateString}</p>

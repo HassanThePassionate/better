@@ -63,7 +63,7 @@ export default function SmallCalendar() {
   };
 
   return (
-    <div className='flex h-full w-full overflow-hidden rounded-lg bg-card text-text'>
+    <div className='flex h-full w-full overflow-hidden rounded-[16px] bg-card text-text'>
       {/* Left panel - Current date and events */}
       <div className='flex w-36 flex-col justify-between bg-hover p-6'>
         <div>

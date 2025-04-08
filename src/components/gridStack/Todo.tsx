@@ -5,7 +5,7 @@ export default function TodoCard() {
     <div className='h-full w-full bg-card rounded-xl'>
       <div className='flex items-center  h-full gap-3  px-3 '>
         <div className='relative'>
-          <div className='bg-background h-10 w-10  flex items-center justify-center rounded-lg'>
+          <div className='bg-background h-10 w-10  flex items-center justify-center rounded-[16px]'>
             <CheckSquare className='h-5 w-5 text-indigo-500' />
           </div>
           <div className='absolute -top-1 -right-1 bg-error text-text-primary text-xs rounded-full h-4 w-4 flex items-center justify-center'>
