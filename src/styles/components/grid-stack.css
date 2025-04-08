@@ -1,14 +1,3 @@
-/* .grid-stack {
-  background-color: var(--background-color);
+.ui-resizable-handle {
+  display: none !important;
 }
-.grid-stack-item-content {
-  background-color: var(--card-color);
-  padding: 12px 20px;
-  overflow: hidden;
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-} */
