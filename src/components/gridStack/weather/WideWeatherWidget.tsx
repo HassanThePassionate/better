@@ -154,8 +154,8 @@ export default function WeatherWidget2x4({
   const temperatureUnit = isCelsius ? "°C" : "°F";
 
   return (
-    <div className='h-full w-full bg-card shadow-sm overflow-hidden'>
-      <div className='p-3 h-full flex flex-col'>
+    <div className='h-full w-full bg-card shadow-sm rounded-[16px] overflow-hidden'>
+      <div className='p-3 h-full flex flex-col rounded-[16px]'>
         <div className='flex justify-between items-start'>
           {/* Left section: City, Temperature, Description */}
           <div className='flex flex-col'>

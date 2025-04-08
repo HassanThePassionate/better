@@ -132,10 +132,8 @@ export default function WeatherWidget({
   const temperatureUnit = isCelsius ? "°C" : "°F";
 
   return (
-    <div
-      className={`w-full h-full bg-card shadow-sm transition-all duration-300`}
-    >
-      <div className='bg-card h-full w-full px-3 py-1.5'>
+    <div className=' rounded-[16px] w-full h-full bg-card shadow-sm transition-all duration-300'>
+      <div className='bg-card h-full w-full px-3 rounded-[16px] py-1.5'>
         {/* Controls */}
         <div className='flex justify-end gap-1 mb-1'>
           <Button

@@ -129,8 +129,8 @@ export default function WeatherCard() {
   const temperatureUnit = isCelsius ? "°C" : "°F";
 
   return (
-    <div className='w-full h-full bg-card rounded-3xl shadow-lg'>
-      <div className='px-6 py-4 bg-card  rounded-3xl relative'>
+    <div className='w-full h-full bg-card rounded-[16px] shadow-lg'>
+      <div className='px-6 py-4 bg-card  rounded-[16px] relative'>
         {/* Controls */}
         <div className='flex justify-end gap-2 mb-2 absolute top-2 right-2'>
           <Button
