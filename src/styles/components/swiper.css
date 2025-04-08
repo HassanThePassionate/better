@@ -1,0 +1,25 @@
+.swiper-button-next,
+.swiper-button-prev {
+  color: black;
+  background: white;
+  border-radius: 50%;
+  height: 28px;
+  width: 28px;
+  margin-top: calc(0px - (28px / 2));
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.swiper-button-disabled {
+  display: none;
+}
+
+.swiper-wrapper {
+  display: flex;
+  order: 1;
+  margin-left: 4px;
+}

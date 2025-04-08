@@ -1,0 +1,61 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+    darkMode: ["class"],
+    content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
+	theme: {
+		extend: {
+		  borderRadius: {
+			lg: 'var(--radius)',
+			md: 'calc(var(--radius) - 2px)',
+			sm: 'calc(var(--radius) - 4px)',
+		  },
+		  colors: {
+			background: 'var(--background-color)',
+			text: 'var(--text-color)',
+			card: 'var(--card-color)',
+			border: 'var(--border-color)',
+			'text-primary': 'var(--text-primary)',
+			'error-light': 'var(--error-light-color)',
+			foreground: 'var(--text-foreground)',
+			badge: 'var(--badge-color)',
+			searchbar: 'var( --search-bar)',
+			sidebar: 'var(--sidebar-bg-color)',
+			brand: 'var(--brand-color)',
+			hover: 'var(--hover-color)',
+			error: 'var(--error-color)',
+			success: 'var(--success-color)',
+			'btn-hover':'var( --btn-hover)',
+			'sidebar-hover':'var( --sidebar-hover)',
+			'brand-hover':'var( --brand-hover)',
+			'selected-hover':'var( --selected-hover-bg)',
+			'selected-bg':'var( --selected-bg)',
+			'selected-border':'var( --selected-border)',
+			'warn-border':'var( --warn-border)',
+			'warn-color':'var( --warn-color)',
+			'warn-text':'var( --warn-text)',
+			'home-sidebar-hover':'var( --home-sidebar-hover)',
+			'cancel-btn':'var( --cancel-btn)',
+			'date-card':'var(  --date-card-color)',
+			'date-selected':'var(--date-selected-bg-color)',
+			'date-hover':'var(--date-hover-bg-color)',
+			'date-text':'var(--date-text-color)',
+			'date-selected-text':'var( --date-selected-text-color)',
+			'delete-bg':'var(  --delete-bg-color)',
+			'delete-text':'var( --delete-text-color',
+			'export-bg':'var( --export-bg-color)',
+			'export-text':'var( --export-text-color)',
+			'card-pin':'var( --card-pin-color)',
+			'pin':'var( --pin-color)',
+			'pin-disabled':'var( --pin-disabled-color)',
+			'sidebar-selected':'var( --sidebar-selected-color)',
+			'switch-enabled-bg': 'var(--switch-enabled-bg-color)',
+			'switch-disabled-bg': 'var(--switch-disabled-bg-color)',
+		
+
+
+			
+		  },
+		},
+	  },
+  plugins: [require("tailwindcss-animate")],
+};

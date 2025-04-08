@@ -1,0 +1,7 @@
+.tooltip {
+  color: var(--card-color);
+}
+
+#tippy-2 {
+  z-index: 30 !important;
+}

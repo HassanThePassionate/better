@@ -1,0 +1,207 @@
+@layer base {
+  :root {
+    --background-color: #ffffff; /* Pure white background */
+    --card-color: #f6f7f8; /* Light gray for cards */
+    --card-pin-color: #85bbfd3a;
+    --text-color: #1c1c1c; /* Dark text for readability */
+    --text-foreground: rgba(28, 28, 28, 0.8); /* Subtle foreground emphasis */
+    --text-primary: #fff; /* Primary text color */
+    --border-color: #e4e6e8; /* Soft light gray borders */
+    --search-bar: #f6f7f8;
+    --badge-color: #dae0e6; /* Light gray badge */
+    --brand-color: #0079d3; /* Reddit’s blue */
+
+    --radius: 0.5rem; /* Rounded corners */
+
+    --btn-hover: #dbeeff; /* Light blue hover for buttons */
+    --brand-hover: #1484d6; /* Slightly lighter Reddit blue */
+    --hover-color: #f0f2f5; /* Subtle hover effect */
+
+    --selected-hover-bg: rgba(0, 121, 211, 0.15); /* Blue selection hover */
+    --selected-bg: rgba(0, 121, 211, 0.1); /* Light selection background */
+    --selected-border: #0079d3; /* Strong selection border */
+
+    --error-color: #ff585b; /* Reddit’s red for errors */
+    --error-light-color: #fee2e2;
+    --home-sidebar-hover: #f8f9fa; /* Sidebar hover effect */
+    --sidebar-bg-color: #ffffff;
+    --sidebar-selected-color: #dae0e6;
+
+    --cancel-btn: #ffffff; /* White cancel button */
+
+    --progress-wrap: #c8e6c9; /* Light green progress background */
+    --progress: #46a629; /* Green progress bar */
+
+    --date-card-color: #f6f7f8;
+    --date-selected-bg-color: black;
+    --date-hover-bg-color: #f0f2f5;
+    --date-text-color: #000;
+    --date-selected-text-color: #f0f2f5;
+
+    --delete-bg-color: #f6f7f8; /* Red for delete */
+    --delete-text-color: #000;
+
+    --export-bg-color: #f6f7f8; /* Blue for export */
+    --export-text-color: #000;
+
+    --pin-color: #000;
+    --pin-disabled-color: #000;
+
+    --svg-color: #000;
+
+    --switch-enabled-bg-color: #000;
+    --switch-disabled-bg-color: #dae0e6;
+  }
+  [data-theme="dark"] {
+    --search-bar: #171c1f;
+    --sidebar-bg-color: #0000;
+    --text-primary: #fff; /* Primary text color */
+    --home-sidebar-hover: #171c1f;
+    --background-color: #000;
+    --card-color: #171c1f;
+    --error-color: #dc2626;
+    --error-light-color: #fee2e2;
+    --text-color: #ffff;
+    --text-foreground: #d4d4d4;
+    --btn-hover: #2a3236;
+    --badge-color: #333d42;
+    --switch-enabled-bg-color: #fff;
+    --switch-disabled-bg-color: #333d42;
+    --switch-disabled-color: #fff;
+    --sidebar-selected-color: #333d42;
+    --border-color: #262626;
+    --hover-color: #2a3236;
+    --cancel-btn: #ffffff1a;
+    --progress-wrap: #043d11;
+    --progress: #21c2218a;
+    --svg-color: #fff;
+    --delete-bg-color: #171c1f;
+    --delete-text-color: #fff;
+    --export-bg-color: #171c1f;
+    --export-text-color: #fff;
+    --brand-color: #0079d3; /* Orange accent */
+    --brand-hover: #1484d6; /* Slightly lighter Reddit blue */
+    --date-card-color: #171c1f;
+    --date-selected-bg-color: #fff;
+    --date-hover-bg-color: #2a3236;
+    --date-text-color: #fff;
+    --date-selected-text-color: #000;
+    --selected-hover-bg: rgba(0, 121, 211, 0.15); /* Blue selection hover */
+    --selected-bg: rgba(0, 121, 211, 0.1); /* Light selection background */
+    --selected-border: #0079d3; /* Strong selection border */
+  }
+}
+[data-theme="sunrise"] {
+  --search-bar: #ffeab6;
+  --background-color: #fffae3; /* Warm sunrise yellow */
+  --card-color: #ffeab6; /* Soft golden cards */
+  --text-color: #5a3e1b; /* Deep brown for text */
+  --brand-color: #ff9500; /* Orange accent */
+  --brand-hover: #ff9500a9; /* Slightly lighter Reddit blue */
+  --btn-hover: #ffd27f; /* Light sunrise orange */
+  --border-color: #ffc773; /* Warm border tones */
+  --hover-color: #ffce85; /* Light golden hover */
+  --sidebar-bg-color: #fff3d4; /* Light creamy background */
+  --home-sidebar-hover: #ffce85a0; /* Sidebar hover effect */
+  --badge-color: #f8c16e;
+  --switch-enabled-bg-color: #5a3e1b;
+  --switch-disabled-bg-color: #f8c16e;
+  --sidebar-selected-color: #ffce85;
+  --error-color: #ff6b6b; /* Soft red for errors */
+  --error-light-color: #ffe3e3;
+  --text-primary: #4a2f15; /* Dark brown for primary text */
+  --text-foreground: #7a4e25;
+  --cancel-btn: #ffdcb0;
+  --progress-wrap: #ffb347;
+  --progress: #ff950050;
+  --svg-color: #5a3e1b;
+  --delete-bg-color: #ffce85;
+  --delete-text-color: #5a3e1b;
+  --export-bg-color: #ffe4b5;
+  --export-text-color: #5a3e1b;
+  --date-card-color: #ffebcd;
+  --date-selected-bg-color: #ffb347;
+  --date-hover-bg-color: #ffce85;
+  --date-text-color: #5a3e1b;
+  --date-selected-text-color: #fff;
+  --selected-hover-bg: rgba(0, 121, 211, 0.15); /* Blue selection hover */
+  --selected-bg: rgba(0, 121, 211, 0.1); /* Light selection background */
+  --selected-border: #0079d3; /* Strong selection border */
+}
+/* Sunset Theme */
+[data-theme="sunset"] {
+  --search-bar: #5a2d63;
+  --background-color: #2c1e3c; /* Deep twilight purple */
+  --card-color: #5a2d63; /* Rich dusk purple */
+  --text-color: #ffddc1; /* Soft peach for text */
+  --brand-color: #ff6b35; /* Sunset orange */
+  --brand-hover: #ff6b35c4; /* Slightly lighter Reddit blue */
+  --btn-hover: #ff914d; /* Warm glowing orange */
+  --border-color: #5a2d63c0; /* Deep fiery orange for bold effect */
+  --hover-color: #ff5e3a; /* More intense sunset glow */
+  --sidebar-bg-color: #3b2445; /* Dark evening shade */
+  --home-sidebar-hover: #ff704380; /* Enhanced hover effect */
+  --badge-color: #ff914db6; /* Bright golden-orange badge */
+  --switch-enabled-bg-color: #ffddc1;
+  --switch-disabled-bg-color: #ff914db6;
+  --sidebar-selected-color: #ff5e3a;
+  --error-color: #ff4757; /* Deep red for errors */
+  --error-light-color: #ffb3b3;
+  --text-primary: #ffe0b2; /* Warm sandy tone */
+  --text-foreground: #ffcc99;
+  --cancel-btn: #8a2be2; /* Vibrant evening purple */
+  --progress-wrap: #ff4500;
+  --progress: #ff914d50;
+  --svg-color: #ffddc1;
+  --delete-bg-color: #5a2d63;
+  --delete-text-color: #ffddc1;
+  --export-bg-color: #3b2445;
+  --export-text-color: #ffddc1;
+  --date-card-color: #5a2d63;
+  --date-selected-bg-color: #ff4500;
+  --date-hover-bg-color: #ff5e3a;
+  --date-text-color: #ffddc1;
+  --date-selected-text-color: #2c1e3c;
+  --selected-hover-bg: rgba(0, 121, 211, 0.15); /* Blue selection hover */
+  --selected-bg: rgba(0, 121, 211, 0.1); /* Light selection background */
+  --selected-border: #0079d3; /* Strong selection border */
+}
+
+/* Forest Theme */
+[data-theme="forest"] {
+  --search-bar: #bee6c0;
+  --background-color: #e3f2e1; /* Soft misty green */
+  --card-color: #bee6c0; /* Light leafy green */
+  --text-color: #000; /* Deep forest green for text */
+  --brand-color: #5ca83cc2; /* Fresh plant green */
+  --brand-hover: #5ca83cc2; /* Slightly lighter Reddit blue */
+  --btn-hover: #66bb6a; /* Light jungle green */
+  --border-color: #81c784; /* Soft nature border */
+  --hover-color: #a5d6a7; /* Light fern green hover */
+  --sidebar-bg-color: #dcedc8; /* Misty light green */
+  --home-sidebar-hover: #a5d6a780; /* Gentle sidebar hover */
+  --badge-color: #9ccc65; /* Leafy badge */
+  --switch-enabled-bg-color: #000;
+  --switch-disabled-bg-color: #9ccc65;
+  --sidebar-selected-color: #81c784;
+  --error-color: #d32f2f; /* Deep red for errors */
+  --error-light-color: #ffcdd2;
+  --text-primary: #2e7d32; /* Forest green for readability */
+  --text-foreground: #4caf50;
+  --cancel-btn: #a5d6a7; /* Soft fern tone */
+  --progress-wrap: #4c9a2a;
+  --progress: #66bb6a50;
+  --svg-color: #2d472c;
+  --delete-bg-color: #dcedc8;
+  --delete-text-color: #2d472c;
+  --export-bg-color: #dcedc8;
+  --export-text-color: #2d472c;
+  --date-card-color: #c8e6c9;
+  --date-selected-bg-color: #4c9a2a;
+  --date-hover-bg-color: #81c784;
+  --date-text-color: #2d472c;
+  --date-selected-text-color: #fff;
+  --selected-hover-bg: rgba(0, 121, 211, 0.15); /* Blue selection hover */
+  --selected-bg: rgba(0, 121, 211, 0.1); /* Light selection background */
+  --selected-border: #0079d3; /* Strong selection border */
+}

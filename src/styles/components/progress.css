@@ -1,0 +1,7 @@
+.Toastify__progress-bar--wrp {
+  background: var(--progress-wrap);
+}
+
+.Toastify__progress-bar-theme--dark {
+  background-color: var(--progress);
+}

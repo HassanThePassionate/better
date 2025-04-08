@@ -1,0 +1,36 @@
+@import "./styles/base/tailwind.css";
+@import "./styles/base/variables.css";
+@import "./styles/base/reset.css";
+@import "./styles/components/button.css";
+@import "./styles/components/inputs.css";
+@import "./styles/components/scrollbars.css";
+@import "./styles/components/tooltips.css";
+@import "./styles/components/progress.css";
+@import "./styles/components/swiper.css";
+@import "./styles/components/grid-stack.css";
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+div[role="dialog"] {
+  box-shadow: none;
+}
+
+.partially-assigned-bg {
+  background: linear-gradient(
+    225deg,
+    #60a5fa,
+    #60a5fa 6px,
+    #ffffff1a 6px,
+    #ffffff1a 8px,
+    #60a5fa 8px,
+    #60a5fa 15px,
+    #ffffff1a 15px,
+    #ffffff1a
+  );
+}

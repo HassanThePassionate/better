@@ -1,0 +1,13 @@
+@layer base {
+  .btn {
+    @apply rounded-r flex items-center text-sm  font-medium  outline-none ml-[1px] h-[36px] py-2 px-3 gap-1.5 text-text bg-badge hover:bg-hover border border-border;
+  }
+
+  .cancel-btn {
+    @apply sm:mt-0 sm:w-auto mt-3 inline-flex w-full justify-center border-border border text-text bg-cancel-btn hover:bg-hover  px-3 py-2 h-[36px];
+  }
+
+  .done-btn {
+    @apply sm:mt-0 sm:w-auto mt-3 inline-flex w-full justify-center bg-brand border-transparent !text-text-primary hover:bg-brand-hover hover:text-text-primary px-3 py-2 h-[36px];
+  }
+}
