@@ -18,9 +18,9 @@ let grid: GridStack;
 
 export function GridStackComponent() {
   const [items, setItems] = useState([
-    { id: 0, width: 4, height: 3, type: "calender" },
-    { id: 1, width: 2, height: 2, type: "chart" },
-    { id: 2, width: 2, height: 2, type: "clock" },
+    { id: 0, width: 3, height: 3, type: "large" },
+    { id: 1, width: 3, height: 2, type: "small" },
+    { id: 3, width: 3, height: 3, type: "notes" },
   ]);
 
   const itemsRef = useRef(new Map());
@@ -58,46 +58,22 @@ export function GridStackComponent() {
             </DropdownMenuTrigger>
             <DropdownMenuContent className='bg-card'>
               <DropdownMenuItem
-                onClick={() => addWidget(4, 3, "calender")}
+                onClick={() => addWidget(3, 2, "small")}
                 className='focus:bg-background'
               >
-                Calender
+                3x2
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => addWidget(1, 1, "stats")}
+                onClick={() => addWidget(3, 3, "large")}
                 className='focus:bg-background'
               >
-                Stats
+                3x3
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => addWidget(2, 2, "clock")}
+                onClick={() => addWidget(2, 2, "notes")}
                 className='focus:bg-background'
               >
-                Clock
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => addWidget(2, 2, "chart")}
-                className='focus:bg-background'
-              >
-                Chart
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => addWidget(2, 2, "sm-calender")}
-                className='focus:bg-background'
-              >
-                Small Calendar
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => addWidget(3, 1, "notebook")}
-                className='focus:bg-background'
-              >
-                NoteBook
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => addWidget(3, 1, "todo")}
-                className='focus:bg-background'
-              >
-                Todo
+                2x2
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
