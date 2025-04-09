@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useCallback, useEffect } from "react";
-import { RefreshCw, Maximize2, WifiOff, Wifi } from "lucide-react";
+import { RefreshCw, WifiOff, Wifi } from "lucide-react";
 import {
   useCryptoData,
   type CryptoStatus,
@@ -113,7 +113,7 @@ export default function CryptoWidget() {
   const chartMin = Math.min(...ethChartData);
 
   return (
-    <div className='w-full h-full bg-[#0f172a] text-white rounded-[16px] overflow-hidden p-3 border-0 font-sans relative'>
+    <div className='w-full h-full bg-[#0f172a] text-white rounded-[16px] overflow-hidden p-3 border-0  relative'>
       <div className='flex items-center justify-between mb-2'>
         <div className='flex items-center gap-2'>
           <div className='w-7 h-7 bg-[#e2e8f0] rounded-full flex items-center justify-center'>
@@ -151,58 +151,46 @@ export default function CryptoWidget() {
             </svg>
           </div>
           <div>
-            <h2 className='text-base font-normal tracking-wide text-[#e2e8f0]'>
-              ETH
+            <h2 className='text-sm font-normal tracking-wide text-[#e2e8f0]'>
+              Ethereum • ETH
             </h2>
+            <div className='text-xs flex font-semibold text-[#f8fafc]'>
+              ${currentPrice.toFixed(2)}
+              <div
+                className={`text-xs ml-2 ${
+                  isPriceUp ? "text-[#22c55e]" : "text-red-500"
+                } font-medium`}
+              >
+                {isPriceUp ? "+" : ""}
+                {priceChangePercent.toFixed(2)}%
+              </div>
+            </div>
           </div>
-        </div>
-        <div className='flex gap-1'>
-          <div
-            className={`flex items-center ${getStatusColor(status)}`}
-            title={error || "Connection status"}
-          >
-            {status === 2 ? <Wifi size={12} /> : <WifiOff size={12} />}
-          </div>
-          <button
-            onClick={handleRefresh}
-            className='p-1 rounded-full bg-[#1e293b] hover:bg-[#334155]'
-            aria-label='Refresh data'
-          >
-            <RefreshCw
-              size={12}
-              className={isRefreshing ? "animate-spin" : ""}
-            />
-          </button>
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className='p-1 rounded-full bg-[#1e293b] hover:bg-[#334155]'
-            aria-label='Expand widget'
-          >
-            <Maximize2 size={12} />
-          </button>
         </div>
       </div>
-
-      <div className='flex justify-between items-center mb-2'>
-        <div className='text-lg font-semibold text-[#f8fafc]'>
-          ${currentPrice.toFixed(2)}
-        </div>
+      <div className='flex gap-1 absolute top-[30px] right-2'>
         <div
-          className={`text-xs ${
-            isPriceUp ? "text-[#22c55e]" : "text-red-500"
-          } font-medium`}
+          className={`flex items-center ${getStatusColor(status)}`}
+          title={error || "Connection status"}
         >
-          {isPriceUp ? "+" : ""}
-          {priceChangePercent.toFixed(2)}%
+          {status === 2 ? <Wifi size={12} /> : <WifiOff size={12} />}
         </div>
+        <button
+          onClick={handleRefresh}
+          className='p-1 rounded-full bg-[#1e293b] hover:bg-[#334155]'
+          aria-label='Refresh data'
+        >
+          <RefreshCw size={12} className={isRefreshing ? "animate-spin" : ""} />
+        </button>
       </div>
+      <div className='flex justify-between items-center mb-2'></div>
 
-      <div className='mt-2 relative'>
+      <div className='mt-4 relative'>
         <div className='absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-[#64748b] py-1 font-medium'>
           <span>{chartMax.toFixed(1)}</span>
           <span>{chartMin.toFixed(1)}</span>
         </div>
-        <div className='ml-7 relative' ref={containerRef}>
+        <div className='ml-8 relative' ref={containerRef}>
           <EnhancedChart
             data={ethChartData}
             width={170}

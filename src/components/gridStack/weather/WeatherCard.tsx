@@ -25,7 +25,7 @@ const cityData: Record<
     humidity: string;
     windSpeed: string;
     icon: string;
-    daily: Array<{ day: string; icon: string; high: number; low: number }>;
+    daily: Array<{ time: string; icon: string }>;
   }
 > = {
   London: {
@@ -35,10 +35,12 @@ const cityData: Record<
     windSpeed: "11.17 m/s",
     icon: "10d",
     daily: [
-      { day: "Mon", icon: "10d", high: 13, low: 8 },
-      { day: "Tue", icon: "09d", high: 12, low: 7 },
-      { day: "Wed", icon: "04d", high: 14, low: 9 },
-      { day: "Thu", icon: "01d", high: 16, low: 10 },
+      { time: "10 AM", icon: "10d" },
+      { time: "11 AM", icon: "09d" },
+      { time: "12 PM", icon: "09d" },
+      { time: "1 PM", icon: "09d" },
+      { time: "2 PM", icon: "10d" },
+      { time: "3 PM", icon: "02d" },
     ],
   },
   "New York": {
@@ -48,10 +50,12 @@ const cityData: Record<
     windSpeed: "6.7 m/s",
     icon: "02d",
     daily: [
-      { day: "Mon", icon: "02d", high: 19, low: 12 },
-      { day: "Tue", icon: "01d", high: 21, low: 14 },
-      { day: "Wed", icon: "01d", high: 23, low: 15 },
-      { day: "Thu", icon: "03d", high: 20, low: 13 },
+      { time: "10 AM", icon: "02d" },
+      { time: "11 AM", icon: "01d" },
+      { time: "12 PM", icon: "01d" },
+      { time: "1 PM", icon: "02d" },
+      { time: "2 PM", icon: "03d" },
+      { time: "3 PM", icon: "03d" },
     ],
   },
   Paris: {
@@ -61,10 +65,12 @@ const cityData: Record<
     windSpeed: "8.2 m/s",
     icon: "01d",
     daily: [
-      { day: "Mon", icon: "01d", high: 15, low: 9 },
-      { day: "Tue", icon: "02d", high: 16, low: 10 },
-      { day: "Wed", icon: "03d", high: 14, low: 8 },
-      { day: "Thu", icon: "01d", high: 17, low: 11 },
+      { time: "10 AM", icon: "01d" },
+      { time: "11 AM", icon: "01d" },
+      { time: "12 PM", icon: "02d" },
+      { time: "1 PM", icon: "02d" },
+      { time: "2 PM", icon: "01d" },
+      { time: "3 PM", icon: "01d" },
     ],
   },
   Tokyo: {
@@ -74,10 +80,12 @@ const cityData: Record<
     windSpeed: "4.5 m/s",
     icon: "03d",
     daily: [
-      { day: "Mon", icon: "03d", high: 22, low: 16 },
-      { day: "Tue", icon: "04d", high: 20, low: 15 },
-      { day: "Wed", icon: "10d", high: 19, low: 14 },
-      { day: "Thu", icon: "01d", high: 23, low: 17 },
+      { time: "10 AM", icon: "03d" },
+      { time: "11 AM", icon: "03d" },
+      { time: "12 PM", icon: "04d" },
+      { time: "1 PM", icon: "04d" },
+      { time: "2 PM", icon: "03d" },
+      { time: "3 PM", icon: "02d" },
     ],
   },
   Sydney: {
@@ -87,10 +95,12 @@ const cityData: Record<
     windSpeed: "9.3 m/s",
     icon: "01d",
     daily: [
-      { day: "Mon", icon: "01d", high: 24, low: 18 },
-      { day: "Tue", icon: "01d", high: 25, low: 19 },
-      { day: "Wed", icon: "02d", high: 23, low: 17 },
-      { day: "Thu", icon: "02d", high: 22, low: 16 },
+      { time: "10 AM", icon: "01d" },
+      { time: "11 AM", icon: "01d" },
+      { time: "12 PM", icon: "01d" },
+      { time: "1 PM", icon: "02d" },
+      { time: "2 PM", icon: "02d" },
+      { time: "3 PM", icon: "01d" },
     ],
   },
 };
@@ -120,6 +130,7 @@ export default function WeatherWidget3x3({
   const [currentCity, setCurrentCity] = useState(cityName);
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
   const [showResults, setShowResults] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isCelsius, setIsCelsius] = useState(true);
@@ -139,7 +150,14 @@ export default function WeatherWidget3x3({
       { day: "Thu", icon: "03d", high: 14, low: 8 },
     ],
   };
+  const today = new Date();
 
+  const formattedToday = today.toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
   const filteredCities = cities.filter((city) =>
     city.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -168,42 +186,36 @@ export default function WeatherWidget3x3({
     : Math.round((data.temperature * 9) / 5 + 32);
 
   // Convert daily temperatures based on selected unit
-  const convertTemp = (temp: number) =>
-    isCelsius ? temp : Math.round((temp * 9) / 5 + 32);
 
   const temperatureUnit = isCelsius ? "°C" : "°F";
 
   return (
-    <div className='h-full w-full bg-card shadow-sm'>
+    <div className='h-full w-full px-1 bg-card shadow-sm relative'>
+      <div className='flex justify-end gap-1 absolute right-2 top-2'>
+        <Button
+          variant='ghost'
+          size='icon'
+          onClick={handleRefresh}
+          disabled={isLoading}
+          className='h-6 w-6'
+        >
+          <RefreshCw className={`h-3 w-3 ${isLoading ? "animate-spin" : ""}`} />
+        </Button>
+
+        <Button
+          variant='ghost'
+          size='icon'
+          onClick={toggleTemperatureUnit}
+          className='h-6 w-6'
+        >
+          <span className='text-[10px] font-bold'>
+            {isCelsius ? "°F" : "°C"}
+          </span>
+        </Button>
+      </div>
       <div className='p-3 h-full flex flex-col'>
-        {/* Controls */}
-        <div className='flex justify-end gap-1'>
-          <Button
-            variant='ghost'
-            size='icon'
-            onClick={handleRefresh}
-            disabled={isLoading}
-            className='h-6 w-6'
-          >
-            <RefreshCw
-              className={`h-3 w-3 ${isLoading ? "animate-spin" : ""}`}
-            />
-          </Button>
-
-          <Button
-            variant='ghost'
-            size='icon'
-            onClick={toggleTemperatureUnit}
-            className='h-6 w-6'
-          >
-            <span className='text-[10px] font-bold'>
-              {isCelsius ? "°F" : "°C"}
-            </span>
-          </Button>
-        </div>
-
         {/* City */}
-        <div className='absolute top-5 '>
+        <div className='absolute top-3 w-full max-w-[280px]'>
           {isEditing && (
             <div className='relative mb-1'>
               <input
@@ -217,7 +229,7 @@ export default function WeatherWidget3x3({
                 autoFocus
               />
               {showResults && (
-                <div className='absolute top-full left-0 right-0 z-10 mt-1 rounded-md border shadow-md bg-white'>
+                <div className='absolute top-full left-0 right-0 z-10 mt-1 rounded-md border shadow-md bg-background'>
                   <ul className='py-1 max-h-[120px] overflow-y-auto'>
                     {filteredCities.map((city) => (
                       <li
@@ -234,8 +246,9 @@ export default function WeatherWidget3x3({
             </div>
           )}
         </div>
-        <div className='flex justify-between items-center'>
+        <div className='flex gap-2 items-center mt-1'>
           <h3 className='text-xl font-bold'>{currentCity}</h3>
+
           <Button
             variant='ghost'
             size='icon'
@@ -245,9 +258,13 @@ export default function WeatherWidget3x3({
             <Pencil className='h-3 w-3' />
           </Button>
         </div>
+        <p className='text-base font-medium text-text mt-1'>
+          {data.description}
+        </p>
+        <p className='text-sm text-text font-medium mt-1'>{formattedToday}</p>
 
         {/* Temperature and Icon */}
-        <div className='flex justify-between items-center mt-1'>
+        <div className='flex gap-2 items-center mt-1'>
           <div className='text-5xl font-bold leading-none'>
             {displayTemperature}
             <span className='text-2xl align-top'>{temperatureUnit}</span>
@@ -258,11 +275,6 @@ export default function WeatherWidget3x3({
             className='h-16 w-16'
           />
         </div>
-
-        {/* Description */}
-        <p className='text-base text-gray-700 mt-1'>{data.description}</p>
-
-        {/* Measurements */}
         <div className='grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-sm'>
           <span className='text-gray-500'>Humidity</span>
           <span className='text-right'>{data.humidity}</span>
@@ -271,26 +283,21 @@ export default function WeatherWidget3x3({
         </div>
 
         {/* Daily Forecast */}
-        <div className='mt-2'>
-          <Separator className='my-1' />
-          <p className='text-xs font-medium text-gray-500'>4-Day Forecast</p>
-          <div className='grid grid-cols-4 gap-1 mt-1'>
-            {data.daily.map((day, index) => (
+        <>
+          <Separator className='my-2' />
+          <div className='flex justify-between items-center '>
+            {data.daily.slice(0, 5).map((hour, index) => (
               <div key={index} className='flex flex-col items-center'>
-                <span className='text-[10px] font-medium'>{day.day}</span>
                 <img
-                  src={`http://openweathermap.org/img/wn/${day.icon}.png`}
+                  src={`http://openweathermap.org/img/wn/${hour.icon}.png`}
                   alt='Weather icon'
-                  className='h-8 w-8 -my-1'
+                  className='h-9 w-9'
                 />
-                <div className='flex gap-1 text-[10px]'>
-                  <span className='font-medium'>{convertTemp(day.high)}</span>
-                  <span className='text-gray-500'>{convertTemp(day.low)}</span>
-                </div>
+                <span className='text-[11px] text-text'>{hour.time}</span>
               </div>
             ))}
           </div>
-        </div>
+        </>
       </div>
     </div>
   );

@@ -172,9 +172,63 @@ export default function LargeCryptoWidget() {
             <h2 className='text-xl font-normal tracking-wide text-[#e2e8f0]'>
               Ethereum • ETH
             </h2>
+            <div className='flex justify-between items-center mb-1'>
+              <div className='relative'>
+                <button
+                  onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
+                  className='flex items-center gap-1 text-sm font-semibold text-[#f8fafc]'
+                >
+                  <span>
+                    {currencySymbols[currency]}
+                    {currentPrice.toFixed(2)}
+                  </span>
+                  <ChevronDown size={16} />
+                </button>
+
+                {showCurrencyDropdown && (
+                  <div className='absolute top-full left-0 mt-1 rounded-md shadow-lg bg-[#1e293b] z-10'>
+                    <div className='py-1'>
+                      {(
+                        Object.keys(currencySymbols) as Array<
+                          keyof typeof currencySymbols
+                        >
+                      ).map((curr) => (
+                        <button
+                          key={curr}
+                          className={`block px-4 py-2 text-sm w-full text-left ${
+                            currency === curr
+                              ? "bg-[#334155] text-white"
+                              : "text-gray-300 hover:bg-[#334155]"
+                          }`}
+                          onClick={() => {
+                            setCurrency(curr);
+                            setShowCurrencyDropdown(false);
+                          }}
+                        >
+                          {curr}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className='flex flex-col items-end pl-1'>
+                <span className='text-xs text-[#64748b] tracking-wide'>
+                  24H CHANGE
+                </span>
+              </div>
+              <div
+                className={`text-xs pl-2 ${
+                  isPriceUp ? "text-[#22c55e]" : "text-red-500"
+                } font-medium`}
+              >
+                {isPriceUp ? "+" : ""}
+                {priceChangePercent.toFixed(2)}%
+              </div>
+            </div>
           </div>
         </div>
-        <div className='flex gap-2'>
+        <div className='flex gap-2 absolute top-2 right-2'>
           <div
             className={`flex items-center ${getStatusColor(status)}`}
             title={error || "Connection status"}
@@ -193,62 +247,7 @@ export default function LargeCryptoWidget() {
           </button>
         </div>
       </div>
-
-      <div className='flex justify-between items-center mb-3'>
-        <div className='relative'>
-          <button
-            onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
-            className='flex items-center gap-1 text-2xl font-semibold text-[#f8fafc]'
-          >
-            <span>
-              {currencySymbols[currency]}
-              {currentPrice.toFixed(2)}
-            </span>
-            <ChevronDown size={16} />
-          </button>
-
-          {showCurrencyDropdown && (
-            <div className='absolute top-full left-0 mt-1 rounded-md shadow-lg bg-[#1e293b] z-10'>
-              <div className='py-1'>
-                {(
-                  Object.keys(currencySymbols) as Array<
-                    keyof typeof currencySymbols
-                  >
-                ).map((curr) => (
-                  <button
-                    key={curr}
-                    className={`block px-4 py-2 text-sm w-full text-left ${
-                      currency === curr
-                        ? "bg-[#334155] text-white"
-                        : "text-gray-300 hover:bg-[#334155]"
-                    }`}
-                    onClick={() => {
-                      setCurrency(curr);
-                      setShowCurrencyDropdown(false);
-                    }}
-                  >
-                    {curr}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-        <div className='flex flex-col items-end'>
-          <span className='text-xs text-[#64748b] tracking-wide'>24H</span>
-          <span className='text-xs text-[#64748b] tracking-wide'>CHANGE</span>
-        </div>
-        <div
-          className={`text-base ${
-            isPriceUp ? "text-[#22c55e]" : "text-red-500"
-          } font-medium`}
-        >
-          {isPriceUp ? "+" : ""}
-          {priceChangePercent.toFixed(2)}%
-        </div>
-      </div>
-
-      <div className='flex gap-1 mb-3'>
+      <div className='flex gap-1 mb-4'>
         {(["1D", "1W", "1M", "3M", "1Y"] as const).map((range) => (
           <button
             key={range}
@@ -263,14 +262,13 @@ export default function LargeCryptoWidget() {
           </button>
         ))}
       </div>
-
       <div className='mt-1 relative'>
         <div className='absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-[#64748b] py-1 font-medium'>
           <span>{chartMax.toFixed(1)}</span>
           <span>{chartMid.toFixed(1)}</span>
           <span>{chartMin.toFixed(1)}</span>
         </div>
-        <div className='ml-8 relative' ref={containerRef}>
+        <div className='ml-[38px] relative' ref={containerRef}>
           <EnhancedChart
             data={ethChartData}
             width={260}

@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 
 import { Clock, ChevronRight, Newspaper, RefreshCw } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface NewsItem {
   id: number;
@@ -194,77 +195,72 @@ export default function NewsWidget({
         </div>
 
         {/* News Items - Scrollable Area */}
-        <div
-          ref={scrollRef}
-          className='flex-1 px-4 pt-1 pb-2 overflow-y-auto ios-scrollbar'
-          style={{
-            scrollbarWidth: "thin",
-            scrollbarColor: "var(--background) transparent",
-          }}
-        >
-          {news.map((item, index) => (
-            <div
-              key={item.id}
-              className={`flex gap-3 ${
-                index !== 0 ? "mt-3" : ""
-              } rounded-xl transition-colors duration-200`}
-            >
-              {/* Only show images for larger widgets */}
-              {(width === 300 || height === 300) && (
-                <div className='shrink-0'>
-                  <div className='w-[46px] h-[46px] rounded-[10px] overflow-hidden shadow-sm'>
-                    <img
-                      src='https://images.pexels.com/photos/518543/pexels-photo-518543.jpeg?cs=srgb&dl=pexels-brotin-biswas-158640-518543.jpg&fm=jpg'
-                      alt={item.title}
-                      width={46}
-                      height={46}
-                      className='object-cover w-full h-full'
-                    />
+        <ScrollArea className='   overflow-y-auto '>
+          <div className='flex-1 pt-2 px-4  pb-2'>
+            {news.map((item, index) => (
+              <div
+                key={item.id}
+                className={`flex gap-3 ${
+                  index !== 0 ? "mt-3" : ""
+                } rounded-xl transition-colors duration-200`}
+              >
+                {/* Only show images for larger widgets */}
+                {(width === 300 || height === 300) && (
+                  <div className='shrink-0'>
+                    <div className='w-[46px] h-[46px] rounded-[10px] overflow-hidden shadow-sm'>
+                      <img
+                        src='https://images.pexels.com/photos/518543/pexels-photo-518543.jpeg?cs=srgb&dl=pexels-brotin-biswas-158640-518543.jpg&fm=jpg'
+                        alt={item.title}
+                        width={46}
+                        height={46}
+                        className='object-cover w-full h-full'
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
-
-              <div className='flex-1 min-w-0'>
-                {item.category && width === 300 && height === 300 && (
-                  <span className='inline-block text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-brand text-text-primary mb-1'>
-                    {item.category}
-                  </span>
                 )}
 
-                <h3
-                  className={`font-medium text-text ${
-                    width === 200 && height === 200
-                      ? "text-[12px] leading-[1.2] line-clamp-2"
-                      : "text-[13px] leading-[1.3] line-clamp-2"
-                  }`}
-                >
-                  {item.title}
-                </h3>
+                <div className='flex-1 min-w-0'>
+                  {item.category && width === 300 && height === 300 && (
+                    <span className='inline-block text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-brand text-text-primary mb-1'>
+                      {item.category}
+                    </span>
+                  )}
 
-                {/* Only show source for larger widgets */}
-                {width === 300 && height === 300 && (
-                  <div className='flex items-center mt-1 text-[11px] text-text'>
-                    <span className='truncate'>{item.source}</span>
-                    <span className='mx-1'>•</span>
-                    <span className='flex items-center'>
+                  <h3
+                    className={`font-medium text-text ${
+                      width === 200 && height === 200
+                        ? "text-[12px] leading-[1.2] line-clamp-2"
+                        : "text-[13px] leading-[1.3] line-clamp-2"
+                    }`}
+                  >
+                    {item.title}
+                  </h3>
+
+                  {/* Only show source for larger widgets */}
+                  {width === 300 && height === 300 && (
+                    <div className='flex items-center mt-1 text-[11px] text-text'>
+                      <span className='truncate'>{item.source}</span>
+                      <span className='mx-1'>•</span>
+                      <span className='flex items-center'>
+                        <Clock className='w-2.5 h-2.5 mr-0.5' />
+                        {item.time}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Show only time for medium widgets */}
+                  {((width === 300 && height === 200) ||
+                    (width === 200 && height === 300)) && (
+                    <div className='mt-0.5 text-[11px] text-text flex items-center'>
                       <Clock className='w-2.5 h-2.5 mr-0.5' />
                       {item.time}
-                    </span>
-                  </div>
-                )}
-
-                {/* Show only time for medium widgets */}
-                {((width === 300 && height === 200) ||
-                  (width === 200 && height === 300)) && (
-                  <div className='mt-0.5 text-[11px] text-text flex items-center'>
-                    <Clock className='w-2.5 h-2.5 mr-0.5' />
-                    {item.time}
-                  </div>
-                )}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ScrollArea>
 
         {/* See More Button - iOS style */}
         <div className='mt-auto mx-4 mb-3'>

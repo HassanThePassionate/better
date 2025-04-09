@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Pencil } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 interface WeatherWidgetProps {
   cityName: string;
@@ -105,7 +106,14 @@ export default function WeatherWidget({
   const filteredCities = cities.filter((city) =>
     city.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  const today = new Date();
 
+  const formattedToday = today.toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
   const handleCitySelect = (city: string) => {
     setCurrentCity(city);
     setIsEditing(false);
@@ -132,10 +140,10 @@ export default function WeatherWidget({
   const temperatureUnit = isCelsius ? "°C" : "°F";
 
   return (
-    <div className=' rounded-[16px] w-full h-full bg-card shadow-sm transition-all duration-300'>
-      <div className='bg-card h-full w-full px-3 rounded-[16px] py-1.5'>
+    <div className=' rounded-[16px] w-full h-full bg-card relative shadow-sm transition-all duration-300'>
+      <div className='bg-card h-full w-full px-3 rounded-[16px] py-1.5 relative'>
         {/* Controls */}
-        <div className='flex justify-end gap-1 mb-1'>
+        <div className='flex justify-end gap-1 absolute top-2 right-2'>
           <Button
             variant='ghost'
             size='icon'
@@ -161,53 +169,56 @@ export default function WeatherWidget({
         </div>
 
         {/* City */}
-        {isEditing ? (
-          <div className='relative mb-2'>
-            <input
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setShowResults(true);
-              }}
-              placeholder='Search for a city...'
-              className='w-full text-sm input'
-              autoFocus
-            />
-            {showResults && (
-              <div className='absolute top-full left-0 right-0 z-10 mt-1 rounded-md border shadow-md bg-background'>
-                <ul className='py-1'>
-                  {filteredCities.map((city) => (
-                    <li
-                      key={city}
-                      onClick={() => handleCitySelect(city)}
-                      className='px-3 py-1 cursor-pointer hover:bg-hover text-sm'
-                    >
-                      {city}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className='flex justify-between items-center'>
-            <h3 className='text-base font-bold'>{currentCity}</h3>
-            <Button
-              variant='ghost'
-              size='icon'
-              onClick={() => setIsEditing(true)}
-              className='h-6 w-6 -mr-1'
-            >
-              <Pencil className='h-3 w-3' />
-            </Button>
-          </div>
-        )}
+        <div className='absolute top-2 max-w-[170px]'>
+          {isEditing && (
+            <div className='relative mb-2'>
+              <input
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowResults(true);
+                }}
+                placeholder='Search for a city...'
+                className='w-full text-sm input'
+                autoFocus
+              />
+              {showResults && (
+                <div className='absolute top-full left-0 right-0 z-10 mt-1 rounded-md border shadow-md bg-background'>
+                  <ul className='py-1'>
+                    {filteredCities.map((city) => (
+                      <li
+                        key={city}
+                        onClick={() => handleCitySelect(city)}
+                        className='px-3 py-1 cursor-pointer hover:bg-hover text-sm'
+                      >
+                        {city}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        <div className='flex gap-2 items-center mt-1'>
+          <h3 className='text-base font-bold'>{currentCity}</h3>
+          <Button
+            variant='ghost'
+            size='icon'
+            onClick={() => setIsEditing(true)}
+            className='h-6 w-6 -mr-1'
+          >
+            <Pencil className='h-3 w-3' />
+          </Button>
+        </div>
 
+        <p className='text-sm text-text font-medium mt-1'>{data.description}</p>
+        <p className='text-xs text-text font-medium mt-1'>{formattedToday}</p>
         {/* Temperature and Icon */}
-        <div className='flex justify-between items-center mt-1'>
-          <div className='text-2xl font-bold leading-none'>
+        <div className='flex gap-2 items-center mt-1.5'>
+          <div className='text-3xl font-bold leading-none'>
             {displayTemperature}
-            <span className='text-xl align-top'>{temperatureUnit}</span>
+            <span className='text-lg align-top'>{temperatureUnit}</span>
           </div>
           <img
             src={`http://openweathermap.org/img/wn/${data.icon}.png`}
@@ -216,10 +227,8 @@ export default function WeatherWidget({
           />
         </div>
 
-        {/* Description */}
-        <p className='text-sm text-gray-700 mt-1'>{data.description}</p>
-
         {/* Measurements */}
+        <Separator className='mt-1' />
         <div className='grid grid-cols-2 gap-x-2 mt-3 px-1 text-sm'>
           <span className='text-gray-500'>Humidity</span>
           <span className='text-right'>{data.humidity}</span>

@@ -154,64 +154,59 @@ export default function WideCryptoWidget() {
             <h2 className='text-lg font-normal tracking-wide text-[#e2e8f0]'>
               Ethereum • ETH
             </h2>
-          </div>
-        </div>
-        <div className='flex items-center gap-2'>
-          <div className='flex'>
-            {(["1D", "1W", "1M"] as const).map((range) => (
-              <button
-                key={range}
-                className={`px-1.5 py-0.5 text-xs rounded-md ${
-                  timeRange === range
-                    ? "bg-[#334155] text-white"
-                    : "text-gray-400 hover:bg-[#1e293b]"
-                }`}
-                onClick={() => handleTimeRangeChange(range)}
+            <div className='flex items-center gap-3 mb-2'>
+              <div className='text-sm font-semibold text-[#f8fafc]'>
+                ${currentPrice.toFixed(2)}
+              </div>
+              <div
+                className={`text-sm ${
+                  isPriceUp ? "text-[#22c55e]" : "text-red-500"
+                } font-medium`}
               >
-                {range}
-              </button>
-            ))}
+                {isPriceUp ? "+" : ""}
+                {priceChangePercent.toFixed(2)}%
+              </div>
+              <div className='flex'>
+                {(["1D", "1W", "1M"] as const).map((range) => (
+                  <button
+                    key={range}
+                    className={`px-1.5 py-0.5 text-xs rounded-md ${
+                      timeRange === range
+                        ? "bg-[#334155] text-white"
+                        : "text-gray-400 hover:bg-[#1e293b]"
+                    }`}
+                    onClick={() => handleTimeRangeChange(range)}
+                  >
+                    {range}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
-          <div
-            className={`flex items-center ${getStatusColor(status)}`}
-            title={error || "Connection status"}
-          >
-            {status === 2 ? <Wifi size={14} /> : <WifiOff size={14} />}
-          </div>
-          <button
-            onClick={handleRefresh}
-            className='p-1 rounded-full bg-[#1e293b] hover:bg-[#334155]'
-            aria-label='Refresh data'
-          >
-            <RefreshCw
-              size={14}
-              className={isRefreshing ? "animate-spin" : ""}
-            />
-          </button>
         </div>
       </div>
-
-      <div className='flex items-center gap-3 mb-2'>
-        <div className='text-xl font-semibold text-[#f8fafc]'>
-          ${currentPrice.toFixed(2)}
-        </div>
+      <div className='flex items-center gap-2 absolute top-2 right-2'>
         <div
-          className={`text-sm ${
-            isPriceUp ? "text-[#22c55e]" : "text-red-500"
-          } font-medium`}
+          className={`flex items-center ${getStatusColor(status)}`}
+          title={error || "Connection status"}
         >
-          {isPriceUp ? "+" : ""}
-          {priceChangePercent.toFixed(2)}%
+          {status === 2 ? <Wifi size={14} /> : <WifiOff size={14} />}
         </div>
+        <button
+          onClick={handleRefresh}
+          className='p-1 rounded-full bg-[#1e293b] hover:bg-[#334155]'
+          aria-label='Refresh data'
+        >
+          <RefreshCw size={14} className={isRefreshing ? "animate-spin" : ""} />
+        </button>
       </div>
-
       <div className='mt-1 relative'>
         <div className='absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-[#64748b] py-1 font-medium'>
           <span>{chartMax.toFixed(1)}</span>
           <span>{chartMid.toFixed(1)}</span>
           <span>{chartMin.toFixed(1)}</span>
         </div>
-        <div className='ml-8 relative' ref={containerRef}>
+        <div className='ml-9 relative' ref={containerRef}>
           <EnhancedChart
             data={ethChartData}
             width={260}

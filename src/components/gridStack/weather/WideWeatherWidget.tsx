@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { Pencil, RefreshCw } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 interface WeatherWidget2x3Props {
@@ -14,7 +14,18 @@ interface WeatherWidget2x3Props {
   windSpeed?: string;
   icon?: string;
 }
-
+const cities = [
+  "London",
+  "New York",
+  "Paris",
+  "Tokyo",
+  "Sydney",
+  "Berlin",
+  "Rome",
+  "Madrid",
+  "Moscow",
+  "Beijing",
+];
 // Sample data mapping for different cities
 const cityData: Record<
   string,
@@ -114,7 +125,10 @@ export default function WideWeatherWidget({
 }: WeatherWidget2x3Props) {
   const [isCelsius, setIsCelsius] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [currentCity, setCurrentCity] = useState(cityName);
+  const [showResults, setShowResults] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   // Use provided data or fallback to sample data
   const data = {
     temperature: temperature ?? cityData[cityName]?.temperature ?? 15,
@@ -132,7 +146,22 @@ export default function WideWeatherWidget({
       { time: "3 PM", icon: "01d" },
     ],
   };
+  const today = new Date();
 
+  const formattedToday = today.toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+  const handleCitySelect = (city: string) => {
+    setCurrentCity(city);
+    setIsEditing(false);
+    setShowResults(false);
+  };
+  const filteredCities = cities.filter((city) =>
+    city.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   const handleRefresh = () => {
     setIsLoading(true);
     // Simulate API call
@@ -157,24 +186,83 @@ export default function WideWeatherWidget({
       <div className='p-3 h-full flex flex-col'>
         <div className='flex justify-between items-start'>
           {/* Left section: City, Temperature, Description */}
-          <div className='flex flex-col'>
-            <h3 className='text-lg font-bold'>{cityName}</h3>
-            <div className='flex items-center mt-2'>
-              <div className='text-3xl font-bold leading-none'>
-                {displayTemperature}
-                <span className='text-lg align-top'>{temperatureUnit}</span>
+          <div className='absolute top-3 w-full max-w-[280px]'>
+            {isEditing && (
+              <div className='relative mb-1'>
+                <input
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setShowResults(true);
+                  }}
+                  placeholder='Search for a city...'
+                  className='w-full text-sm input'
+                  autoFocus
+                />
+                {showResults && (
+                  <div className='absolute top-full left-0 right-0 z-10 mt-1 rounded-md border shadow-md bg-background'>
+                    <ul className='py-1 max-h-[120px] overflow-y-auto'>
+                      {filteredCities.map((city) => (
+                        <li
+                          key={city}
+                          onClick={() => handleCitySelect(city)}
+                          className='px-3 py-1 cursor-pointer hover:bg-gray-100 text-sm'
+                        >
+                          {city}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
-              <img
-                src={`http://openweathermap.org/img/wn/${data.icon}.png`}
-                alt='Weather icon'
-                className='h-12 w-12'
-              />
-            </div>
-            <p className='text-sm text-gray-700 mt-1'>{data.description}</p>
+            )}
           </div>
+          <div className='flex flex-col w-full'>
+            <div className='flex items-center gap-2'>
+              <h3 className='text-lg font-bold'>{currentCity}</h3>
+              <Button
+                variant='ghost'
+                size='icon'
+                onClick={() => setIsEditing(true)}
+                className='h-6 w-6 -mr-1'
+              >
+                <Pencil className='h-3 w-3' />
+              </Button>
+            </div>
 
+            <div className='flex items-center justify-between'>
+              <p className='text-sm text-text font-medium mt-1'>
+                {data.description}
+              </p>
+              <p className='text-xs text-text font-medium mt-1'>
+                {formattedToday}
+              </p>
+            </div>
+            <div className='flex items-center justify-between w-full'>
+              <div className='flex items-center gap-2 mt-2'>
+                <div className='text-3xl font-bold leading-none'>
+                  {displayTemperature}
+                  <span className='text-lg align-top'>{temperatureUnit}</span>
+                </div>
+                <img
+                  src={`http://openweathermap.org/img/wn/${data.icon}.png`}
+                  alt='Weather icon'
+                  className='h-12 w-12'
+                />
+              </div>
+              <div className=' text-sm mt-2'>
+                <div>
+                  <span className='text-gray-500'>Humidity:</span>{" "}
+                  {data.humidity}
+                </div>
+                <div>
+                  <span className='text-gray-500'>Wind:</span> {data.windSpeed}
+                </div>
+              </div>
+            </div>
+          </div>
           {/* Right section: Measurements and Controls */}
-          <div className='flex flex-col items-end'>
+          <div className='flex flex-col items-end absolute top-3 right-3'>
             <div className='flex gap-1'>
               <Button
                 variant='ghost'
@@ -197,14 +285,6 @@ export default function WideWeatherWidget({
                   {isCelsius ? "°F" : "°C"}
                 </span>
               </Button>
-            </div>
-            <div className='text-right text-sm mt-2'>
-              <div>
-                <span className='text-gray-500'>Humidity:</span> {data.humidity}
-              </div>
-              <div>
-                <span className='text-gray-500'>Wind:</span> {data.windSpeed}
-              </div>
             </div>
           </div>
         </div>

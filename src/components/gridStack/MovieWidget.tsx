@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { ScrollArea } from "../ui/scroll-area";
 
 export default function MovieWidget() {
   const [selectedMovie, setSelectedMovie] = useState(0);
@@ -558,93 +559,85 @@ export default function MovieWidget() {
       {/* iOS-style scrollable grid with improved scroll UI */}
       <div className='px-3 pb-3 h-[190px] overflow-hidden relative'>
         {/* Scroll container with iOS-style scrollbar */}
-        <div
-          ref={scrollRef}
-          className={`grid grid-cols-3 gap-2 h-full overflow-y-auto pr-1 pb-4 ios-scrollbar ${
-            isScrolling ? "ios-scrollbar-visible" : "ios-scrollbar-hidden"
-          }`}
-          style={{
-            scrollbarWidth: "thin",
-            scrollBehavior: "smooth",
-            WebkitOverflowScrolling: "touch",
-          }}
-        >
-          {currentContent.map((item, index) => (
-            <div
-              key={index}
-              className='relative cursor-pointer transition-all duration-200 group'
-              onClick={() => setSelectedMovie(index)}
-            >
+        <ScrollArea className='h-full overflow-y-auto pr-3 pb-4 '>
+          <div className='grid grid-cols-3 gap-2 pt-2 '>
+            {currentContent.map((item, index) => (
               <div
-                className={`relative aspect-[2/3] rounded-xl overflow-hidden transition-all duration-300 
+                key={index}
+                className='relative cursor-pointer transition-all duration-200 group'
+                onClick={() => setSelectedMovie(index)}
+              >
+                <div
+                  className={`relative aspect-[2/3] rounded-xl overflow-hidden transition-all duration-300 
                 group-hover:shadow-[0_0_10px_rgba(255,255,255,0.2)] 
                 group-hover:scale-[1.03] 
                 group-hover:z-10 ${
                   selectedMovie === index ? "ring-2 ring-white/70" : ""
                 }`}
-              >
-                {/* Background glow effect on hover */}
-                <div className='absolute -inset-1 bg-white/0 rounded-xl group-hover:bg-white/5 group-hover:blur-md transition-all duration-300 z-0'></div>
+                >
+                  {/* Background glow effect on hover */}
+                  <div className='absolute -inset-1 bg-white/0 rounded-xl group-hover:bg-white/5 group-hover:blur-md transition-all duration-300 z-0'></div>
 
-                {/* Image with hover effect */}
-                <div className='relative z-10 w-full h-full overflow-hidden rounded-xl'>
-                  <img
-                    src={item.image || "/placeholder.svg"}
-                    alt={item.title}
-                    className='object-cover transition-all duration-300 group-hover:brightness-110 group-hover:contrast-[1.02]'
-                  />
+                  {/* Image with hover effect */}
+                  <div className='relative z-10 w-full h-full overflow-hidden rounded-xl'>
+                    <img
+                      src={item.image || "/placeholder.svg"}
+                      alt={item.title}
+                      className='object-cover transition-all duration-300 group-hover:brightness-110 group-hover:contrast-[1.02]'
+                    />
 
-                  {/* iOS-style overlay with hover effect */}
-                  <div
-                    className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent 
+                    {/* iOS-style overlay with hover effect */}
+                    <div
+                      className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent 
                     transition-opacity duration-300 group-hover:opacity-80'
-                  ></div>
+                    ></div>
 
-                  {/* Rating badge - iOS style with hover effect */}
-                  <div
-                    className='absolute top-1.5 right-1.5 bg-card backdrop-blur-md px-1.5 py-0.5 rounded-full 
+                    {/* Rating badge - iOS style with hover effect */}
+                    <div
+                      className='absolute top-1.5 right-1.5 bg-card backdrop-blur-md px-1.5 py-0.5 rounded-full 
                     text-[8px] font-medium flex items-center transition-all duration-300 
                      group-hover:backdrop-blur-lg'
-                  >
-                    <svg
-                      className='w-2 h-2 mr-0.5 transition-transform duration-300 group-hover:scale-110'
-                      fill='currentColor'
-                      viewBox='0 0 20 20'
-                      xmlns='http://www.w3.org/2000/svg'
                     >
-                      <path d='M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z'></path>
-                    </svg>
-                    {item.rating}
-                  </div>
-
-                  {/* Title and year - iOS style with hover effect */}
-                  <div className='absolute bottom-0 w-full p-1.5 transition-all duration-300 group-hover:pb-2'>
-                    <div
-                      className='text-[9px] font-medium leading-tight line-clamp-2 transition-all duration-300 
-                      group-hover:text-white group-hover:font-semibold'
-                    >
-                      {item.title}
+                      <svg
+                        className='w-2 h-2 mr-0.5 transition-transform duration-300 group-hover:scale-110'
+                        fill='currentColor'
+                        viewBox='0 0 20 20'
+                        xmlns='http://www.w3.org/2000/svg'
+                      >
+                        <path d='M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z'></path>
+                      </svg>
+                      {item.rating}
                     </div>
-                    <div className='flex items-center justify-between mt-0.5'>
-                      <span
-                        className='text-[8px] text-gray-300 font-medium transition-colors duration-300 
+
+                    {/* Title and year - iOS style with hover effect */}
+                    <div className='absolute bottom-0 w-full p-1.5 transition-all duration-300 group-hover:pb-2'>
+                      <div
+                        className='text-[9px] font-medium leading-tight line-clamp-2 transition-all duration-300 
+                      group-hover:text-white group-hover:font-semibold'
+                      >
+                        {item.title}
+                      </div>
+                      <div className='flex items-center justify-between mt-0.5'>
+                        <span
+                          className='text-[8px] text-gray-300 font-medium transition-colors duration-300 
                         group-hover:text-white/90'
-                      >
-                        {item.year}
-                      </span>
-                      <span
-                        className='text-[7px] bg-white/20 backdrop-blur-sm px-1.5 rounded-full text-white/90 
+                        >
+                          {item.year}
+                        </span>
+                        <span
+                          className='text-[7px] bg-white/20 backdrop-blur-sm px-1.5 rounded-full text-white/90 
                         transition-all duration-300 group-hover:bg-white/30'
-                      >
-                        {item.genre}
-                      </span>
+                        >
+                          {item.genre}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ScrollArea>
 
         {/* iOS-style scroll indicator - fade gradient at bottom */}
         {canScrollDown && (
