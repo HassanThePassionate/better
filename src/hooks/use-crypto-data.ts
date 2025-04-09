@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 "use client"
 
 import { useState, useEffect, useRef } from "react"
@@ -282,7 +282,7 @@ export function useCryptoData(asset = "BTC") {
 
       case "1W": {
         // Weekly pattern with weekend dips
-        const midPoint = (high + low) / 2
+
         chartData = Array(dataPoints)
           .fill(0)
           .map((_, i) => {
@@ -403,7 +403,7 @@ export function useCryptoData(asset = "BTC") {
 
   // Get date labels based on time range
   const getDateLabels = (timeRange: TimeRange = "1D") => {
-    const today = new Date()
+
     const labels: string[] = []
 
     const formatDate = (date: Date) => {
