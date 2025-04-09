@@ -3,10 +3,10 @@
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
-interface WeatherWidget2x4Props {
+interface WeatherWidget2x3Props {
   cityName: string;
   temperature?: number;
   description?: string;
@@ -104,17 +104,16 @@ const cityData: Record<
   },
 };
 
-export default function WeatherWidget2x4({
+export default function WideWeatherWidget({
   cityName,
   temperature,
   description,
   humidity,
   windSpeed,
   icon,
-}: WeatherWidget2x4Props) {
+}: WeatherWidget2x3Props) {
   const [isCelsius, setIsCelsius] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [showHourly, setShowHourly] = useState(true);
 
   // Use provided data or fallback to sample data
   const data = {
@@ -154,8 +153,8 @@ export default function WeatherWidget2x4({
   const temperatureUnit = isCelsius ? "°C" : "°F";
 
   return (
-    <div className='h-full w-full bg-card shadow-sm rounded-[16px] overflow-hidden'>
-      <div className='p-3 h-full flex flex-col rounded-[16px]'>
+    <div className='w-full h-full bg-card rounded-[16px] shadow-sm overflow-hidden'>
+      <div className='p-3 h-full flex flex-col'>
         <div className='flex justify-between items-start'>
           {/* Left section: City, Temperature, Description */}
           <div className='flex flex-col'>
@@ -198,18 +197,6 @@ export default function WeatherWidget2x4({
                   {isCelsius ? "°F" : "°C"}
                 </span>
               </Button>
-              <Button
-                variant='ghost'
-                size='icon'
-                onClick={() => setShowHourly(!showHourly)}
-                className='h-6 w-6'
-              >
-                {showHourly ? (
-                  <ChevronUp className='h-3 w-3' />
-                ) : (
-                  <ChevronDown className='h-3 w-3' />
-                )}
-              </Button>
             </div>
             <div className='text-right text-sm mt-2'>
               <div>
@@ -223,23 +210,22 @@ export default function WeatherWidget2x4({
         </div>
 
         {/* Hourly Forecast */}
-        {showHourly && (
-          <>
-            <Separator className='my-2' />
-            <div className='flex justify-between items-center mt-auto'>
-              {data.hourly.slice(0, 6).map((hour, index) => (
-                <div key={index} className='flex flex-col items-center'>
-                  <img
-                    src={`http://openweathermap.org/img/wn/${hour.icon}.png`}
-                    alt='Weather icon'
-                    className='h-8 w-8'
-                  />
-                  <span className='text-[10px] text-gray-600'>{hour.time}</span>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+
+        <>
+          <Separator className='my-2' />
+          <div className='flex justify-between items-center mt-auto'>
+            {data.hourly.slice(0, 5).map((hour, index) => (
+              <div key={index} className='flex flex-col items-center'>
+                <img
+                  src={`http://openweathermap.org/img/wn/${hour.icon}.png`}
+                  alt='Weather icon'
+                  className='h-8 w-8'
+                />
+                <span className='text-[10px] text-gray-600'>{hour.time}</span>
+              </div>
+            ))}
+          </div>
+        </>
       </div>
     </div>
   );

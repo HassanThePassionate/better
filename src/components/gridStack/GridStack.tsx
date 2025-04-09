@@ -21,10 +21,17 @@ export function GridStackComponent() {
     { id: 0, width: 2, height: 2, type: "sm-weather" },
     { id: 1, width: 3, height: 3, type: "weather" },
     { id: 2, width: 3, height: 3, type: "large" },
-    { id: 3, width: 3, height: 2, type: "small" },
-    { id: 4, width: 3, height: 3, type: "notes" },
-    { id: 5, width: 2, height: 2, type: "sm-notes" },
-    { id: 6, width: 4, height: 2, type: "wide-weather" },
+    { id: 3, width: 3, height: 3, type: "movie" },
+    { id: 4, width: 3, height: 2, type: "small" },
+    { id: 5, width: 3, height: 3, type: "notes" },
+    { id: 6, width: 2, height: 2, type: "sm-notes" },
+    { id: 7, width: 4, height: 2, type: "wide-weather" },
+    { id: 8, width: 2, height: 2, type: "sm-cryptoCard" },
+    { id: 9, width: 3, height: 2, type: "wide-cryptoCard" },
+    { id: 10, width: 3, height: 3, type: "large-cryptoCard" },
+    { id: 11, width: 4, height: 3, type: "large-calendar" },
+    { id: 12, width: 2, height: 2, type: "sm-calendar" },
+    { id: 13, width: 3, height: 2, type: "wide-calendar" },
   ]);
 
   const itemsRef = useRef(new Map());
@@ -102,6 +109,48 @@ export function GridStackComponent() {
                 className='focus:bg-background'
               >
                 Wide Weather 3x2
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => addWidget(3, 3, "movie")}
+                className='focus:bg-background'
+              >
+                Movie 3x3
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => addWidget(2, 2, "sm-cryptoCard")}
+                className='focus:bg-background'
+              >
+                Small cryptoCard 2x2
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => addWidget(3, 2, "wide-cryptoCard")}
+                className='focus:bg-background'
+              >
+                Wide cryptoCard 3x2
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => addWidget(3, 3, "large-cryptoCard")}
+                className='focus:bg-background'
+              >
+                Large cryptoCard 3x3
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => addWidget(2, 2, "sm-calendar")}
+                className='focus:bg-background'
+              >
+                Small calendar 2x2
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => addWidget(3, 2, "wide-calendar")}
+                className='focus:bg-background'
+              >
+                Wide calendar 3x2
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => addWidget(3, 3, "large-calendar")}
+                className='focus:bg-background'
+              >
+                Large calendar 4x3
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

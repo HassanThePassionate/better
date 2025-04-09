@@ -1,5 +1,5 @@
 import { PlusIcon } from "lucide-react";
-import { ScrollArea } from "../ui/scroll-area";
+import { ScrollArea } from "../../ui/scroll-area";
 
 interface Note {
   id: number;

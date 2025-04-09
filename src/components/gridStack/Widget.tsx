@@ -6,12 +6,19 @@
 // import Stats from "./Stats";
 // import TodoCard from "./Todo";
 
-import NotesWidget from "./NotesWidget";
-import SmallNotesWidget from "./SmallNotWidget";
+import NotesWidget from "./notes/NotesWidget";
+import SmallNotesWidget from "./notes/SmallNotWidget";
 import WeatherCard from "./weather/WeatherCard";
 import WeatherWidget from "./weather/WeatherWidget";
 import WeatherWidgetWide from "./weather/WideWeatherWidget";
-import Widgets from "./Widgets";
+import Widgets from "./notes/Widgets";
+import MovieWidget from "./MovieWidget";
+import CryptoWidget from "./crypto/CryptoWidget";
+import WideCryptoWidget from "./crypto/WideCryptoWidget";
+import LargeCryptoWidget from "./crypto/LargeCryptoWidget";
+import SmallCalendar from "./calender/SmCalendar";
+import MainCalendar from "./calender/CalenderWidget";
+import WideCalendar from "./calender/WideCalendar";
 const notes = [
   {
     id: 1,
@@ -56,11 +63,25 @@ const Widget = ({ type }: { type?: string }) => {
       ) : type === "sm-notes" ? (
         <SmallNotesWidget notes={notes} />
       ) : type === "weather" ? (
-        <WeatherCard />
+        <WeatherCard cityName='London' />
       ) : type === "sm-weather" ? (
         <WeatherWidget cityName='New York' />
       ) : type === "wide-weather" ? (
         <WeatherWidgetWide cityName='New York' />
+      ) : type === "movie" ? (
+        <MovieWidget />
+      ) : type === "sm-cryptoCard" ? (
+        <CryptoWidget />
+      ) : type === "wide-cryptoCard" ? (
+        <WideCryptoWidget />
+      ) : type === "large-cryptoCard" ? (
+        <LargeCryptoWidget />
+      ) : type === "sm-calendar" ? (
+        <SmallCalendar />
+      ) : type === "large-calendar" ? (
+        <MainCalendar />
+      ) : type === "wide-calendar" ? (
+        <WideCalendar />
       ) : null}
     </>
   );
