@@ -22,9 +22,9 @@ export default function CryptoWidget() {
     value: 0,
     visible: false,
   });
-  const [timeRange, setTimeRange] = useState<TimeRange>("1D");
+  const [timeRange] = useState<TimeRange>("1D");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Use the crypto data hook to get real-time data
@@ -95,13 +95,6 @@ export default function CryptoWidget() {
       }
     };
   }, []);
-
-  // Handle time range change
-  const handleTimeRangeChange = (range: TimeRange) => {
-    setTimeRange(range);
-    // Hide tooltip when changing time range
-    setTooltip((prev) => ({ ...prev, visible: false }));
-  };
 
   // Get current price and price change
   const currentPrice = ethData ? ethData.lastPrice : 0;
@@ -228,150 +221,6 @@ export default function CryptoWidget() {
           <span key={index}>{date}</span>
         ))}
       </div>
-
-      {/* Expanded view overlay */}
-      {isExpanded && (
-        <div
-          className='fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50'
-          onClick={() => setIsExpanded(false)}
-        >
-          <div
-            className='w-[300px] h-[300px] bg-[#0f172a] text-white rounded-[20px] overflow-hidden p-4 border-0 font-sans'
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* This would be a larger version of the widget with more details */}
-            <div className='flex items-center gap-2 mb-3'>
-              <div className='w-10 h-10 bg-[#e2e8f0] rounded-full flex items-center justify-center'>
-                <svg
-                  width='20'
-                  height='32'
-                  viewBox='0 0 24 38'
-                  fill='none'
-                  xmlns='http://www.w3.org/2000/svg'
-                >
-                  <path
-                    d='M11.9978 0L11.8252 0.576379V24.0844L11.9978 24.2547L23.3725 18.0606L11.9978 0Z'
-                    fill='#343434'
-                  />
-                  <path
-                    d='M11.9978 0L0.623047 18.0606L11.9978 24.2547V12.9556V0Z'
-                    fill='#8C8C8C'
-                  />
-                  <path
-                    d='M11.9978 26.2856L11.9004 26.4044V35.1274L11.9978 35.4132L23.3771 19.9939L11.9978 26.2856Z'
-                    fill='#3C3C3B'
-                  />
-                  <path
-                    d='M11.9978 35.4132V26.2856L0.623047 19.9939L11.9978 35.4132Z'
-                    fill='#141414'
-                  />
-                  <path
-                    d='M11.9978 24.2547L23.3725 18.0606L11.9978 12.9556V24.2547Z'
-                    fill='#393939'
-                  />
-                  <path
-                    d='M0.623047 18.0606L11.9978 24.2547V12.9556L0.623047 18.0606Z'
-                    fill='#8C8C8C'
-                  />
-                </svg>
-              </div>
-              <div>
-                <h2 className='text-xl font-normal tracking-wide text-[#e2e8f0]'>
-                  Ethereum • ETH
-                </h2>
-              </div>
-            </div>
-
-            <div className='flex justify-between items-center mb-3'>
-              <div className='text-2xl font-semibold text-[#f8fafc]'>
-                ${currentPrice.toFixed(2)}
-              </div>
-              <div
-                className={`text-base ${
-                  isPriceUp ? "text-[#22c55e]" : "text-red-500"
-                } font-medium`}
-              >
-                {isPriceUp ? "+" : ""}
-                {priceChangePercent.toFixed(2)}%
-              </div>
-            </div>
-
-            <div className='flex gap-1 mb-3'>
-              {(["1D", "1W", "1M", "3M", "1Y"] as const).map((range) => (
-                <button
-                  key={range}
-                  className={`px-2 py-1 text-xs rounded-md ${
-                    timeRange === range
-                      ? "bg-[#334155] text-white"
-                      : "text-gray-400 hover:bg-[#1e293b]"
-                  }`}
-                  onClick={() => handleTimeRangeChange(range)}
-                >
-                  {range}
-                </button>
-              ))}
-            </div>
-
-            <div className='mb-4'>
-              <EnhancedChart
-                data={ethChartData}
-                width={270}
-                height={100}
-                lineColor='#4f8eff'
-                fillColor='rgba(79, 142, 255, 0.2)'
-                gridColor='#1a2635'
-                isDarkMode={true}
-                showGrid={true}
-                showTooltip={true}
-                animate={true}
-                onHover={() => {}}
-              />
-            </div>
-
-            <div className='grid grid-cols-2 gap-3 mb-4'>
-              <div className='bg-[#1e293b] p-2 rounded-lg'>
-                <div className='text-xs text-[#64748b] mb-1'>24H HIGH</div>
-                <div className='text-sm text-[#e2e8f0]'>
-                  ${ethData ? ethData.highPrice.toFixed(2) : "0.00"}
-                </div>
-              </div>
-              <div className='bg-[#1e293b] p-2 rounded-lg'>
-                <div className='text-xs text-[#64748b] mb-1'>24H LOW</div>
-                <div className='text-sm text-[#e2e8f0]'>
-                  ${ethData ? ethData.lowPrice.toFixed(2) : "0.00"}
-                </div>
-              </div>
-              <div className='bg-[#1e293b] p-2 rounded-lg'>
-                <div className='text-xs text-[#64748b] mb-1'>24H VOLUME</div>
-                <div className='text-sm text-[#e2e8f0]'>
-                  $
-                  {ethData
-                    ? (ethData.quoteVolume / 1000000).toFixed(2)
-                    : "0.00"}
-                  M
-                </div>
-              </div>
-              <div className='bg-[#1e293b] p-2 rounded-lg'>
-                <div className='text-xs text-[#64748b] mb-1'>PRICE CHANGE</div>
-                <div
-                  className={`text-sm ${
-                    isPriceUp ? "text-[#22c55e]" : "text-red-500"
-                  }`}
-                >
-                  ${ethData ? ethData.priceChange.toFixed(2) : "0.00"}
-                </div>
-              </div>
-            </div>
-
-            <button
-              className='w-full py-2 bg-[#4f8eff] hover:bg-[#3b7dff] text-white rounded-lg font-medium transition-colors'
-              onClick={() => setIsExpanded(false)}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

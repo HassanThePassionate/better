@@ -206,7 +206,7 @@ export default function WideWeatherWidget({
                         <li
                           key={city}
                           onClick={() => handleCitySelect(city)}
-                          className='px-3 py-1 cursor-pointer hover:bg-gray-100 text-sm'
+                          className='px-3 py-1 cursor-pointer hover:bg-hover text-sm'
                         >
                           {city}
                         </li>

@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import { ScrollArea } from "../ui/scroll-area";
 
 export default function MovieWidget() {
-  const [selectedMovie, setSelectedMovie] = useState(0);
   const [contentType, setContentType] = useState("movies"); // "movies" or "series"
   const [category, setCategory] = useState("trending"); // "trending", "new", "region"
   const [isScrolling, setIsScrolling] = useState(false);
@@ -472,7 +471,6 @@ export default function MovieWidget() {
 
   // Reset selected movie when changing content type or category
   useEffect(() => {
-    setSelectedMovie(0);
     // Reset scroll position
     if (scrollRef.current) {
       scrollRef.current.scrollTop = 0;
@@ -565,15 +563,12 @@ export default function MovieWidget() {
               <div
                 key={index}
                 className='relative cursor-pointer transition-all duration-200 group'
-                onClick={() => setSelectedMovie(index)}
               >
                 <div
                   className={`relative aspect-[2/3] rounded-xl overflow-hidden transition-all duration-300 
                 group-hover:shadow-[0_0_10px_rgba(255,255,255,0.2)] 
                 group-hover:scale-[1.03] 
-                group-hover:z-10 ${
-                  selectedMovie === index ? "ring-2 ring-white/70" : ""
-                }`}
+                group-hover:z-10 `}
                 >
                   {/* Background glow effect on hover */}
                   <div className='absolute -inset-1 bg-white/0 rounded-xl group-hover:bg-white/5 group-hover:blur-md transition-all duration-300 z-0'></div>
