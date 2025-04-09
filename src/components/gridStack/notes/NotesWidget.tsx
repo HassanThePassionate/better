@@ -18,7 +18,9 @@ export default function NotesWidget({ notes }: NotesWidgetProps) {
       <div className='py-4 px-5 flex flex-row items-center justify-between'>
         <div className='flex items-baseline gap-2'>
           <h2 className='text-xl font-medium text-amber-700'>Notes</h2>
-          <span className='text-sm text-gray-500'>{notes.length}</span>
+          <span className='text-sm text-foreground opacity-80'>
+            {notes.length}
+          </span>
         </div>
         <button className='text-amber-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-hover transition-colors duration-200'>
           <PlusIcon className='h-5 w-5' />
