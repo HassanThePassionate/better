@@ -32,6 +32,9 @@ export function GridStackComponent() {
     { id: 11, width: 4, height: 3, type: "large-calendar" },
     { id: 12, width: 2, height: 2, type: "sm-calendar" },
     { id: 13, width: 3, height: 2, type: "wide-calendar" },
+    { id: 14, width: 2, height: 2, type: "sm-news" },
+    { id: 15, width: 3, height: 2, type: "wide-news" },
+    { id: 16, width: 3, height: 3, type: "large-news" },
   ]);
 
   const itemsRef = useRef(new Map());

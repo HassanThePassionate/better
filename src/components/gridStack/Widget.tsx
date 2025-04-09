@@ -19,6 +19,7 @@ import LargeCryptoWidget from "./crypto/LargeCryptoWidget";
 import SmallCalendar from "./calender/SmCalendar";
 import MainCalendar from "./calender/CalenderWidget";
 import WideCalendar from "./calender/WideCalendar";
+import NewsWidget from "./news/NewsWidget";
 const notes = [
   {
     id: 1,
@@ -82,6 +83,12 @@ const Widget = ({ type }: { type?: string }) => {
         <MainCalendar />
       ) : type === "wide-calendar" ? (
         <WideCalendar />
+      ) : type === "sm-news" ? (
+        <NewsWidget height={200} width={200} />
+      ) : type === "wide-news" ? (
+        <NewsWidget height={200} width={300} />
+      ) : type === "large-news" ? (
+        <NewsWidget height={300} width={300} />
       ) : null}
     </>
   );
