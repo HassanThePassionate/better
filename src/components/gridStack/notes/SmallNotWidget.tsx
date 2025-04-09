@@ -22,7 +22,7 @@ export default function SmallNotesWidget({ notes }: SmallNotesWidgetProps) {
             {notes.length}
           </span>
         </div>
-        <button className='text-amber-700 w-6 h-6 rounded-full flex items-center justify-center hover:bg-amber-100 transition-colors duration-200'>
+        <button className='text-amber-700 w-6 h-6 rounded-full flex items-center justify-center hover:bg-hover transition-colors duration-200'>
           <PlusIcon className='h-3.5 w-3.5' />
           <span className='sr-only'>Add note</span>
         </button>
@@ -33,7 +33,7 @@ export default function SmallNotesWidget({ notes }: SmallNotesWidgetProps) {
           {notes.map((note) => (
             <div
               key={note.id}
-              className='flex items-start px-3 py-2 hover:bg-amber-50 transition-colors duration-200 cursor-pointer'
+              className='flex items-start px-3 py-2 hover:bg-hover transition-colors duration-200 cursor-pointer'
             >
               <div
                 className={`w-1 self-stretch rounded-full mr-2 ${

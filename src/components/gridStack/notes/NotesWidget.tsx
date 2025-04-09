@@ -20,7 +20,7 @@ export default function NotesWidget({ notes }: NotesWidgetProps) {
           <h2 className='text-xl font-medium text-amber-700'>Notes</h2>
           <span className='text-sm text-gray-500'>{notes.length}</span>
         </div>
-        <button className='text-amber-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-amber-100 transition-colors duration-200'>
+        <button className='text-amber-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-hover transition-colors duration-200'>
           <PlusIcon className='h-5 w-5' />
           <span className='sr-only'>Add note</span>
         </button>
@@ -31,7 +31,7 @@ export default function NotesWidget({ notes }: NotesWidgetProps) {
           {notes.map((note) => (
             <div
               key={note.id}
-              className='flex items-start px-5 py-4 hover:bg-amber-50 transition-colors duration-200 cursor-pointer'
+              className='flex items-start px-5 py-4 hover:bg-hover transition-colors duration-200 cursor-pointer'
             >
               <div
                 className={`w-1.5 self-stretch rounded-full mr-3 ${

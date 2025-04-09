@@ -22,8 +22,10 @@ export default function WideCalendar() {
 
           <div className='flex h-full'>
             {/* Left side - Date */}
-            <div className='w-[90px] bg-gray-50/50 flex flex-col items-center justify-center border-r border-border'>
-              <h2 className='text-xs font-bold text-error bg-error'>MONDAY</h2>
+            <div className='w-[90px] bg-hover flex flex-col items-center justify-center border-r border-border'>
+              <h2 className='text-xs font-bold text-text-primary bg-error p-1 rounded-md'>
+                MONDAY
+              </h2>
               <span className='text-4xl font-bold mt-1'>22</span>
             </div>
 
