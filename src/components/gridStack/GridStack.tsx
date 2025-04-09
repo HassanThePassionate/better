@@ -150,10 +150,28 @@ export function GridStackComponent() {
                 Wide calendar 3x2
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => addWidget(3, 3, "large-calendar")}
+                onClick={() => addWidget(4, 3, "large-calendar")}
                 className='focus:bg-background'
               >
                 Large calendar 4x3
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => addWidget(2, 2, "sm-news")}
+                className='focus:bg-background'
+              >
+                Small news 2x2
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => addWidget(3, 2, "wide-news")}
+                className='focus:bg-background'
+              >
+                Wide News 3x2
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => addWidget(3, 3, "large-news")}
+                className='focus:bg-background'
+              >
+                Large News 3x3
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
