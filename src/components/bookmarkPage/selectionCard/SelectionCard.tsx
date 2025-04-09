@@ -52,8 +52,9 @@ const SelectionCard = () => {
   return (
     <div
       className={cn(
-        "block relative lg:max-w-[280px] max-w-[400px] w-full max-[1600px]:fixed  max-[1600px]:right-8 max-lg:right-1/2  max-lg:left-1/2 max-lg:translate-x-[-50%] z-[2000]  opacity-0  translate-x-[100%] transition-all duration-300 min-[1600px]:ml-2 ",
-        showSelectionCard && "opacity-100 translate-x-0 max-lg:bottom-6 "
+        "block relative lg:max-w-[280px] max-w-[400px] w-full max-[1600px]:fixed  max-[1600px]:right-8 max-lg:right-1/2  max-lg:left-1/2 max-lg:translate-x-[-50%] z-[2000]  opacity-0 pointer-events-none  translate-x-[100%] transition-all duration-300 min-[1600px]:ml-2 ",
+        showSelectionCard &&
+          "opacity-100 translate-x-0 max-lg:bottom-6 pointer-events-auto "
       )}
     >
       <div className='sticky top-0 left-0 w-full lg:max-w-[280px] lg:min-w-72 max-w-[400px]  '>
