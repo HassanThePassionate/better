@@ -9,6 +9,8 @@ interface DateContextType {
   dateRefs: Map<string, HTMLDivElement>;
   registerDateRef: (dateString: string, ref: HTMLDivElement) => void;
   scrollToDate: (date: Date) => void;
+  noResultsMessage: string;
+  setNoResultsMessage: (message: string) => void;
 }
 
 const DateContext = createContext<DateContextType>({
@@ -17,10 +19,13 @@ const DateContext = createContext<DateContextType>({
   dateRefs: new Map(),
   registerDateRef: () => {},
   scrollToDate: () => {},
+  noResultsMessage: "",
+  setNoResultsMessage: () => {},
 });
 
 export function DateProvider({ children }: { children: React.ReactNode }) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [noResultsMessage, setNoResultsMessage] = useState("");
   const dateRefsRef = useRef(new Map<string, HTMLDivElement>());
 
   const registerDateRef = (dateString: string, ref: HTMLDivElement) => {
@@ -32,34 +37,18 @@ export function DateProvider({ children }: { children: React.ReactNode }) {
     const ref = dateRefsRef.current.get(dateString);
 
     if (ref) {
+      setNoResultsMessage("");
       ref.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
-      // If exact date not found, try to find the closest date
-      let closestDate = null;
-      let minDiff = Number.POSITIVE_INFINITY;
-
-      dateRefsRef.current.forEach((ref, dateStr) => {
-        const refDate = new Date(dateStr);
-        const diff = Math.abs(date.getTime() - refDate.getTime());
-
-        if (diff < minDiff) {
-          minDiff = diff;
-          closestDate = dateStr;
-        }
-      });
-
-      if (closestDate) {
-        const closestRef = dateRefsRef.current.get(closestDate);
-        if (closestRef) {
-          closestRef.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      }
+      setNoResultsMessage("Sorry, no visits found.");
     }
   };
 
   return (
     <DateContext.Provider
       value={{
+        noResultsMessage,
+        setNoResultsMessage,
         selectedDate,
         setSelectedDate,
         dateRefs: dateRefsRef.current,

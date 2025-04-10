@@ -27,7 +27,6 @@ const TabsCards = ({ cards }: TabsCardsProps) => {
   const { isListView } = useThumbnailToggler();
   const [favoriteExe, setFavoriteExe] = useState<Card[]>([]);
   const { activeFilter } = useExtensionContext();
-
   const { page } = usePageContext();
   const { setCurrentHeader } = useHeaderContext();
   const isShowHourlyLog = page === "history";
@@ -85,7 +84,7 @@ const TabsCards = ({ cards }: TabsCardsProps) => {
     for (const [date, timeGroups] of Object.entries(dateGroups)) {
       const sortedTimeGroups = Object.entries(timeGroups)
         .map(([time, cards]) => ({ time, cards }))
-        .sort((a, b) => b.time.localeCompare(a.time)); // Sort times in descending order
+        .sort((a, b) => b.time.localeCompare(a.time));
 
       result.push({
         date,

@@ -50,7 +50,9 @@ export default function CardGroup({
   const { setCurrentHeader } = useHeaderContext();
   const { filteredExtensions } = useExtensionContext();
   const { page } = usePageContext();
-  const { setSelectedDate, registerDateRef } = useDateContext();
+
+  const { setSelectedDate, registerDateRef, noResultsMessage } =
+    useDateContext();
   const time = specificTime || cards[0]?.time || "";
   const groupDate = date || cards[0]?.date || "";
   const id = cards[0]?.id || "";
@@ -136,30 +138,39 @@ export default function CardGroup({
       </div>
     );
   }
-
   return (
-    <div>
-      {isShowHourlyLog && (
-        <HourlyLog
-          specificTime={time}
-          date={isFirstInDateGroup ? groupDate : undefined}
-          id={id}
-        />
-      )}
-      <div className={containerClasses} ref={groupRef}>
-        {dataToRender.map((card) => (
-          <CardRenderer
-            favorite={favorite}
-            key={card.id}
-            isDownloadPage={isDownloadPage}
-            data={card}
-            isListView={isListView}
-            isExtensionsPage={isExtensionsPage}
-            favoriteExe={favoriteExe}
-            setFavoriteExe={setFavoriteExe}
+    <>
+      <div className={cn(isShowHourlyLog && noResultsMessage && "opacity-0")}>
+        {isShowHourlyLog && (
+          <HourlyLog
+            specificTime={time}
+            date={isFirstInDateGroup ? groupDate : undefined}
+            id={id}
           />
-        ))}
+        )}
+        <div className={containerClasses} ref={groupRef}>
+          {dataToRender.map((card) => (
+            <CardRenderer
+              favorite={favorite}
+              key={card.id}
+              isDownloadPage={isDownloadPage}
+              data={card}
+              isListView={isListView}
+              isExtensionsPage={isExtensionsPage}
+              favoriteExe={favoriteExe}
+              setFavoriteExe={setFavoriteExe}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+      <p
+        className={cn(
+          "text-lg text-text font-medium text-center absolute hidden top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mt-12",
+          isShowHourlyLog && noResultsMessage && "block"
+        )}
+      >
+        {noResultsMessage}
+      </p>
+    </>
   );
 }
