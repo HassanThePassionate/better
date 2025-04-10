@@ -4,7 +4,9 @@ import type React from "react";
 
 import {
   createContext,
+  Dispatch,
   type RefObject,
+  SetStateAction,
   useContext,
   useRef,
   useState,
@@ -19,6 +21,7 @@ type Notes = {
   updatedAt: string;
   createdAt: string;
   des: string;
+  color?: string; // Add color property to each note
 }[];
 
 type EditorContextProps = {
@@ -33,9 +36,24 @@ type EditorContextProps = {
   addNewNote: () => void;
   deleteNote: (id: number) => void;
   selectNote: (id: number) => void;
-  setNotes: (notes: Notes) => void;
+  setNotes: Dispatch<
+    SetStateAction<
+      {
+        id: number;
+        title: string;
+        des: string;
+        content: string;
+        updatedAt: string;
+        createdAt: string;
+        color: string;
+      }[]
+    >
+  >;
   searchTerm: string;
   setSearchTerm: (term: string) => void;
+  selectedColor: string; // Keep for backward compatibility
+  setSelectedColor: (color: string) => void; // Keep for backward compatibility
+  setNoteColor: (noteId: number, color: string) => void; // New function to set color for specific note
 };
 
 const EditorContext = createContext<EditorContextProps | undefined>(undefined);
@@ -45,8 +63,10 @@ export const EditorContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const [selectedColor, setSelectedColor] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+
   const currentTime = new Date().toISOString();
   const [searchTerm, setSearchTerm] = useState("");
   const DEFAULT_TITLE = "Untitled";
@@ -59,8 +79,10 @@ export const EditorContextProvider = ({
       content: `<h1>${DEFAULT_TITLE}</h1><p>Start writing...</p>`,
       updatedAt: currentTime,
       createdAt: currentTime,
+      color: "", // Initialize with empty color
     },
   ]);
+
   const filteredNotes =
     searchTerm.trim() === ""
       ? notes
@@ -72,6 +94,27 @@ export const EditorContextProvider = ({
         );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedNoteId, setSelectedNoteId] = useState(1);
+
+  // Set color for a specific note
+  const setNoteColor = (noteId: number, color: string) => {
+    setNotes((prevNotes) =>
+      prevNotes.map((note) =>
+        note.id === noteId
+          ? {
+              ...note,
+              color: color,
+              updatedAt: new Date().toISOString(),
+            }
+          : note
+      )
+    );
+
+    // Also update selectedColor for backward compatibility
+    if (noteId === selectedNoteId) {
+      setSelectedColor(color);
+    }
+  };
+
   const editor = useEditor({
     extensions: editorExtensions,
     content:
@@ -158,6 +201,7 @@ export const EditorContextProvider = ({
       content: `<h1>${DEFAULT_TITLE}</h1><p>Start writing...</p>`,
       updatedAt: currentTime,
       createdAt: currentTime,
+      color: "", // Initialize with empty color
     };
     setNotes([...notes, newNote]);
     setSelectedNoteId(newNote.id);
@@ -182,6 +226,9 @@ export const EditorContextProvider = ({
       const newSelectedId = updatedNotes[newSelectedIndex].id;
       setSelectedNoteId(newSelectedId);
       editor?.commands.setContent(updatedNotes[newSelectedIndex].content);
+
+      // Update selectedColor when changing selected note
+      setSelectedColor(updatedNotes[newSelectedIndex].color || "");
     }
 
     setNotes(updatedNotes);
@@ -192,6 +239,8 @@ export const EditorContextProvider = ({
     const selectedNote = filteredNotes.find((note) => note.id === id);
     if (selectedNote) {
       editor?.commands.setContent(selectedNote.content);
+      // Update selectedColor when changing selected note
+      setSelectedColor(selectedNote.color || "");
     }
   };
 
@@ -200,6 +249,8 @@ export const EditorContextProvider = ({
   return (
     <EditorContext.Provider
       value={{
+        selectedColor,
+        setSelectedColor,
         linkUrl,
         setLinkUrl,
         filteredNotes,
@@ -214,6 +265,7 @@ export const EditorContextProvider = ({
         setNotes,
         searchTerm,
         setSearchTerm,
+        setNoteColor,
       }}
     >
       {children}

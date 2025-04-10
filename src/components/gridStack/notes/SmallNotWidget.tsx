@@ -1,15 +1,19 @@
 import { PlusIcon } from "lucide-react";
 import { ScrollArea } from "../../ui/scroll-area";
 
-interface Note {
+import { formatDistanceToNow } from "date-fns";
+
+type Notes = {
   id: number;
   title: string;
-  date: string;
-  color: string;
-}
-
+  content: string;
+  updatedAt: string;
+  createdAt: string;
+  des: string;
+  color?: string;
+}[];
 interface SmallNotesWidgetProps {
-  notes: Note[];
+  notes: Notes;
 }
 
 export default function SmallNotesWidget({ notes }: SmallNotesWidgetProps) {
@@ -36,17 +40,17 @@ export default function SmallNotesWidget({ notes }: SmallNotesWidgetProps) {
               className='flex items-start px-3 py-2 hover:bg-hover transition-colors duration-200 cursor-pointer'
             >
               <div
-                className={`w-1 self-stretch rounded-full mr-2 ${
-                  note.color === "orange"
-                    ? "bg-orange-400"
-                    : note.color === "green"
-                    ? "bg-green-400"
-                    : "bg-red-400"
-                }`}
+                className='w-1 self-stretch rounded-full mr-3 bg-background'
+                style={{ backgroundColor: note.color || "" }}
               />
               <div>
                 <h3 className='font-medium text-xs'>{note.title}</h3>
-                <p className='text-gray-500 text-xs'>{note.date}</p>
+                <p className='text-gray-500 text-xs'>
+                  {" "}
+                  {formatDistanceToNow(new Date(note.createdAt), {
+                    addSuffix: true,
+                  })}
+                </p>
               </div>
             </div>
           ))}

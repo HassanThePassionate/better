@@ -209,7 +209,7 @@ export default function WideCryptoWidget() {
         <div className='ml-9 relative' ref={containerRef}>
           <EnhancedChart
             data={ethChartData}
-            width={260}
+            width={240}
             height={80}
             lineColor='#4f8eff'
             fillColor='rgba(79, 142, 255, 0.2)'

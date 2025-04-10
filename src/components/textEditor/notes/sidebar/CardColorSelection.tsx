@@ -1,3 +1,7 @@
+"use client";
+
+import type React from "react";
+
 import SidebarItem from "@/components/homeSidebar/SidebarItem";
 import {
   Popover,
@@ -7,24 +11,35 @@ import {
 import { colors } from "@/constant/CardColor";
 import { Check } from "lucide-react";
 import { IoColorPaletteSharp } from "react-icons/io5";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useEditorContext } from "@/context/EditorContext";
 
-interface Props {
-  selectedColor: string;
-  setSelectedColor: (color: string) => void;
+interface CardColorSelectionProps {
+  noteId: number;
 }
 
-const CardColorSelection = ({ selectedColor, setSelectedColor }: Props) => {
-  const [inputColor, setInputColor] = useState(selectedColor);
+const CardColorSelection = ({ noteId }: CardColorSelectionProps) => {
+  const { filteredNotes, setNoteColor } = useEditorContext();
+
+  // Find the current note to get its color
+  const currentNote = filteredNotes.find((note) => note.id === noteId);
+  const noteColor = currentNote?.color || "";
+
+  const [inputColor, setInputColor] = useState(noteColor);
+
+  // Update input color when note color changes
+  useEffect(() => {
+    setInputColor(noteColor);
+  }, [noteColor]);
 
   const handleColorChange = (color: string) => {
-    setSelectedColor(color);
-    setInputColor(color); // Input field bhi update hoga
+    setNoteColor(noteId, color);
+    setInputColor(color);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSelectedColor(inputColor); // Enter dabane par color select hoga
+    setNoteColor(noteId, inputColor);
   };
 
   const handleColorInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +71,7 @@ const CardColorSelection = ({ selectedColor, setSelectedColor }: Props) => {
               onClick={() => handleColorChange(color.value)}
               aria-label={`Select ${color.label} color`}
             >
-              {selectedColor === color.value && (
+              {noteColor === color.value && (
                 <Check
                   className={`h-4 w-4 ${
                     color.value === "#ffffff" ? "text-black" : "text-black"

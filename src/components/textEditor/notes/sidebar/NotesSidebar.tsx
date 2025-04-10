@@ -17,7 +17,7 @@ const NotesSidebar = () => {
 
       <div
         className={cn(
-          "flex flex-col  py-1 px-4 gap-2 overflow-y-auto max-h-[290px] lg:max-h-[calc(100vh-100px)] pb-6 pt-1 no-scrollbar",
+          "flex flex-col  py-1 px-4 gap-2 overflow-y-auto max-h-[290px] lg:max-h-[calc(100vh-220px)] pb-6 pt-1 no-scrollbar",
           cardView && "grid grid-cols-2"
         )}
       >

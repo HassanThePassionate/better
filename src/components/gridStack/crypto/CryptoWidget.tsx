@@ -186,7 +186,7 @@ export default function CryptoWidget() {
         <div className='ml-8 relative' ref={containerRef}>
           <EnhancedChart
             data={ethChartData}
-            width={170}
+            width={138}
             height={80}
             lineColor='#4f8eff'
             fillColor='rgba(79, 142, 255, 0.2)'

@@ -20,39 +20,10 @@ import SmallCalendar from "./calender/SmCalendar";
 import MainCalendar from "./calender/CalenderWidget";
 import WideCalendar from "./calender/WideCalendar";
 import NewsWidget from "./news/NewsWidget";
-const notes = [
-  {
-    id: 1,
-    title: "Welcome Hitab Notes",
-    date: "July 28",
-    color: "orange",
-  },
-  {
-    id: 2,
-    title: "The Last Rose of Summer",
-    date: "July 28",
-    color: "green",
-  },
-  {
-    id: 3,
-    title: "Change The Way of Thinking",
-    date: "July 29",
-    color: "red",
-  },
-  {
-    id: 4,
-    title: "Project Ideas",
-    date: "July 30",
-    color: "green",
-  },
-  {
-    id: 5,
-    title: "Shopping List",
-    date: "July 30",
-    color: "orange",
-  },
-];
+import { useEditorContext } from "@/context/EditorContext";
+
 const Widget = ({ type }: { type?: string }) => {
+  const { filteredNotes: notes } = useEditorContext();
   return (
     <>
       {type === "large" ? (
