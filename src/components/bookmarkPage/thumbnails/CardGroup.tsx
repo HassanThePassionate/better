@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import type { Card } from "@/types/TabCardType";
 import { useHeaderContext } from "@/context/HeaderContext";
 import { useExtensionContext } from "@/context/ExtensionContext";
+import { useDateContext } from "@/context/DateContext";
 
 import CardRenderer from "./CardRenderer";
 import HourlyLog from "@/components/historyPage/HourlyLog";
@@ -49,24 +50,57 @@ export default function CardGroup({
   const { setCurrentHeader } = useHeaderContext();
   const { filteredExtensions } = useExtensionContext();
   const { page } = usePageContext();
+  const { setSelectedDate, registerDateRef } = useDateContext();
   const time = specificTime || cards[0]?.time || "";
   const groupDate = date || cards[0]?.date || "";
   const id = cards[0]?.id || "";
 
+  // Register this group's ref with the DateContext if it's the first in its date group
   useEffect(() => {
-    if (!isShowHourlyLog || !time) return;
+    if (
+      isFirstInDateGroup &&
+      groupRef.current &&
+      groupDate &&
+      groupDate !== "default"
+    ) {
+      try {
+        const dateObj = new Date(groupDate);
+        if (!isNaN(dateObj.getTime())) {
+          const dateString = dateObj.toISOString().split("T")[0];
+          registerDateRef(dateString, groupRef.current);
+        }
+      } catch (e) {
+        console.error("Invalid date format:", groupDate, e);
+      }
+    }
+  }, [isFirstInDateGroup, groupDate, registerDateRef]);
+
+  useEffect(() => {
+    if (!isShowHourlyLog || !time || !groupDate) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && entry.intersectionRatio >= 0.1) {
             setCurrentHeader({ date: groupDate, time });
+
+            // Update the selected date in the DateSlider when this group is visible
+            if (groupDate && groupDate !== "default") {
+              try {
+                const dateObj = new Date(groupDate);
+                if (!isNaN(dateObj.getTime())) {
+                  setSelectedDate(dateObj);
+                }
+              } catch (e) {
+                console.error("Invalid date format:", groupDate, e);
+              }
+            }
           }
         });
       },
       {
         threshold: 0.1,
-        rootMargin: "-280px 30px",
+        rootMargin: "-300px 30px",
       }
     );
 
@@ -79,7 +113,14 @@ export default function CardGroup({
         observer.unobserve(groupRef.current);
       }
     };
-  }, [cards, groupDate, time, isShowHourlyLog, setCurrentHeader]);
+  }, [
+    cards,
+    groupDate,
+    time,
+    isShowHourlyLog,
+    setCurrentHeader,
+    setSelectedDate,
+  ]);
 
   const dataToRender = (() => {
     if (favorite && favoriteExe.length > 0) {

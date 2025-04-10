@@ -151,7 +151,7 @@ const TabsCards = ({ cards }: TabsCardsProps) => {
             : cardGroups.groups.map((dateGroup, dateIndex) => (
                 <div key={`date-group-${dateIndex}`}>
                   {dateGroup.date !== "default" && dateIndex !== 0 && (
-                    <h4 className='pt-8 pb-6 text-2xl font-bold'>
+                    <h4 className=' py-6 pb-2 text-xl font-bold'>
                       {dateGroup.date}
                     </h4>
                   )}
