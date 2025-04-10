@@ -12,7 +12,7 @@ interface HourlyLogProps {
 const HourlyLog = ({ specificTime, date, id }: HourlyLogProps) => {
   return (
     <div>
-      {id != 1 && <h4 className='pt-6  pb-4 text-xl font-bold'>{date}</h4>}
+      {id != 1 && <h4 className='pt-8  pb-6 text-2xl font-bold'>{date}</h4>}
 
       <div className='flex items-center justify-between pb-[13px] pt-2 max-lg:px-2'>
         <h4 className='text-xs font-bold'>{specificTime}</h4>
