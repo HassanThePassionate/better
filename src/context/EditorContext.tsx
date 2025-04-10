@@ -21,7 +21,7 @@ type Notes = {
   updatedAt: string;
   createdAt: string;
   des: string;
-  color?: string; // Add color property to each note
+  color: string;
 }[];
 
 type EditorContextProps = {
