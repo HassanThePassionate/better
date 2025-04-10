@@ -60,7 +60,7 @@ export default function CardGroup({
       },
       {
         threshold: 0.1,
-        rootMargin: "-260px 300px",
+        rootMargin: "-280px 300px",
       }
     );
 
