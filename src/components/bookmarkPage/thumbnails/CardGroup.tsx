@@ -22,6 +22,9 @@ interface CardGroupProps {
   favoriteExe: Card[];
   setFavoriteExe: React.Dispatch<React.SetStateAction<Card[]>>;
   favorite?: boolean;
+  specificTime?: string;
+  date?: string;
+  isFirstInDateGroup?: boolean;
 }
 
 export default function CardGroup({
@@ -33,6 +36,9 @@ export default function CardGroup({
   setFavoriteExe,
   isDownloadPage,
   favorite,
+  specificTime,
+  date,
+  isFirstInDateGroup = false,
 }: CardGroupProps) {
   const containerClasses = cn(
     "flex flex-col gap-2 px-1.5 lg:px-0 mt-2 lg:mt-0 ",
@@ -43,8 +49,8 @@ export default function CardGroup({
   const { setCurrentHeader } = useHeaderContext();
   const { filteredExtensions } = useExtensionContext();
   const { page } = usePageContext();
-  const time = cards[0]?.time || "";
-  const date = cards[0]?.date || "";
+  const time = specificTime || cards[0]?.time || "";
+  const groupDate = date || cards[0]?.date || "";
   const id = cards[0]?.id || "";
 
   useEffect(() => {
@@ -54,7 +60,7 @@ export default function CardGroup({
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && entry.intersectionRatio >= 0.1) {
-            setCurrentHeader({ date, time });
+            setCurrentHeader({ date: groupDate, time });
           }
         });
       },
@@ -73,7 +79,7 @@ export default function CardGroup({
         observer.unobserve(groupRef.current);
       }
     };
-  }, [cards, date, time, isShowHourlyLog, setCurrentHeader]);
+  }, [cards, groupDate, time, isShowHourlyLog, setCurrentHeader]);
 
   const dataToRender = (() => {
     if (favorite && favoriteExe.length > 0) {
@@ -89,9 +95,16 @@ export default function CardGroup({
       </div>
     );
   }
+
   return (
     <div>
-      {isShowHourlyLog && <HourlyLog specificTime={time} date={date} id={id} />}
+      {isShowHourlyLog && (
+        <HourlyLog
+          specificTime={time}
+          date={isFirstInDateGroup ? groupDate : undefined}
+          id={id}
+        />
+      )}
       <div className={containerClasses} ref={groupRef}>
         {dataToRender.map((card) => (
           <CardRenderer

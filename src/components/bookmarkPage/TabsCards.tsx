@@ -15,6 +15,14 @@ interface TabsCardsProps {
   cards: Card[];
 }
 
+interface DateGroup {
+  date: string;
+  timeGroups: {
+    time: string;
+    cards: Card[];
+  }[];
+}
+
 const TabsCards = ({ cards }: TabsCardsProps) => {
   const { isListView } = useThumbnailToggler();
   const [favoriteExe, setFavoriteExe] = useState<Card[]>([]);
@@ -50,36 +58,49 @@ const TabsCards = ({ cards }: TabsCardsProps) => {
 
   const cardGroups = useMemo(() => {
     if (!isShowHourlyLog) {
-      return [visibleCards];
+      return { type: "flat" as const, groups: [visibleCards] };
     }
 
-    const groups: Record<string, Card[]> = {};
+    // First group by date
+    const dateGroups: Record<string, Record<string, Card[]>> = {};
 
     visibleCards.forEach((card) => {
-      if (card.time) {
-        const key = card.time;
-        if (!groups[key]) {
-          groups[key] = [];
-        }
-        groups[key].push(card);
-      } else {
-        const key = "default";
-        if (!groups[key]) {
-          groups[key] = [];
-        }
-        groups[key].push(card);
+      const date = card.date || "default";
+      const time = card.time || "default";
+
+      if (!dateGroups[date]) {
+        dateGroups[date] = {};
       }
+
+      if (!dateGroups[date][time]) {
+        dateGroups[date][time] = [];
+      }
+
+      dateGroups[date][time].push(card);
     });
 
-    return Object.values(groups).sort((a, b) => {
-      if (!a[0].time) return 1;
-      if (!b[0].time) return -1;
+    // Convert to array format
+    const result: DateGroup[] = [];
 
-      const timeA = a[0].time;
-      const timeB = b[0].time;
+    for (const [date, timeGroups] of Object.entries(dateGroups)) {
+      const sortedTimeGroups = Object.entries(timeGroups)
+        .map(([time, cards]) => ({ time, cards }))
+        .sort((a, b) => b.time.localeCompare(a.time)); // Sort times in descending order
 
-      return timeB.localeCompare(timeA);
+      result.push({
+        date,
+        timeGroups: sortedTimeGroups,
+      });
+    }
+
+    // Sort dates in descending order
+    result.sort((a, b) => {
+      if (a.date === "default") return 1;
+      if (b.date === "default") return -1;
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
+
+    return { type: "grouped" as const, groups: result };
   }, [visibleCards, isShowHourlyLog]);
 
   useEffect(() => {
@@ -111,20 +132,51 @@ const TabsCards = ({ cards }: TabsCardsProps) => {
         />
       </div>
 
-      {shouldShowFavorites &&
-        cardGroups.map((group, index) => (
-          <CardGroup
-            key={`group-${index}`}
-            cards={group}
-            isListView={isListView}
-            isExtensionsPage={isExtensionsPage}
-            isDownloadPage={isDownloadPage}
-            isShowHourlyLog={isShowHourlyLog}
-            showHourlyLogAfter={index < cardGroups.length - 1}
-            favoriteExe={favoriteExe}
-            setFavoriteExe={setFavoriteExe}
-          />
-        ))}
+      {shouldShowFavorites && (
+        <>
+          {cardGroups.type === "flat"
+            ? cardGroups.groups.map((group, index) => (
+                <CardGroup
+                  key={`group-${index}`}
+                  cards={group}
+                  isListView={isListView}
+                  isExtensionsPage={isExtensionsPage}
+                  isDownloadPage={isDownloadPage}
+                  isShowHourlyLog={isShowHourlyLog}
+                  showHourlyLogAfter={index < cardGroups.groups.length - 1}
+                  favoriteExe={favoriteExe}
+                  setFavoriteExe={setFavoriteExe}
+                />
+              ))
+            : cardGroups.groups.map((dateGroup, dateIndex) => (
+                <div key={`date-group-${dateIndex}`}>
+                  {dateGroup.date !== "default" && dateIndex !== 0 && (
+                    <h4 className='pt-8 pb-6 text-2xl font-bold'>
+                      {dateGroup.date}
+                    </h4>
+                  )}
+                  {dateGroup.timeGroups.map((timeGroup, timeIndex) => (
+                    <CardGroup
+                      key={`time-group-${dateIndex}-${timeIndex}`}
+                      cards={timeGroup.cards}
+                      isListView={isListView}
+                      isExtensionsPage={isExtensionsPage}
+                      isDownloadPage={isDownloadPage}
+                      isShowHourlyLog={isShowHourlyLog}
+                      showHourlyLogAfter={
+                        timeIndex < dateGroup.timeGroups.length - 1
+                      }
+                      favoriteExe={favoriteExe}
+                      setFavoriteExe={setFavoriteExe}
+                      specificTime={timeGroup.time}
+                      date={dateGroup.date}
+                      isFirstInDateGroup={timeIndex === 0}
+                    />
+                  ))}
+                </div>
+              ))}
+        </>
+      )}
 
       <InfiniteScrollSentinel
         onLoadMore={loadMoreCards}

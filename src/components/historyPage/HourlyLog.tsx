@@ -9,18 +9,18 @@ interface HourlyLogProps {
   id?: string | number;
 }
 
-const HourlyLog = ({ specificTime, date, id }: HourlyLogProps) => {
+const HourlyLog = ({ specificTime }: HourlyLogProps) => {
   return (
     <div>
-      {id != 1 && <h4 className='pt-8  pb-6 text-2xl font-bold'>{date}</h4>}
-
-      <div className='flex items-center justify-between pb-[13px] pt-2 max-lg:px-2'>
-        <h4 className='text-xs font-bold'>{specificTime}</h4>
-        <AlertDialogBox
-          trigger={<ActionBtn text='Delete' />}
-          className='p-0 text-delete-text'
-        />
-      </div>
+      {specificTime && (
+        <div className='flex items-center justify-between pb-[13px] pt-2 max-lg:px-2'>
+          <h4 className='text-xs font-bold'>{specificTime}</h4>
+          <AlertDialogBox
+            trigger={<ActionBtn text='Delete' />}
+            className='p-0 text-delete-text'
+          />
+        </div>
+      )}
     </div>
   );
 };
