@@ -45,6 +45,7 @@ export default function CardGroup({
   const { page } = usePageContext();
   const time = cards[0]?.time || "";
   const date = cards[0]?.date || "";
+  const id = cards[0]?.id || "";
 
   useEffect(() => {
     if (!isShowHourlyLog || !time) return;
@@ -52,14 +53,14 @@ export default function CardGroup({
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.2) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.1) {
             setCurrentHeader({ date, time });
           }
         });
       },
       {
-        threshold: 0.5,
-        rootMargin: "-230px 0px",
+        threshold: 0.1,
+        rootMargin: "-260px 300px",
       }
     );
 
@@ -90,7 +91,7 @@ export default function CardGroup({
   }
   return (
     <div>
-      {isShowHourlyLog && <HourlyLog specificTime={time} />}
+      {isShowHourlyLog && <HourlyLog specificTime={time} date={date} id={id} />}
       <div className={containerClasses} ref={groupRef}>
         {dataToRender.map((card) => (
           <CardRenderer

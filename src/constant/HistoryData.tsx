@@ -1,6 +1,4 @@
 import type { Card } from "@/types/TabCardType";
-
-// Add time and date to all cards
 export const historyData: Card[] = [
   {
     time: "9:30PM",
