@@ -271,7 +271,7 @@ export default function LargeCryptoWidget() {
         <div className='ml-[38px] relative' ref={containerRef}>
           <EnhancedChart
             data={ethChartData}
-            width={230}
+            width={238}
             height={140}
             lineColor='#4f8eff'
             fillColor='rgba(79, 142, 255, 0.2)'

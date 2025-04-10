@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useRef } from "react"
@@ -30,6 +29,7 @@ export function useCryptoData(asset = "BTC") {
   const lastUpdateRef = useRef<number>(0)
   const pendingUpdateRef = useRef<CoinData[] | null>(null)
   const chartDataCacheRef = useRef<Record<string, Record<TimeRange, number[]>>>({})
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Parse symbol into base and quote assets (e.g., "ETHBTC" -> { base: "ETH", quote: "BTC" })
   const parseSymbol = (symbol: string) => {
@@ -81,106 +81,196 @@ export function useCryptoData(asset = "BTC") {
     }
   }
 
-  useEffect(() => {
-    const endpoint = "wss://stream.binance.com:9443/ws/!ticker@arr"
-    const updateIntervalId = setInterval(throttledUpdate, 200) // Check for updates every 200ms
+  // Initial data load using REST API
+  const fetchInitialData = async () => {
+    try {
+      setStatus(1) // open (connecting)
+      setError(null)
 
-    const connect = () => {
-      try {
-        setStatus(0) // closed
+      // Use the 24hr ticker price change statistics endpoint
+      const response = await fetch("https://api.binance.com/api/v3/ticker/24hr")
 
-        // Create new WebSocket connection
-        const socket = new WebSocket(endpoint)
-        socketRef.current = socket
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
 
-        // Connection opened
-        socket.addEventListener("open", () => {
-          setStatus(1) // open
-          setError(null)
-        })
+      const data = await response.json()
 
-        // Listen for messages
-        socket.addEventListener("message", (event) => {
-          try {
-            const data = JSON.parse(event.data)
+      if (Array.isArray(data)) {
+        // Process each ticker
+        const updatedCoins: CoinData[] = []
 
-            if (Array.isArray(data)) {
-              setStatus(2) // active
+        data.forEach((ticker) => {
+          const { baseAsset, quoteAsset } = parseSymbol(ticker.symbol)
 
-              // Process each ticker
-              const updatedCoins: CoinData[] = []
-
-              data.forEach((ticker) => {
-                const { baseAsset, quoteAsset } = parseSymbol(ticker.s)
-
-                // Only process if it matches the selected asset as quote
-                if (quoteAsset === asset) {
-                  const coinData: CoinData = {
-                    symbol: ticker.s,
-                    priceChange: Number.parseFloat(ticker.p),
-                    priceChangePercent: Number.parseFloat(ticker.P),
-                    lastPrice: Number.parseFloat(ticker.c),
-                    volume: Number.parseFloat(ticker.v),
-                    quoteVolume: Number.parseFloat(ticker.q),
-                    openTime: ticker.O,
-                    closeTime: ticker.C,
-                    highPrice: Number.parseFloat(ticker.h),
-                    lowPrice: Number.parseFloat(ticker.l),
-                    baseAsset,
-                    quoteAsset,
-                  }
-
-                  // Update cache
-                  cacheRef.current[ticker.s] = coinData
-                  updatedCoins.push(coinData)
-                }
-              })
-
-              // Sort by volume descending
-              updatedCoins.sort((a, b) => b.quoteVolume - a.quoteVolume)
-
-              // Store update for throttled application
-              pendingUpdateRef.current = updatedCoins
+          // Only process if it matches the selected asset as quote
+          if (quoteAsset === asset) {
+            const coinData: CoinData = {
+              symbol: ticker.symbol,
+              priceChange: Number.parseFloat(ticker.priceChange),
+              priceChangePercent: Number.parseFloat(ticker.priceChangePercent),
+              lastPrice: Number.parseFloat(ticker.lastPrice),
+              volume: Number.parseFloat(ticker.volume),
+              quoteVolume: Number.parseFloat(ticker.quoteVolume),
+              openTime: ticker.openTime,
+              closeTime: ticker.closeTime,
+              highPrice: Number.parseFloat(ticker.highPrice),
+              lowPrice: Number.parseFloat(ticker.lowPrice),
+              baseAsset,
+              quoteAsset,
             }
-          } catch (err) {
-            console.error("Error parsing message:", err)
+
+            // Update cache
+            cacheRef.current[ticker.symbol] = coinData
+            updatedCoins.push(coinData)
           }
         })
 
-        // Connection closed
-        socket.addEventListener("close", () => {
-          setStatus(0) // closed
+        // Sort by volume descending
+        updatedCoins.sort((a, b) => b.quoteVolume - a.quoteVolume)
 
-          // Try to reconnect after 5 seconds
-          setTimeout(() => {
-            if (socketRef.current?.readyState !== 1) {
-              connect()
-            }
-          }, 5000)
-        })
+        // Update state
+        setCoins(updatedCoins)
+        lastUpdateRef.current = Date.now()
 
-        // Connection error
-        socket.addEventListener("error", (err) => {
-          console.error("WebSocket error:", err)
-          setStatus(-1) // error
-          setError("Connection error. Retrying...")
-
-          // Close socket
-          socket.close()
-        })
-      } catch (err) {
-        console.error("Failed to connect:", err)
-        setStatus(-1) // error
-        setError("Failed to connect to Binance API")
+        // Now that we have initial data, connect to WebSocket
+        connectWebSocket()
       }
-    }
+    } catch (err) {
+      console.error("Failed to fetch initial data:", err)
+      setStatus(-1) // error
+      setError(err instanceof Error ? err.message : "Failed to fetch data from Binance API")
 
-    // Initial connection
-    connect()
+      // Try to reconnect after 5 seconds
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current)
+      }
+      reconnectTimeoutRef.current = setTimeout(fetchInitialData, 5000)
+    }
+  }
+
+  // Connect to WebSocket for real-time updates
+  const connectWebSocket = () => {
+    try {
+      const endpoint = "wss://stream.binance.com:9443/ws/!ticker@arr"
+
+      // Close existing connection if any
+      if (socketRef.current) {
+        socketRef.current.close()
+      }
+
+      // Create new WebSocket connection
+      const socket = new WebSocket(endpoint)
+      socketRef.current = socket
+
+      // Connection opened
+      socket.addEventListener("open", () => {
+        setStatus(1) // open
+        setError(null)
+        console.log("WebSocket connection established")
+      })
+
+      // Listen for messages
+      socket.addEventListener("message", (event) => {
+        try {
+          const data = JSON.parse(event.data)
+
+          if (Array.isArray(data)) {
+            setStatus(2) // active
+
+            // Process each ticker
+            const updatedCoins: CoinData[] = []
+
+            data.forEach((ticker) => {
+              const { baseAsset, quoteAsset } = parseSymbol(ticker.s)
+
+              // Only process if it matches the selected asset as quote
+              if (quoteAsset === asset) {
+                const coinData: CoinData = {
+                  symbol: ticker.s,
+                  priceChange: Number.parseFloat(ticker.p),
+                  priceChangePercent: Number.parseFloat(ticker.P),
+                  lastPrice: Number.parseFloat(ticker.c),
+                  volume: Number.parseFloat(ticker.v),
+                  quoteVolume: Number.parseFloat(ticker.q),
+                  openTime: ticker.O,
+                  closeTime: ticker.C,
+                  highPrice: Number.parseFloat(ticker.h),
+                  lowPrice: Number.parseFloat(ticker.l),
+                  baseAsset,
+                  quoteAsset,
+                }
+
+                // Update cache
+                cacheRef.current[ticker.s] = coinData
+                updatedCoins.push(coinData)
+              }
+            })
+
+            // Sort by volume descending
+            updatedCoins.sort((a, b) => b.quoteVolume - a.quoteVolume)
+
+            // Store update for throttled application
+            pendingUpdateRef.current = updatedCoins
+          }
+        } catch (err) {
+          console.error("Error parsing WebSocket message:", err)
+        }
+      })
+
+      // Connection closed
+      socket.addEventListener("close", () => {
+        console.log("WebSocket connection closed")
+        setStatus(0) // closed
+
+        // Try to reconnect after 5 seconds
+        if (reconnectTimeoutRef.current) {
+          clearTimeout(reconnectTimeoutRef.current)
+        }
+        reconnectTimeoutRef.current = setTimeout(() => {
+          // First try to fetch fresh data via API
+          fetchInitialData()
+        }, 5000)
+      })
+
+      // Connection error
+      socket.addEventListener("error", (err) => {
+        console.error("WebSocket error:", err)
+        setStatus(-1) // error
+        setError("Connection error. Retrying...")
+
+        // Close socket
+        socket.close()
+      })
+    } catch (err) {
+      console.error("Failed to connect to WebSocket:", err)
+      setStatus(-1) // error
+      setError("Failed to connect to Binance WebSocket API")
+
+      // Try to reconnect after 5 seconds
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current)
+      }
+      reconnectTimeoutRef.current = setTimeout(fetchInitialData, 5000)
+    }
+  }
+
+  useEffect(() => {
+    // Set up throttled update interval
+    const updateIntervalId = setInterval(throttledUpdate, 200) // Check for updates every 200ms
+
+    // Initial data load via REST API
+    fetchInitialData()
 
     // Cleanup on unmount
     return () => {
       clearInterval(updateIntervalId)
+
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current)
+        reconnectTimeoutRef.current = null
+      }
+
       if (socketRef.current) {
         socketRef.current.close()
         socketRef.current = null
@@ -403,7 +493,6 @@ export function useCryptoData(asset = "BTC") {
 
   // Get date labels based on time range
   const getDateLabels = (timeRange: TimeRange = "1D") => {
-
     const labels: string[] = []
 
     const formatDate = (date: Date) => {
@@ -470,11 +559,18 @@ export function useCryptoData(asset = "BTC") {
     return labels
   }
 
+  // Function to manually refresh data
+  const refreshData = () => {
+    // First try to fetch fresh data via API
+    fetchInitialData()
+  }
+
   return {
     coins,
     status,
     error,
     getCoinData,
     getDateLabels,
+    refreshData,
   }
 }
