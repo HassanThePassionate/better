@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
@@ -44,6 +43,7 @@ export default function AdvancedCoinsWidget() {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchResults, setSearchResults] = useState<CoinWithChart[]>([]);
   const [dataSource, setDataSource] = useState<string>("Loading...");
+  console.log(dataSource, searchResults);
   const [realtimePriceData, setRealtimePriceData] = useState<
     Record<string, number[]>
   >({});
@@ -53,20 +53,20 @@ export default function AdvancedCoinsWidget() {
   const dataSourceRef = useRef<string>("Binance");
   const fetchingRef = useRef<boolean>(false);
   const lastUpdateTimeRef = useRef<number>(Date.now());
-  const priceUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  //   const priceUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const chartUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const isMountedRef = useRef<boolean>(true);
 
-  const currency = "USD" as const;
-  const currencySymbol = "$";
+  //   const currency = "USD" as const;
+  //   const currencySymbol = "$";
   const numberOfCoins = 10;
-  const showVolume = false;
+  //   const showVolume = false;
   const showMarketCap = true;
   const showSparklines = true;
-  const priceUpdateFrequency = "1s" as const;
-  const chartUpdateFrequency = "5s" as const;
+  //   const priceUpdateFrequency = "1s" as const;
+  //   const chartUpdateFrequency = "5s" as const;
 
-  const { coins, status, error, getCoinData } = useCryptoData("USDT");
+  const { coins, status, error } = useCryptoData("USDT");
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -186,50 +186,50 @@ export default function AdvancedCoinsWidget() {
   );
 
   // Add these utility functions for rate limiting
-  const rateLimitedAPIs = useRef<
-    Record<string, { limited: boolean; resetTime: number }>
-  >({
-    binance: { limited: false, resetTime: 0 },
-    bybit: { limited: false, resetTime: 0 },
-    kucoin: { limited: false, resetTime: 0 },
-    bitfinex: { limited: false, resetTime: 0 },
-    bitstamp: { limited: false, resetTime: 0 },
-    kraken: { limited: false, resetTime: 0 },
-  });
+  //   const rateLimitedAPIs = useRef<
+  //     Record<string, { limited: boolean; resetTime: number }>
+  //   >({
+  //     binance: { limited: false, resetTime: 0 },
+  //     bybit: { limited: false, resetTime: 0 },
+  //     kucoin: { limited: false, resetTime: 0 },
+  //     bitfinex: { limited: false, resetTime: 0 },
+  //     bitstamp: { limited: false, resetTime: 0 },
+  //     kraken: { limited: false, resetTime: 0 },
+  //   });
 
-  const isRateLimited = useCallback((source: string) => {
-    const now = Date.now();
-    if (
-      rateLimitedAPIs.current[source]?.limited &&
-      now >= rateLimitedAPIs.current[source].resetTime
-    ) {
-      // Reset if the time has passed
-      rateLimitedAPIs.current[source].limited = false;
-    }
-    return rateLimitedAPIs.current[source]?.limited || false;
-  }, []);
+  //   const isRateLimited = useCallback((source: string) => {
+  //     const now = Date.now();
+  //     if (
+  //       rateLimitedAPIs.current[source]?.limited &&
+  //       now >= rateLimitedAPIs.current[source].resetTime
+  //     ) {
+  //       // Reset if the time has passed
+  //       rateLimitedAPIs.current[source].limited = false;
+  //     }
+  //     return rateLimitedAPIs.current[source]?.limited || false;
+  //   }, []);
 
-  const markRateLimited = useCallback((source: string) => {
-    const resetTimes: Record<string, number> = {
-      binance: 60000, // 1 minute
-      bybit: 60000, // 1 minute
-      kucoin: 30000, // 30 seconds
-      bitfinex: 60000, // 1 minute
-      bitstamp: 30000, // 30 seconds
-      kraken: 30000, // 30 seconds
-    };
+  //   const markRateLimited = useCallback((source: string) => {
+  //     const resetTimes: Record<string, number> = {
+  //       binance: 60000, // 1 minute
+  //       bybit: 60000, // 1 minute
+  //       kucoin: 30000, // 30 seconds
+  //       bitfinex: 60000, // 1 minute
+  //       bitstamp: 30000, // 30 seconds
+  //       kraken: 30000, // 30 seconds
+  //     };
 
-    const resetTime = resetTimes[source] || 60000;
-    rateLimitedAPIs.current[source] = {
-      limited: true,
-      resetTime: Date.now() + resetTime,
-    };
+  //     const resetTime = resetTimes[source] || 60000;
+  //     rateLimitedAPIs.current[source] = {
+  //       limited: true,
+  //       resetTime: Date.now() + resetTime,
+  //     };
 
-    // Set a timeout to reset the rate limit flag
-    setTimeout(() => {
-      rateLimitedAPIs.current[source].limited = false;
-    }, resetTime);
-  }, []);
+  //     // Set a timeout to reset the rate limit flag
+  //     setTimeout(() => {
+  //       rateLimitedAPIs.current[source].limited = false;
+  //     }, resetTime);
+  //   }, []);
 
   useEffect(() => {
     if (coins.length === 0) return;
@@ -492,9 +492,9 @@ export default function AdvancedCoinsWidget() {
     return num.toFixed(1);
   };
 
-  const formatPrice = (price: number): string => {
-    return currencySymbol + Number.parseFloat(price.toString());
-  };
+  //   const formatPrice = (price: number): string => {
+  //     return currencySymbol + Number.parseFloat(price.toString());
+  //   };
 
   const calculateMarketCap = (coin: CoinWithChart, index: number): number => {
     const topMarketCaps: Record<string, number> = {
@@ -708,7 +708,7 @@ export default function AdvancedCoinsWidget() {
           // Update the coin row rendering for a more ISO-style look with smaller fonts
           displayedCoins.map((coin, index) => {
             const isPriceUp = coin.priceChangePercent >= 0;
-            const chartColor = isPriceUp ? "#22c55e" : "#ef4444";
+            // const chartColor = isPriceUp ? "#22c55e" : "#ef4444";
 
             return (
               <div

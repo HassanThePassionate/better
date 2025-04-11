@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -52,8 +50,6 @@ export default function CoinDetailModal({
   });
   // Change the default chart type from "line" to "area" to match the image
 
-  const [alertPrice, setAlertPrice] = useState("");
-
   const [conversionAmount, setConversionAmount] = useState("1");
   const [exchangesVisible, setExchangesVisible] = useState(false);
   // Update the currency state to include a proper handler
@@ -83,7 +79,7 @@ export default function CoinDetailModal({
   const [chartMax, setChartMax] = useState(0);
   const [chartMin, setChartMin] = useState(0);
   const [requestStatus, setRequestStatus] = useState<string>("");
-
+  console.log(requestStatus);
   // Refs
   const modalRef = useRef<HTMLDivElement>(null);
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -110,73 +106,6 @@ export default function CoinDetailModal({
   };
 
   // Add this function to generate fallback data when API calls fail
-  const generateFallbackData = useCallback(
-    (symbol: string, range: ExtendedTimeRange): number[] => {
-      // Get the coin data if available
-      const coin = allCoins.find((c) => c.symbol === symbol);
-
-      // Default values if coin not found
-      const basePrice = coin?.lastPrice || 100;
-      const trend = coin?.priceChangePercent || 0;
-      const volatility = Math.abs(trend) / 10 + 0.02;
-
-      // Number of points based on time range
-      let points = 24;
-      switch (range) {
-        case "1D":
-          points = 24;
-          break;
-        case "1W":
-          points = 7;
-          break;
-        case "1M":
-          points = 30;
-          break;
-        case "3M":
-          points = 90;
-          break;
-        case "6M":
-          points = 180;
-          break;
-        case "YTD": {
-          const now = new Date();
-          const startOfYear = new Date(now.getFullYear(), 0, 1);
-          const daysPassed = Math.floor(
-            (now.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000)
-          );
-          points = daysPassed;
-          break;
-        }
-        case "1Y":
-          points = 365;
-          break;
-        case "2Y":
-          points = 730;
-          break;
-      }
-
-      // Generate synthetic data
-      return Array(points)
-        .fill(0)
-        .map((_, i) => {
-          const progress = i / (points - 1);
-          // Use symbol characters to create a unique but consistent pattern
-          const seed = symbol
-            .split("")
-            .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-          const pseudoRandom = Math.sin(seed * i) * 0.5 + 0.5;
-          const randomFactor = (pseudoRandom * 2 - 1) * volatility;
-
-          // Create a trend that follows the price change direction
-          const trendFactor = Math.pow(progress, 1.2) * (trend / 100);
-
-          return (
-            basePrice * (1 + trendFactor + randomFactor * (1 - progress * 0.7))
-          );
-        });
-    },
-    [allCoins]
-  );
 
   // Improve the fetchData function with better error handling and loading state management
   const fetchData = useCallback(
@@ -372,12 +301,6 @@ export default function CoinDetailModal({
     return currencySymbols[currency] + formatNumber(convertedPrice);
   };
 
-  // Format currency
-  const formatCurrency = (num: number, decimals = 2): string => {
-    if (!num && num !== 0) return "-";
-    return `$${formatNumber(num, decimals)}`;
-  };
-
   // Calculate market cap (estimated)
   const calculateMarketCap = (coin: CoinData): number => {
     // This is a rough estimate - in a real app you'd get this from an API
@@ -485,38 +408,6 @@ export default function CoinDetailModal({
     link.click();
   }, [selectedCoin]);
 
-  // Set alert function
-  const setAlert = useCallback(() => {
-    if (!selectedCoin || !alertPrice || isNaN(Number.parseFloat(alertPrice)))
-      return;
-
-    // In a real app, this would be stored in a database and trigger notifications
-    const priceValue = Number.parseFloat(alertPrice);
-    const currentPrice = selectedCoin.lastPrice;
-
-    alert(
-      `Alert set for ${selectedCoin.baseAsset}: ${
-        priceValue > currentPrice ? "Price above" : "Price below"
-      } $${alertPrice}`
-    );
-    setAlertPrice("");
-  }, [selectedCoin, alertPrice]);
-
-  // Simulated trading function
-  const executeTrade = useCallback(
-    (action: "buy" | "sell") => {
-      if (!selectedCoin) return;
-
-      // This is just a simulation for demonstration purposes
-      alert(
-        `${action.toUpperCase()} order placed for ${
-          selectedCoin.baseAsset
-        } at $${selectedCoin.lastPrice}`
-      );
-    },
-    [selectedCoin]
-  );
-
   // If modal is not open or no coin is selected, don't render
   if (!isOpen || !selectedCoin) return null;
 
@@ -524,7 +415,6 @@ export default function CoinDetailModal({
   // const priceChange = selectedCoin.priceChange;
   const priceChangePercent = selectedCoin.priceChangePercent;
   const isPriceUp = priceChangePercent >= 0;
-  // const chartColor = "#ef4444"; // Always red to match the design
 
   // Calculate market cap
   const marketCap = calculateMarketCap(selectedCoin);
@@ -541,20 +431,6 @@ export default function CoinDetailModal({
   const avgVolume = selectedCoin.quoteVolume * 0.8;
 
   // Get dates for x-axis (simulated for 1M view)
-  const getDates = () => {
-    const today = new Date();
-    const dates = [];
-
-    for (let i = 30; i >= 0; i -= 7) {
-      const date = new Date();
-      date.setDate(today.getDate() - i);
-      dates.push(date.getDate());
-    }
-
-    return dates;
-  };
-
-  const xAxisDates = getDates();
 
   // Replace the entire return statement with this ISO-style version
   return (
@@ -1104,7 +980,11 @@ export default function CoinDetailModal({
                   <select
                     className='ml-2 bg-[#1a1a1a] border border-gray-800 rounded-md px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500'
                     value={currency}
-                    onChange={(e) => setCurrency(e.target.value as any)}
+                    onChange={(e) =>
+                      setCurrency(
+                        e.target.value as "USD" | "EUR" | "GBP" | "JPY" | "CNY"
+                      )
+                    }
                   >
                     <option value='USD'>USD</option>
                     <option value='EUR'>EUR</option>
