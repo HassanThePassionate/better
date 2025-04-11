@@ -19,6 +19,8 @@ import LargeCryptoWidget from "./crypto/LargeCryptoWidget";
 import NewsWidget from "./news/NewsWidget";
 import { useEditorContext } from "@/context/EditorContext";
 import EventCalendar from "./calender/DisplayCalendar";
+import TopCoinsWidget from "./crypto/TopCoinWidget";
+import AdvancedCoinsWidget from "./crypto/AdvanceCoinWidget";
 
 const Widget = ({ type }: { type?: string }) => {
   const { filteredNotes: notes } = useEditorContext();
@@ -46,6 +48,10 @@ const Widget = ({ type }: { type?: string }) => {
         <WideCryptoWidget />
       ) : type === "large-cryptoCard" ? (
         <LargeCryptoWidget />
+      ) : type === "top-coin" ? (
+        <TopCoinsWidget />
+      ) : type === "adv-crypto" ? (
+        <AdvancedCoinsWidget />
       ) : type === "sm-calendar" ? (
         <EventCalendar type='small' />
       ) : type === "large-calendar" ? (

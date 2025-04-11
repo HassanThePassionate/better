@@ -15,6 +15,8 @@ interface ChartProps {
   showTooltip?: boolean;
   animate?: boolean;
   onHover?: (value: number | null, x: number, y: number) => void;
+  onReload?: () => void; // Add reload callback prop
+  refreshInterval?: number; // Add refresh interval prop
 }
 
 export default function EnhancedChart({
@@ -29,6 +31,8 @@ export default function EnhancedChart({
   showTooltip = true,
   animate = true,
   onHover,
+  onReload,
+  refreshInterval = 20000, // Default to 20 seconds
 }: ChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [animationProgress, setAnimationProgress] = useState(animate ? 0 : 1);
@@ -38,72 +42,33 @@ export default function EnhancedChart({
     value: number;
   } | null>(null);
   const requestRef = useRef<number | null>(null);
-  const previousDataRef = useRef<number[]>(data);
+  const previousDataRef = useRef<number[]>([]);
   const pointsRef = useRef<{ x: number; y: number; value: number }[]>([]);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isDrawingRef = useRef(false);
+  const animationStartTimeRef = useRef<number | null>(null);
 
-  // Calculate points only when data changes
+  // Calculate points only when data changes - memoized for performance
   const calculatePoints = useCallback(() => {
-    if (!data.length) return [];
+    if (!data || !data.length) return [];
 
-    const max = Math.max(...data);
-    const min = Math.min(...data);
+    // Ensure we have valid data
+    const validData = data.filter(
+      (value) => !isNaN(value) && value !== null && value !== undefined
+    );
+    if (validData.length === 0) return [];
+
+    const max = Math.max(...validData);
+    const min = Math.min(...validData);
     const range = max - min > 0 ? max - min : 1; // Prevent division by zero
 
-    return data.map((value, index) => {
-      const x = index * (width / (data.length - 1));
-      const y = height - ((value - min) / range) * height * 0.9 + height * 0.05; // Add 5% padding top and bottom
+    // Remove padding to use full chart area
+    return validData.map((value, index) => {
+      const x = index * (width / (validData.length - 1));
+      const y = height - ((value - min) / range) * height;
       return { x, y, value };
     });
   }, [data, width, height]);
-
-  // Update points when data changes
-  useEffect(() => {
-    // Only recalculate points if data has actually changed
-    if (JSON.stringify(data) !== JSON.stringify(previousDataRef.current)) {
-      pointsRef.current = calculatePoints();
-      previousDataRef.current = [...data];
-
-      // Reset animation if data changes
-      if (animate) {
-        setAnimationProgress(0);
-        if (requestRef.current) {
-          cancelAnimationFrame(requestRef.current);
-        }
-        requestRef.current = requestAnimationFrame(animateChart);
-      }
-    }
-  }, [data, calculatePoints, animate]);
-
-  // Animation function with smoother transitions
-  const animateChart = useCallback(() => {
-    if (!animate) {
-      setAnimationProgress(1);
-      return;
-    }
-
-    setAnimationProgress((prev) => {
-      const newProgress = Math.min(prev + 0.03, 1); // Slower animation
-      if (newProgress < 1) {
-        requestRef.current = requestAnimationFrame(animateChart);
-      }
-      return newProgress;
-    });
-  }, [animate]);
-
-  // Start animation
-  useEffect(() => {
-    if (animate && animationProgress < 1) {
-      requestRef.current = requestAnimationFrame(animateChart);
-    }
-
-    return () => {
-      if (requestRef.current) {
-        cancelAnimationFrame(requestRef.current);
-      }
-    };
-  }, [animate, animateChart, animationProgress]);
 
   // Draw chart - optimized to prevent flickering
   const drawChart = useCallback(() => {
@@ -129,22 +94,33 @@ export default function EnhancedChart({
     ctx.fillRect(0, 0, width, height);
 
     // Skip drawing if no data or points
-    if (!data.length || pointsRef.current.length === 0) {
+    if (!data || !data.length || pointsRef.current.length === 0) {
       isDrawingRef.current = false;
       return;
     }
 
-    // Draw horizontal grid lines if enabled
+    // Draw grid lines if enabled
     if (showGrid) {
+      // Draw horizontal grid lines
       ctx.strokeStyle = isDarkMode ? gridColor : "#e2e8f0";
       ctx.lineWidth = 0.5;
 
-      const gridLines = Math.min(5, height / 20); // Adjust grid lines based on height
-      for (let i = 0; i < gridLines; i++) {
-        const y = i * (height / (gridLines - 1));
+      const horizontalGridLines = Math.min(5, Math.floor(height / 30)); // Adjust grid lines based on height
+      for (let i = 0; i <= horizontalGridLines; i++) {
+        const y = (i * height) / horizontalGridLines;
         ctx.beginPath();
         ctx.moveTo(0, y);
         ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+
+      // Draw vertical grid lines
+      const verticalGridLines = Math.min(6, Math.floor(width / 50)); // Adjust grid lines based on width
+      for (let i = 0; i <= verticalGridLines; i++) {
+        const x = (i * width) / verticalGridLines;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
         ctx.stroke();
       }
     }
@@ -173,13 +149,10 @@ export default function EnhancedChart({
 
     // Create gradient fill
     const gradient = ctx.createLinearGradient(0, 0, 0, height);
-    if (isDarkMode) {
-      gradient.addColorStop(0, fillColor);
-      gradient.addColorStop(1, "rgba(79, 142, 255, 0)");
-    } else {
-      gradient.addColorStop(0, fillColor);
-      gradient.addColorStop(1, "rgba(79, 142, 255, 0)");
-    }
+    const fillColorStart = fillColor.replace(/[^,]+(?=\))/, "0.3"); // More opacity at top
+    const fillColorEnd = fillColor.replace(/[^,]+(?=\))/, "0.05"); // Less opacity at bottom
+    gradient.addColorStop(0, fillColorStart);
+    gradient.addColorStop(1, fillColorEnd);
     ctx.fillStyle = gradient;
     ctx.fill();
 
@@ -207,7 +180,9 @@ export default function EnhancedChart({
     }
 
     ctx.strokeStyle = lineColor;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 2; // Increased line width for better visibility
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
     ctx.stroke();
 
     // Draw hovered point if any
@@ -227,7 +202,7 @@ export default function EnhancedChart({
       // Draw point
       ctx.beginPath();
       ctx.fillStyle = lineColor;
-      ctx.arc(hoveredPoint.x, hoveredPoint.y, 3, 0, Math.PI * 2);
+      ctx.arc(hoveredPoint.x, hoveredPoint.y, 4, 0, Math.PI * 2); // Larger point for better visibility
       ctx.fill();
       ctx.strokeStyle = isDarkMode ? "#fff" : "#fff";
       ctx.lineWidth = 1.5;
@@ -249,6 +224,105 @@ export default function EnhancedChart({
     animate,
   ]);
 
+  // Update points when data changes
+  useEffect(() => {
+    // Only recalculate points if data has actually changed and is valid
+    if (data && data.length > 0) {
+      // Instead of comparing stringified data which can cause unnecessary rerenders,
+      // check if the data is significantly different to warrant a recalculation
+      let shouldUpdate = false;
+
+      // If lengths are different, definitely update
+      if (previousDataRef.current.length !== data.length) {
+        shouldUpdate = true;
+      } else {
+        // Check if data has changed significantly (more than 0.5% difference)
+        const significantChanges = data.filter((value, index) => {
+          const prevValue = previousDataRef.current[index];
+          if (prevValue === undefined) return true;
+
+          // Calculate percent difference
+          const diff = Math.abs((value - prevValue) / prevValue);
+          return diff > 0.005; // 0.5% threshold
+        });
+
+        // If we have significant changes, update
+        shouldUpdate = significantChanges.length > 0;
+      }
+
+      if (shouldUpdate) {
+        const calculatedPoints = calculatePoints();
+
+        // Smoothly transition between old and new points
+        if (pointsRef.current.length > 0 && calculatedPoints.length > 0) {
+          // Store the new target points but don't immediately replace current points
+          // This allows for animation between states
+          const currentPoints = [...pointsRef.current];
+          const targetPoints = calculatedPoints;
+
+          // Update points with smooth transition
+          pointsRef.current = currentPoints.map((point, i) => {
+            if (i < targetPoints.length) {
+              // Blend between current and target (start with 20% of the way there)
+              return {
+                x: point.x,
+                y: point.y * 0.8 + targetPoints[i].y * 0.2,
+                value: point.value * 0.8 + targetPoints[i].value * 0.2,
+              };
+            }
+            return point;
+          });
+        } else {
+          // If no existing points, just set the new ones
+          pointsRef.current = calculatedPoints;
+        }
+
+        previousDataRef.current = [...data];
+
+        // Trigger a redraw without full animation reset
+        drawChart();
+      }
+    }
+  }, [data, calculatePoints, drawChart]);
+
+  // Improve animation smoothness with RAF-based timing
+  const animateChart = useCallback(
+    (timestamp: number) => {
+      if (!animate) {
+        setAnimationProgress(1);
+        return;
+      }
+
+      if (animationStartTimeRef.current === null) {
+        animationStartTimeRef.current = timestamp;
+      }
+
+      const elapsed = timestamp - (animationStartTimeRef.current || 0);
+      const duration = 1000; // Animation duration in ms
+      const progress = Math.min(elapsed / duration, 1);
+
+      setAnimationProgress(progress);
+
+      if (progress < 1) {
+        requestRef.current = requestAnimationFrame(animateChart);
+      }
+    },
+    [animate]
+  );
+
+  // Start animation
+  useEffect(() => {
+    if (animate && animationProgress < 1) {
+      requestRef.current = requestAnimationFrame(animateChart);
+    }
+
+    return () => {
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
+    };
+  }, [animate, animateChart, animationProgress]);
+
   // Draw chart when needed
   useEffect(() => {
     drawChart();
@@ -257,7 +331,12 @@ export default function EnhancedChart({
   // Debounced hover handler to prevent flickering
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
-      if (!showTooltip || !data.length || pointsRef.current.length === 0)
+      if (
+        !showTooltip ||
+        !data ||
+        !data.length ||
+        pointsRef.current.length === 0
+      )
         return;
 
       const canvas = canvasRef.current;
@@ -294,7 +373,12 @@ export default function EnhancedChart({
         ) {
           setHoveredPoint(closestPoint);
           if (onHover) {
-            onHover(closestPoint.value, closestPoint.x, closestPoint.y);
+            // Format the value to a reasonable number of decimal places
+            const formattedValue =
+              closestPoint.value > 1
+                ? Math.round(closestPoint.value * 100) / 100 // 2 decimal places for values > 1
+                : closestPoint.value; // Keep full precision for small values
+            onHover(formattedValue, closestPoint.x, closestPoint.y);
           }
         }
       }, 10); // Small delay to smooth out hover
@@ -321,6 +405,72 @@ export default function EnhancedChart({
     };
   }, []);
 
+  // Add auto-refresh functionality
+  useEffect(() => {
+    if (!onReload) return;
+
+    const intervalId = setInterval(() => {
+      if (onReload) onReload();
+    }, refreshInterval);
+
+    return () => clearInterval(intervalId);
+  }, [onReload, refreshInterval]);
+
+  // Add a new useEffect for smooth data transitions
+  useEffect(() => {
+    if (!data || data.length === 0 || pointsRef.current.length === 0) return;
+
+    // Create a smooth transition animation
+    let animationFrame: number;
+    let progress = 0;
+
+    const animateTransition = () => {
+      progress += 0.05; // Increment by 5% each frame
+
+      if (progress >= 1) {
+        // Animation complete, set final values
+        const calculatedPoints = calculatePoints();
+        pointsRef.current = calculatedPoints;
+        drawChart();
+        return;
+      }
+
+      // Calculate intermediate points
+      const calculatedPoints = calculatePoints();
+      if (calculatedPoints.length > 0 && pointsRef.current.length > 0) {
+        pointsRef.current = pointsRef.current.map((point, i) => {
+          if (i < calculatedPoints.length) {
+            // Smooth transition using easing function
+            const ease = 1 - Math.pow(1 - progress, 3); // Cubic ease out
+            return {
+              x: point.x,
+              y: point.y * (1 - ease) + calculatedPoints[i].y * ease,
+              value:
+                point.value * (1 - ease) + calculatedPoints[i].value * ease,
+            };
+          }
+          return point;
+        });
+
+        // Redraw with updated points
+        drawChart();
+
+        // Continue animation
+        animationFrame = requestAnimationFrame(animateTransition);
+      }
+    };
+
+    // Start animation
+    animationFrame = requestAnimationFrame(animateTransition);
+
+    // Cleanup
+    return () => {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+    };
+  }, [data, calculatePoints, drawChart]);
+
   return (
     <canvas
       ref={canvasRef}
@@ -328,6 +478,9 @@ export default function EnhancedChart({
         width: `${width}px`,
         height: `${height}px`,
         imageRendering: "crisp-edges",
+        maxWidth: "100%",
+        maxHeight: "100%",
+        objectFit: "fill",
       }}
       onMouseMove={showTooltip ? handleMouseMove : undefined}
       onMouseLeave={showTooltip ? handleMouseLeave : undefined}

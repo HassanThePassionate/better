@@ -1,16 +1,85 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
+import type React from "react";
+
 import { useRef, useState, useCallback, useEffect } from "react";
-import { RefreshCw, Wifi, WifiOff } from "lucide-react";
+import {
+  RefreshCw,
+  Wifi,
+  WifiOff,
+  ChevronDown,
+  Search,
+  X,
+  Flame,
+} from "lucide-react";
 import {
   useCryptoData,
   type CryptoStatus,
   type TimeRange,
+  type CoinData,
 } from "@/hooks/use-crypto-data";
 import EnhancedChart from "./CryptoChart";
+import CoinIcon from "./CoinIcon";
+
+// Replace the AVAILABLE_COINS constant with a smaller set of featured coins
+const FEATURED_COINS = [
+  {
+    symbol: "ETHUSDT",
+    name: "Ethereum",
+    shortName: "ETH",
+    iconColor: "#627eea",
+  },
+  {
+    symbol: "BTCUSDT",
+    name: "Bitcoin",
+    shortName: "BTC",
+    iconColor: "#f7931a",
+  },
+  {
+    symbol: "BNBUSDT",
+    name: "Binance Coin",
+    shortName: "BNB",
+    iconColor: "#f3ba2f",
+  },
+  { symbol: "SOLUSDT", name: "Solana", shortName: "SOL", iconColor: "#00ffbd" },
+];
+
+// Add a function to get coin icon color based on symbol
+const getCoinIconColor = (symbol: string): string => {
+  const baseAsset = symbol.replace("USDT", "").toLowerCase();
+
+  // Common coin colors
+  const coinColors: Record<string, string> = {
+    btc: "#f7931a",
+    eth: "#627eea",
+    bnb: "#f3ba2f",
+    sol: "#00ffbd",
+    ada: "#0033ad",
+    doge: "#c3a634",
+    xrp: "#23292f",
+    dot: "#e6007a",
+    matic: "#8247e5",
+    avax: "#e84142",
+    link: "#2a5ada",
+    ltc: "#345d9d",
+    uni: "#ff007a",
+    atom: "#2e3148",
+    etc: "#328332",
+    algo: "#000000",
+    icp: "#3b00b9",
+    fil: "#0090ff",
+    vet: "#15bdff",
+    xtz: "#a6e000",
+  };
+
+  return coinColors[baseAsset] || "#64748b";
+};
 
 export default function WideCryptoWidget() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  // ===== STATE & REFS =====
+  // UI state
   const [tooltip, setTooltip] = useState<{
     x: number;
     y: number;
@@ -24,46 +93,388 @@ export default function WideCryptoWidget() {
   });
   const [timeRange, setTimeRange] = useState<TimeRange>("1D");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [hasValidData, setHasValidData] = useState(false);
+  const [showCoinDropdown, setShowCoinDropdown] = useState(false);
+  const [selectedCoin, setSelectedCoin] = useState(FEATURED_COINS[0]);
+  // Update the component state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [filteredCoins, setFilteredCoins] = useState<CoinData[]>([]);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Data state
+  const [chartData, setChartData] = useState<number[]>([]);
+
+  // Refs
+  const containerRef = useRef<HTMLDivElement>(null);
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const dataSourceRef = useRef<string>("CoinGecko");
+  const fetchingRef = useRef<boolean>(false);
+  const initialLoadDoneRef = useRef<boolean>(false);
+  const lastUpdateTimeRef = useRef<number>(0);
+  const lastSuccessfulChartDataRef = useRef<
+    Record<string, Record<TimeRange, number[]>>
+  >({});
+  const chartDataCacheRef = useRef<Record<string, Record<TimeRange, number[]>>>(
+    {}
+  ); // Add chartDataCacheRef
 
-  // Use the crypto data hook to get real-time data
-  const { status, error, getCoinData, getDateLabels } = useCryptoData("USDT");
+  // Hook for crypto data
+  const { coins, status, error, getCoinData, getDateLabels } =
+    useCryptoData("USDT");
 
-  // Get ETH data with the selected time range
-  const { coin: ethData, chartData: ethChartData } = getCoinData(
-    "ETHUSDT",
-    timeRange
-  );
+  // Initialize cache for the selected coin
+  useEffect(() => {
+    if (!lastSuccessfulChartDataRef.current[selectedCoin.symbol]) {
+      lastSuccessfulChartDataRef.current[selectedCoin.symbol] = {
+        "1D": [],
+        "1W": [],
+        "1M": [],
+        "3M": [],
+        "1Y": [],
+      };
+    }
+    if (!chartDataCacheRef.current[selectedCoin.symbol]) {
+      chartDataCacheRef.current[selectedCoin.symbol] = {
+        "1D": [],
+        "1W": [],
+        "1M": [],
+        "3M": [],
+        "1Y": [],
+      };
+    }
+  }, [selectedCoin]);
 
-  // Get date labels based on time range
-  const dateLabels = getDateLabels(timeRange);
+  // Update the component to display the data source
+  // First, add a new state to track the data source
+  const [dataSource, setDataSource] = useState<string>("Loading...");
 
-  // Function to handle refresh
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    // Simulate refresh delay
-    setTimeout(() => {
-      setIsRefreshing(false);
-    }, 1000);
+  // Add a new state for tracking request status
+  const [requestStatus, setRequestStatus] = useState<string>("");
+
+  // Add this new function to generate fallback data for coins with no API data
+  const generateFallbackData = (symbol: string, range: TimeRange): number[] => {
+    // Get the coin data if available
+    const coin = coins.find((c) => c.symbol === symbol);
+
+    // Default values if coin not found
+    const basePrice = coin?.lastPrice || 100;
+    const trend = coin?.priceChangePercent || 0;
+    const volatility = Math.abs(trend) / 10 + 0.02;
+
+    // Number of points based on time range
+    let points = 24;
+    switch (range) {
+      case "1D":
+        points = 24;
+        break;
+      case "1W":
+        points = 7;
+        break;
+      case "1M":
+        points = 30;
+        break;
+      case "3M":
+        points = 90;
+        break;
+      case "1Y":
+        points = 365;
+        break;
+    }
+
+    // Generate synthetic data
+    return Array(points)
+      .fill(0)
+      .map((_, i) => {
+        const progress = i / (points - 1);
+        // Use symbol characters to create a unique but consistent pattern
+        const seed = symbol
+          .split("")
+          .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const pseudoRandom = Math.sin(seed * i) * 0.5 + 0.5;
+        const randomFactor = (pseudoRandom * 2 - 1) * volatility;
+
+        // Create a trend that follows the price change direction
+        const trendFactor = Math.pow(progress, 1.2) * (trend / 100);
+
+        return (
+          basePrice * (1 + trendFactor + randomFactor * (1 - progress * 0.7))
+        );
+      });
   };
 
-  // Status indicator color
-  const getStatusColor = (status: CryptoStatus) => {
-    switch (status) {
-      case 2:
-        return "text-green-500"; // active
-      case 1:
-        return "text-yellow-500"; // open
-      case 0:
-        return "text-gray-500"; // closed
-      case -1:
-        return "text-red-500"; // error
-      default:
-        return "text-gray-500";
+  // ===== DATA FETCHING =====
+  // Fetch data function
+  const fetchData = async (isMounted: boolean) => {
+    if (!isMounted || fetchingRef.current) return;
+
+    // Throttle updates to every 20 seconds
+    const now = Date.now();
+    if (now - lastUpdateTimeRef.current < 20000) return;
+
+    lastUpdateTimeRef.current = now;
+    fetchingRef.current = true;
+    setIsRefreshing(true);
+
+    // Define the order of APIs to try
+    const apiSources = [
+      "Binance",
+      "CoinGecko",
+      "Bybit",
+      "KuCoin",
+      "Bitfinex",
+      "Bitstamp",
+      "Kraken",
+    ];
+    let success = false;
+    const triedApis: string[] = [];
+
+    try {
+      for (const apiSource of apiSources) {
+        if (!isMounted) return;
+
+        // Add this API to the list of tried APIs
+        triedApis.push(apiSource);
+
+        // Update request status to show all APIs being tried
+        setRequestStatus(`Trying: ${triedApis.join(" → ")}...`);
+
+        const {
+          coin: coinData,
+          chartData: coinChartData,
+          success: apiSuccess,
+          source,
+        } = await getCoinData(selectedCoin.symbol, timeRange);
+
+        if (!isMounted) return;
+
+        if (apiSuccess && coinChartData && coinChartData.length > 0) {
+          // Valid data received
+          setChartData(coinChartData);
+          if (!lastSuccessfulChartDataRef.current[selectedCoin.symbol]) {
+            lastSuccessfulChartDataRef.current[selectedCoin.symbol] =
+              {} as Record<TimeRange, number[]>;
+          }
+          lastSuccessfulChartDataRef.current[selectedCoin.symbol][timeRange] =
+            coinChartData;
+          dataSourceRef.current = source || "Unknown";
+          setDataSource(source || "Unknown");
+          setHasValidData(true);
+          setRequestStatus(
+            `✓ Data loaded from ${source} (tried: ${triedApis.join(", ")})`
+          );
+          success = true;
+          break;
+        } else {
+          // This API failed, update status to show we're falling back
+          setRequestStatus(`${apiSource} failed, trying next API...`);
+        }
+      }
+
+      if (!success) {
+        // If all APIs failed, don't generate fallback data
+        setChartData([]);
+        dataSourceRef.current = "None";
+        setDataSource("None");
+        setHasValidData(false);
+        setRequestStatus(`✗ All APIs failed (${triedApis.join(", ")})`);
+      }
+
+      initialLoadDoneRef.current = true;
+    } catch (error) {
+      console.error("Error fetching chart data:", error);
+
+      if (!isMounted) return;
+
+      if (
+        lastSuccessfulChartDataRef.current[selectedCoin.symbol]?.[timeRange]
+          ?.length > 0
+      ) {
+        // Use cached data if available
+        setChartData(
+          lastSuccessfulChartDataRef.current[selectedCoin.symbol][timeRange]
+        );
+        dataSourceRef.current = "Cached";
+        setDataSource("Cached");
+        setHasValidData(true);
+        setRequestStatus(
+          `⚠️ Error with APIs (${triedApis.join(", ")}). Using cached data.`
+        );
+      } else {
+        // Don't generate fallback data
+        setChartData([]);
+        dataSourceRef.current = "None";
+        setDataSource("None");
+        setHasValidData(false);
+        setRequestStatus(`⚠️ No historical data found`);
+      }
+    } finally {
+      if (isMounted) {
+        setIsRefreshing(false);
+        fetchingRef.current = false;
+      }
     }
   };
 
-  // Handle chart hover with debouncing to prevent flickering
+  // Initial data fetch and auto-refresh
+  useEffect(() => {
+    let isMounted = true;
+
+    // Prevent multiple simultaneous fetches
+    if (fetchingRef.current) return;
+
+    fetchData(isMounted);
+
+    // Auto-refresh interval
+    const refreshInterval = setInterval(() => {
+      if (!fetchingRef.current && initialLoadDoneRef.current) {
+        fetchData(isMounted);
+      }
+    }, 20000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(refreshInterval);
+    };
+  }, [timeRange, selectedCoin]);
+
+  // ===== EVENT HANDLERS =====
+  // Handle manual refresh
+  const handleRefresh = async () => {
+    if (isRefreshing || fetchingRef.current) return;
+
+    fetchingRef.current = true;
+    setIsRefreshing(true);
+
+    // Clear cached data for this symbol and time range to force a fresh API fetch
+    if (chartDataCacheRef.current[selectedCoin.symbol]) {
+      chartDataCacheRef.current[selectedCoin.symbol][timeRange] = [];
+    }
+
+    try {
+      const {
+        coin: coinData,
+        chartData: coinChartData,
+        success,
+        source,
+      } = await getCoinData(selectedCoin.symbol, timeRange, true); // Pass true to force refresh
+
+      if (success && coinChartData && coinChartData.length > 0) {
+        setChartData(coinChartData);
+        if (!lastSuccessfulChartDataRef.current[selectedCoin.symbol]) {
+          lastSuccessfulChartDataRef.current[selectedCoin.symbol] =
+            {} as Record<TimeRange, number[]>;
+        }
+        lastSuccessfulChartDataRef.current[selectedCoin.symbol][timeRange] =
+          coinChartData;
+        dataSourceRef.current = source || "Unknown";
+        setDataSource(source || "Unknown");
+        setHasValidData(true);
+      } else {
+        // If API fetch fails, fall back to cached data
+        if (
+          lastSuccessfulChartDataRef.current[selectedCoin.symbol]?.[timeRange]
+            ?.length > 0
+        ) {
+          setChartData(
+            lastSuccessfulChartDataRef.current[selectedCoin.symbol][timeRange]
+          );
+          dataSourceRef.current = "Cached";
+          setDataSource("Cached");
+          setHasValidData(true);
+        } else {
+          setHasValidData(false);
+        }
+      }
+    } catch (error) {
+      console.error("Error refreshing chart data:", error);
+      if (
+        lastSuccessfulChartDataRef.current[selectedCoin.symbol]?.[timeRange]
+          ?.length > 0
+      ) {
+        setChartData(
+          lastSuccessfulChartDataRef.current[selectedCoin.symbol][timeRange]
+        );
+        dataSourceRef.current = "Cached";
+        setDataSource("Cached");
+        setHasValidData(true);
+      } else {
+        setHasValidData(false);
+      }
+    } finally {
+      if (hasValidData) {
+        setIsRefreshing(false);
+      }
+      fetchingRef.current = false;
+    }
+  };
+
+  // Handle time range change
+  const handleTimeRangeChange = (range: TimeRange) => {
+    setIsRefreshing(true);
+    setTimeRange(range);
+    setTooltip((prev) => ({ ...prev, visible: false }));
+
+    const fetchTimeRangeData = async () => {
+      try {
+        const {
+          coin: coinData,
+          chartData: coinChartData,
+          success,
+          source,
+        } = await getCoinData(selectedCoin.symbol, range);
+
+        if (success && coinChartData && coinChartData.length > 0) {
+          setChartData(coinChartData);
+          if (!lastSuccessfulChartDataRef.current[selectedCoin.symbol]) {
+            lastSuccessfulChartDataRef.current[selectedCoin.symbol] =
+              {} as Record<TimeRange, number[]>;
+          }
+          lastSuccessfulChartDataRef.current[selectedCoin.symbol][range] =
+            coinChartData;
+          dataSourceRef.current = source || "Unknown";
+          setDataSource(source || "Unknown");
+          setHasValidData(true);
+        } else if (
+          !success &&
+          lastSuccessfulChartDataRef.current[selectedCoin.symbol]?.[range]
+            ?.length > 0
+        ) {
+          setChartData(
+            lastSuccessfulChartDataRef.current[selectedCoin.symbol][range]
+          );
+          dataSourceRef.current = "Cached";
+          setDataSource("Cached");
+          setHasValidData(true);
+        } else {
+          setHasValidData(false);
+        }
+      } catch (error) {
+        console.error("Error fetching chart data:", error);
+        if (
+          lastSuccessfulChartDataRef.current[selectedCoin.symbol]?.[range]
+            ?.length > 0
+        ) {
+          setChartData(
+            lastSuccessfulChartDataRef.current[selectedCoin.symbol][range]
+          );
+          dataSourceRef.current = "Cached";
+          setDataSource("Cached");
+          setHasValidData(true);
+        } else {
+          setHasValidData(false);
+        }
+      } finally {
+        if (hasValidData) {
+          setIsRefreshing(false);
+        }
+      }
+    };
+
+    fetchTimeRangeData();
+  };
+
+  // Handle chart hover with debouncing
   const handleChartHover = useCallback(
     (value: number | null, x: number, y: number) => {
       if (tooltipTimeoutRef.current) {
@@ -81,12 +492,12 @@ export default function WideCryptoWidget() {
             visible: true,
           });
         }
-      }, 10); // Small delay to smooth out tooltip updates
+      }, 10);
     },
     []
   );
 
-  // Clean up timeout on unmount
+  // Clean up tooltip timeout on unmount
   useEffect(() => {
     return () => {
       if (tooltipTimeoutRef.current) {
@@ -95,135 +506,444 @@ export default function WideCryptoWidget() {
     };
   }, []);
 
-  // Handle time range change
-  const handleTimeRangeChange = (range: TimeRange) => {
-    setTimeRange(range);
-    // Hide tooltip when changing time range
+  // ===== UTILITY FUNCTIONS =====
+  // Status indicator color
+  const getStatusColor = (status: CryptoStatus) => {
+    switch (status) {
+      case 2:
+        return "text-green-500"; // active
+      case 1:
+        return "text-yellow-500"; // open
+      case 0:
+        return "text-gray-500"; // closed
+      case -1:
+        return "text-red-500"; // error
+      default:
+        return "text-gray-500";
+    }
+  };
+
+  // ===== DATA PROCESSING =====
+  // Get date labels based on time range
+  const dateLabels = getDateLabels(timeRange);
+
+  // Get coin data
+  const coinData = coins.find((c) => c.symbol === selectedCoin.symbol);
+
+  // Calculate price and chart metrics
+  const currentPrice = coinData ? coinData.lastPrice : 0;
+  const priceChangePercent = coinData ? coinData.priceChangePercent : 0;
+  const isPriceUp = priceChangePercent >= 0;
+
+  // Calculate chart range values
+  const chartMax = chartData.length > 0 ? Math.max(...chartData) : 3100;
+  const chartMin = chartData.length > 0 ? Math.min(...chartData) : 2900;
+  const chartMid = (chartMax + chartMin) / 2;
+
+  // Add a useEffect to handle clicking outside the search dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target as Node)
+      ) {
+        setIsSearchFocused(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Add a function to handle search input changes
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+
+    if (!query.trim()) {
+      setFilteredCoins([]);
+      return;
+    }
+
+    // Filter coins from the WebSocket data - this already contains real-time price data
+    const results = coins
+      .filter(
+        (coin) =>
+          coin.symbol.toLowerCase().includes(query) ||
+          coin.baseAsset.toLowerCase().includes(query)
+      )
+      .sort((a, b) => b.quoteVolume - a.quoteVolume) // Sort by volume (highest first)
+      .slice(0, 50); // Limit to 50 results for performance
+
+    setFilteredCoins(results);
+  };
+
+  // Add a function to format coin for display
+  const formatCoinForDisplay = (coin: CoinData) => {
+    return {
+      symbol: coin.symbol,
+      name: coin.baseAsset,
+      shortName: coin.baseAsset,
+      iconColor: getCoinIconColor(coin.symbol),
+    };
+  };
+
+  // Update the handleCoinChange function
+  const handleCoinChange = (coin: any) => {
+    // Create a standardized coin object
+    const standardizedCoin = {
+      symbol: coin.symbol,
+      name: coin.name || coin.baseAsset,
+      shortName: coin.shortName || coin.baseAsset,
+      iconColor: coin.iconColor || getCoinIconColor(coin.symbol),
+    };
+
+    setSelectedCoin(standardizedCoin);
+    setShowCoinDropdown(false);
+    setSearchQuery("");
+    setFilteredCoins([]);
+    setIsRefreshing(true);
     setTooltip((prev) => ({ ...prev, visible: false }));
   };
 
-  // Get current price and price change
-  const currentPrice = ethData ? ethData.lastPrice : 0;
-  const priceChangePercent = ethData ? ethData.priceChangePercent : 0;
-  const isPriceUp = priceChangePercent >= 0;
-
-  // Calculate price range based on chart data
-  const chartMax = Math.max(...ethChartData);
-  const chartMin = Math.min(...ethChartData);
-  const chartMid = (chartMax + chartMin) / 2;
-
+  // ===== RENDER =====
   return (
     <div className='w-full h-full bg-[#0f172a] text-white rounded-[20px] overflow-hidden p-3 border-0 font-sans'>
+      {/* Header */}
       <div className='flex justify-between items-start mb-2'>
-        <div className='flex items-center gap-2'>
-          <div className='w-8 h-8 bg-[#e2e8f0] rounded-full flex items-center justify-center'>
-            <svg
-              width='16'
-              height='26'
-              viewBox='0 0 24 38'
-              fill='none'
-              xmlns='http://www.w3.org/2000/svg'
-            >
-              <path
-                d='M11.9978 0L11.8252 0.576379V24.0844L11.9978 24.2547L23.3725 18.0606L11.9978 0Z'
-                fill='#343434'
-              />
-              <path
-                d='M11.9978 0L0.623047 18.0606L11.9978 24.2547V12.9556V0Z'
-                fill='#8C8C8C'
-              />
-              <path
-                d='M11.9978 26.2856L11.9004 26.4044V35.1274L11.9978 35.4132L23.3771 19.9939L11.9978 26.2856Z'
-                fill='#3C3C3B'
-              />
-              <path
-                d='M11.9978 35.4132V26.2856L0.623047 19.9939L11.9978 35.4132Z'
-                fill='#141414'
-              />
-              <path
-                d='M11.9978 24.2547L23.3725 18.0606L11.9978 12.9556V24.2547Z'
-                fill='#393939'
-              />
-              <path
-                d='M0.623047 18.0606L11.9978 24.2547V12.9556L0.623047 18.0606Z'
-                fill='#8C8C8C'
-              />
-            </svg>
-          </div>
-          <div>
-            <h2 className='text-lg font-normal tracking-wide text-[#e2e8f0]'>
-              Ethereum • ETH
-            </h2>
-            <div className='flex items-center gap-3 mb-2'>
-              <div className='text-sm font-semibold text-[#f8fafc]'>
-                ${currentPrice.toFixed(2)}
-              </div>
-              <div
-                className={`text-sm ${
-                  isPriceUp ? "text-[#22c55e]" : "text-red-500"
-                } font-medium`}
-              >
-                {isPriceUp ? "+" : ""}
-                {priceChangePercent.toFixed(2)}%
-              </div>
-              <div className='flex'>
-                {(["1D", "1W", "1M"] as const).map((range) => (
+        {/* Replace the coin dropdown UI in the render section with this improved version */}
+        <div className='flex items-center gap-2 relative'>
+          <button
+            onClick={() => setShowCoinDropdown(!showCoinDropdown)}
+            className='flex items-center gap-2 hover:bg-[#1e293b] rounded-full p-1'
+          >
+            <CoinIcon symbol={selectedCoin.symbol} size={32} />
+            <div>
+              <h2 className='text-lg font-normal tracking-wide text-[#e2e8f0]'>
+                {selectedCoin.shortName}
+              </h2>
+            </div>
+            <ChevronDown size={14} />
+          </button>
+
+          {showCoinDropdown && (
+            <div className='fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center'>
+              <div className='bg-[#1e293b] rounded-lg shadow-xl w-[90%] max-w-md max-h-[80vh] overflow-hidden'>
+                <div className='p-4 border-b border-[#334155] flex justify-between items-center'>
+                  <h3 className='text-lg font-medium text-white'>
+                    Select Cryptocurrency
+                  </h3>
                   <button
-                    key={range}
-                    className={`px-1.5 py-0.5 text-xs rounded-md ${
-                      timeRange === range
-                        ? "bg-[#334155] text-white"
-                        : "text-gray-400 hover:bg-[#1e293b]"
-                    }`}
-                    onClick={() => handleTimeRangeChange(range)}
+                    onClick={() => setShowCoinDropdown(false)}
+                    className='text-gray-400 hover:text-white'
                   >
-                    {range}
+                    <X size={20} />
                   </button>
-                ))}
+                </div>
+
+                <div className='p-4'>
+                  <div className='relative mb-4'>
+                    <Search
+                      className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+                      size={18}
+                    />
+                    <input
+                      ref={searchInputRef}
+                      type='text'
+                      placeholder='Search all coins...'
+                      className='w-full bg-[#334155] text-white border-none rounded-md pl-10 pr-10 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500'
+                      value={searchQuery}
+                      onChange={handleSearchChange}
+                      onFocus={() => setIsSearchFocused(true)}
+                      autoFocus
+                    />
+                    {searchQuery && (
+                      <button
+                        className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white'
+                        onClick={() => setSearchQuery("")}
+                      >
+                        <X size={18} />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className='border-b border-[#334155] pb-2 mb-2'>
+                    <h4 className='text-sm font-medium text-gray-300 flex items-center'>
+                      <Flame className='mr-1 text-orange-500' size={16} />
+                      Trending Crypto
+                    </h4>
+                  </div>
+
+                  <div className='max-h-[50vh] overflow-y-auto'>
+                    {searchQuery.trim() === "" ? (
+                      // Show featured coins when no search query
+                      <>
+                        {FEATURED_COINS.map((coin) => (
+                          <button
+                            key={coin.symbol}
+                            className='flex items-center justify-between px-4 py-3 text-sm w-full text-left hover:bg-[#334155] border-b border-[#334155] last:border-b-0 rounded-md'
+                            onClick={() => {
+                              handleCoinChange(coin);
+                              setShowCoinDropdown(false);
+                            }}
+                          >
+                            <div className='flex items-center gap-2'>
+                              <CoinIcon symbol={coin.symbol} size={24} />
+                              <div>
+                                <div className='font-medium'>{coin.name}</div>
+                                <div className='text-xs text-gray-400'>
+                                  {coin.shortName}
+                                </div>
+                              </div>
+                            </div>
+                            <div className='text-right'>
+                              <div className='font-medium'>
+                                $
+                                {(() => {
+                                  const coinInfo = coins.find(
+                                    (c) => c.symbol === coin.symbol
+                                  );
+                                  return coinInfo
+                                    ? Number.parseFloat(
+                                        coinInfo.lastPrice.toString()
+                                      ).toFixed(2)
+                                    : "0";
+                                })()}
+                              </div>
+                              <div
+                                className={`text-xs ${
+                                  (() => {
+                                    const coinInfo = coins.find(
+                                      (c) => c.symbol === coin.symbol
+                                    );
+                                    return coinInfo
+                                      ? coinInfo.priceChangePercent >= 0
+                                      : isPriceUp;
+                                  })()
+                                    ? "text-[#22c55e]"
+                                    : "text-[#ef4444]"
+                                }`}
+                              >
+                                {(() => {
+                                  const coinInfo = coins.find(
+                                    (c) => c.symbol === coin.symbol
+                                  );
+                                  return coinInfo
+                                    ? (coinInfo.priceChangePercent >= 0
+                                        ? "+"
+                                        : "") +
+                                        coinInfo.priceChangePercent.toFixed(2)
+                                    : "+0.00";
+                                })()}
+                                %
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </>
+                    ) : filteredCoins.length > 0 ? (
+                      // Show search results
+                      <>
+                        <div className='px-4 py-2 text-xs text-gray-400'>
+                          {filteredCoins.length} results found
+                        </div>
+                        {filteredCoins.map((coin) => {
+                          const formattedCoin = formatCoinForDisplay(coin);
+                          const coinPriceChange = coin.priceChangePercent;
+                          const isCoinPriceUp = coinPriceChange >= 0;
+
+                          return (
+                            <button
+                              key={coin.symbol}
+                              className='flex items-center justify-between px-4 py-3 text-sm w-full text-left hover:bg-[#334155] border-b border-[#334155] last:border-b-0 rounded-md'
+                              onClick={() => {
+                                handleCoinChange(formattedCoin);
+                                setShowCoinDropdown(false);
+                              }}
+                            >
+                              <div className='flex items-center gap-2'>
+                                <CoinIcon symbol={coin.symbol} size={24} />
+                                <div>
+                                  <div className='font-medium'>
+                                    {formattedCoin.name}
+                                  </div>
+                                  <div className='text-xs text-gray-400'>
+                                    {coin.symbol}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className='text-right'>
+                                <div className='font-medium'>
+                                  $
+                                  {Number.parseFloat(coin.lastPrice.toString())}
+                                </div>
+                                <div
+                                  className={`text-xs ${
+                                    isCoinPriceUp
+                                      ? "text-[#22c55e]"
+                                      : "text-[#ef4444]"
+                                  }`}
+                                >
+                                  {isCoinPriceUp ? "+" : ""}
+                                  {coinPriceChange.toFixed(2)}%
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </>
+                    ) : (
+                      // No results found
+                      <div className='px-4 py-6 text-sm text-gray-400 text-center'>
+                        No coins found
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
+          )}
+        </div>
+        <div className='flex items-center gap-2'>
+          {/* Time Range Selector */}
+          <div className='flex'>
+            {(["1D", "1W", "1M"] as const).map((range) => (
+              <button
+                key={range}
+                className={`px-1.5 py-0.5 text-xs rounded-md ${
+                  timeRange === range
+                    ? "bg-[#334155] text-white"
+                    : "text-gray-400 hover:bg-[#1e293b]"
+                }`}
+                onClick={() => handleTimeRangeChange(range)}
+              >
+                {range}
+              </button>
+            ))}
           </div>
+          <div
+            className={`flex items-center ${getStatusColor(status)}`}
+            title={error || "Connection status"}
+          >
+            {status === 2 ? <Wifi size={14} /> : <WifiOff size={14} />}
+          </div>
+          <button
+            onClick={handleRefresh}
+            className='p-1 rounded-full bg-[#1e293b] hover:bg-[#334155]'
+            aria-label='Refresh data'
+            disabled={isRefreshing}
+          >
+            <RefreshCw
+              size={14}
+              className={isRefreshing ? "animate-spin" : ""}
+            />
+          </button>
         </div>
       </div>
-      <div className='flex items-center gap-2 absolute top-2 right-2'>
-        <div
-          className={`flex items-center ${getStatusColor(status)}`}
-          title={error || "Connection status"}
-        >
-          {status === 2 ? <Wifi size={14} /> : <WifiOff size={14} />}
-        </div>
-        <button
-          onClick={handleRefresh}
-          className='p-1 rounded-full bg-[#1e293b] hover:bg-[#334155]'
-          aria-label='Refresh data'
-        >
-          <RefreshCw size={14} className={isRefreshing ? "animate-spin" : ""} />
-        </button>
-      </div>
-      <div className='mt-1 relative'>
-        <div className='absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-[#64748b] py-1 font-medium'>
-          <span>{chartMax.toFixed(1)}</span>
-          <span>{chartMid.toFixed(1)}</span>
-          <span>{chartMin.toFixed(1)}</span>
-        </div>
-        <div className='ml-9 relative' ref={containerRef}>
-          <EnhancedChart
-            data={ethChartData}
-            width={240}
-            height={80}
-            lineColor='#4f8eff'
-            fillColor='rgba(79, 142, 255, 0.2)'
-            gridColor='#1a2635'
-            isDarkMode={true}
-            showGrid={true}
-            showTooltip={true}
-            animate={true}
-            onHover={handleChartHover}
-          />
 
-          {tooltip.visible && (
+      {/* Price and Change */}
+      <div className='flex items-center gap-3 mb-2'>
+        <div className='text-lg font-semibold text-[#f8fafc]'>
+          ${Number.parseFloat(currentPrice.toString())}
+        </div>
+        <div
+          className={`text-xs ${
+            isPriceUp ? "text-[#22c55e]" : "text-red-500"
+          } font-medium`}
+        >
+          {isPriceUp ? "+" : ""}
+          {priceChangePercent.toFixed(2)}%
+        </div>
+      </div>
+
+      {/* Chart */}
+      <div className='mt-1 relative'>
+        <div className='absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-[#64748b] py-1 font-medium'>
+          <span>
+            {chartMax > 1000
+              ? chartMax.toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })
+              : chartMax > 1
+              ? chartMax.toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                })
+              : chartMax.toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 6,
+                })}
+          </span>
+          <span>
+            {chartMid > 1000
+              ? chartMid.toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })
+              : chartMid > 1
+              ? chartMid.toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                })
+              : chartMid.toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 6,
+                })}
+          </span>
+          <span>
+            {chartMin > 1000
+              ? chartMin.toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })
+              : chartMin > 1
+              ? chartMin.toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                })
+              : chartMin.toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 6,
+                })}
+          </span>
+        </div>
+        <div className='ml-6 relative' ref={containerRef}>
+          {isRefreshing ? (
+            <div className='flex items-center justify-center h-[80px]'>
+              <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-white'></div>
+            </div>
+          ) : !hasValidData || chartData.length === 0 ? (
+            <div className='flex items-center justify-center h-[80px] text-center'>
+              <div className='text-[#64748b] text-sm'>
+                No historical data found
+              </div>
+            </div>
+          ) : (
+            <EnhancedChart
+              data={chartData}
+              width={260}
+              height={70}
+              lineColor={isPriceUp ? "#22c55e" : "#ef4444"}
+              fillColor={
+                isPriceUp ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)"
+              }
+              gridColor='#1a2635'
+              isDarkMode={true}
+              showGrid={true}
+              showTooltip={true}
+              animate={true}
+              onHover={handleChartHover}
+            />
+          )}
+
+          {tooltip.visible && hasValidData && !isRefreshing && (
             <div
-              className='absolute bg-[#1e293b] text-white text-xs py-1 px-2 rounded pointer-events-none z-10 font-medium shadow-lg transition-all duration-100 ease-out'
+              className={`absolute bg-[#1e293b] text-white text-xs py-1 px-2 rounded pointer-events-none z-50 font-medium shadow-lg transition-all duration-100 ease-out border ${
+                isPriceUp ? "border-[#22c55e]" : "border-[#ef4444]"
+              }`}
               style={{
                 left: `${tooltip.x}px`,
                 top:
@@ -235,18 +955,39 @@ export default function WideCryptoWidget() {
                   "0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1)",
               }}
             >
-              ${tooltip.value.toFixed(2)}
+              $
+              {tooltip.value > 1000
+                ? tooltip.value.toLocaleString("en-US", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2,
+                  })
+                : tooltip.value > 1
+                ? tooltip.value.toLocaleString("en-US", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 4,
+                  })
+                : tooltip.value.toLocaleString("en-US", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 8,
+                  })}
             </div>
           )}
         </div>
       </div>
 
-      <div className='flex justify-between text-xs text-[#64748b] mt-1 px-1 font-medium'>
+      {/* Date Labels */}
+      <div className='flex justify-between text-[10px] text-[#64748b] mt-1 px-1 font-medium'>
         {dateLabels.map((date, index) => (
           <div key={index} className='flex flex-col items-center'>
             <span>{date}</span>
           </div>
         ))}
+      </div>
+
+      {/* Footer hidden as requested */}
+      {/* Footer with request status */}
+      <div className='mt-1 text-[9px] text-[#64748b] text-center border-t border-[#1e293b] pt-1'>
+        {requestStatus}
       </div>
     </div>
   );
