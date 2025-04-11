@@ -35,8 +35,8 @@ export default function TopCoinsWidget() {
   // Update the component to display the data source
   // First, add a new state to track the data source
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [dataSource, setDataSource] = useState<string>("Binance");
+  console.log(dataSource);
   // Add these state variables inside the TopCoinsWidget component, after the existing state declarations
   const [selectedCoin, setSelectedCoin] = useState<CoinData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
