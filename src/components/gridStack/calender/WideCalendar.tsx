@@ -1,106 +1,133 @@
 "use client";
 
-import { Plus, Video } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { allDayEvents } from "@/lib/calendar-utils";
+import type React from "react";
 
-export default function WideCalendar() {
+import { format } from "date-fns";
+import { Video, Plus } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import type { CalendarEvent } from "@/types/calendar";
+import { formatEventTime } from "@/lib/calendar-date-utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+interface RectangularWidgetProps {
+  selectedDate: Date;
+  events: CalendarEvent[];
+  onClick: () => void;
+  onAddEvent: (e: React.MouseEvent) => void;
+}
+
+export function RectangularWidget({
+  selectedDate,
+  events,
+  onClick,
+  onAddEvent,
+}: RectangularWidgetProps) {
+  const allDayEventsCount = events.filter((event) => event.isAllDay).length;
+
   return (
-    <>
-      <div className='w-full h-full overflow-hidden rounded-2xl shadow-sm border-0 bg-card backdrop-blur-sm'>
-        <div className='p-0 relative'>
-          {/* Add button */}
-          <div className='absolute top-3 right-3 z-10'>
-            <Button
-              variant='destructive'
-              size='icon'
-              className='h-7 w-7 rounded-full p-0 shadow-sm bg-error '
-            >
-              <Plus className='h-4 w-4' />
-            </Button>
+    <div
+      className='w-full h-full overflow-hidden rounded-2xl shadow-sm border-0 bg-card backdrop-blur-sm cursor-pointer'
+      onClick={onClick}
+    >
+      <div className='p-0 relative h-full'>
+        {/* Add button */}
+        <div className='absolute top-1 right-3 z-10'>
+          <Button
+            variant='destructive'
+            size='icon'
+            className='h-6 w-6 rounded-full p-0 shadow-sm bg-error hover:bg-error'
+            onClick={onAddEvent}
+          >
+            <Plus className='h-4 w-4' />
+          </Button>
+        </div>
+
+        <div className='flex h-full'>
+          {/* Left side - Date */}
+          <div className='w-[90px] bg-badge flex flex-col items-center   justify-center border-r border-border'>
+            <h2 className='text-xs font-bold text-error'>
+              {format(selectedDate, "EEEE").toUpperCase()}
+            </h2>
+            <span className='text-4xl font-bold mt-1'>
+              {format(selectedDate, "d")}
+            </span>
           </div>
 
-          <div className='flex h-full'>
-            {/* Left side - Date */}
-            <div className='w-[90px] bg-hover flex flex-col items-center justify-center border-r border-border'>
-              <h2 className='text-xs font-bold text-text-primary bg-error p-1 rounded-md'>
-                MONDAY
-              </h2>
-              <span className='text-4xl font-bold mt-1'>22</span>
+          {/* Right side - Events */}
+          <div className='flex-1 flex flex-col h-full'>
+            {/* Header with all-day events summary */}
+            <div className='px-3 pt-2 pb-1 border-b border-border'>
+              {allDayEventsCount > 0 ? (
+                <div className='flex items-center'>
+                  <div className='bg-purple-500 text-text-primary text-xs px-2 py-0.5 rounded-md inline-block'>
+                    {allDayEventsCount} all-day event
+                    {allDayEventsCount !== 1 ? "s" : ""}
+                  </div>
+                </div>
+              ) : (
+                <div className='h-5'></div>
+              )}
             </div>
 
-            {/* Right side - Events */}
-            <div className='flex-1 p-3 pt-2'>
-              {/* All-day events summary */}
-              <div className='mb-2 flex items-center'>
-                <div className='bg-purple-500 text-text-primary text-xs px-2 py-0.5 rounded-md inline-block'>
-                  2 all-day events
-                </div>
-                <span className='text-[10px] text-text ml-2'>All-Day</span>
-              </div>
-
-              {/* Events list */}
-              <div className='space-y-2.5 mt-3'>
-                {/* Product Sync */}
-                <div className='flex items-center space-x-2'>
-                  <div className='w-1 h-8 bg-brand rounded-full'></div>
-                  <div className='flex-1'>
-                    <div className='flex items-center justify-between'>
-                      <span className='text-xs font-medium'>
-                        {allDayEvents[0].title}
-                      </span>
-                      <div className='flex items-center space-x-1 mt-2'>
-                        <Video className='h-3 w-3 text-brand ' />
+            {/* Events list */}
+            <div className='flex-1 overflow-hidden px-3 py-2'>
+              {events.length > 0 ? (
+                <ScrollArea className='h-full pr-1 overflow-y-auto '>
+                  <div className='space-y-2'>
+                    {events.map((event) => (
+                      <div
+                        key={event.id}
+                        className='flex items-center space-x-2 group'
+                      >
+                        <div
+                          className={`w-1 h-8 ${event.color} rounded-full flex-shrink-0`}
+                        ></div>
+                        <div className='flex-1 min-w-0'>
+                          <div className='flex items-center justify-between'>
+                            <span className='text-xs font-medium truncate max-w-[120px]'>
+                              {event.title}
+                            </span>
+                            {event.isVideo && (
+                              <div className='flex items-center space-x-1'>
+                                <Video className='h-3 w-3 text-brand mr-1 ' />
+                                <Button
+                                  size='sm'
+                                  className='h-4  text-[9px] rounded-full bg-brand hover:bg-brand-hover px-1.5 py-0 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity !mr-3'
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                  }}
+                                >
+                                  Join
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                          <span className='text-[9px] text-gray-500 block'>
+                            {event.isAllDay
+                              ? "All day"
+                              : `${formatEventTime(
+                                  event.date
+                                )}-${formatEventTime(event.endDate)}`}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <span className='text-[9px] text-text'>
-                      {allDayEvents[0].time}
-                    </span>
+                    ))}
                   </div>
-                </div>
-
-                {/* Marketing Meeting */}
-                <div className='flex items-center space-x-2'>
-                  <div className='w-1 h-8 bg-orange-500 rounded-full'></div>
-                  <div className='flex-1'>
-                    <div className='flex items-center justify-between'>
-                      <span className='text-xs font-medium'>
-                        {allDayEvents[1].title}
-                      </span>
-                      <Video className='h-3 w-3 text-orange-500' />
-                    </div>
-                    <span className='text-[9px] text-text'>
-                      {allDayEvents[1].time}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Lunch */}
-                <div className='flex items-center space-x-2'>
-                  <div className='w-1 h-8 bg-green-500 rounded-full'></div>
-                  <div className='flex-1'>
-                    <div className='flex items-center justify-between'>
-                      <span className='text-xs font-medium'>
-                        {allDayEvents[2].title}
-                      </span>
-                    </div>
-                    <span className='text-[9px] text-text'>
-                      {allDayEvents[2].time}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* More events indicator */}
-              <div className='absolute bottom-3 right-3'>
-                <div className='bg-pink-100 text-pink-500 text-[10px] font-medium px-2 py-0.5 rounded-full shadow-sm'>
-                  +3
-                </div>
-              </div>
+                </ScrollArea>
+              ) : (
+                <EmptyState
+                  title='No events scheduled'
+                  description='Use + button to add an event'
+                  size='sm'
+                  className='h-full'
+                />
+              )}
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

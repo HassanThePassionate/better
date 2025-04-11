@@ -14,37 +14,40 @@ import { ExtensionProvider } from "./context/ExtensionContext";
 import GridLayoutPage from "./pages/GridLayoutPage";
 import { EditorContextProvider } from "./context/EditorContext";
 import { DateProvider } from "./context/DateContext";
+import { EventsProvider } from "./context/EventContext";
 
 const App = () => {
   const { page, dialogOpen } = usePageContext();
   return (
     <BookmarkProvider>
       <ExtensionProvider>
-        <HeaderProvider>
-          <DateProvider>
-            <EditorContextProvider>
-              <ThemeDropDownContextProvider>
-                <MenuProvider>
-                  <FormProvider>
-                    {page === "bookmarks" && <Home />}
-                    {page === "edit" && <EditBookmark />}
-                    {page === "history" && <HistoryPage />}
-                    {page === "extensions" && <ExtensionPage />}
-                    {page === "downloads" && <Downloads />}
-                    {page === "notes" && <Notes />}
-                    {page === "grid" && <GridLayoutPage />}
-                    {dialogOpen && (
-                      <div
-                        className='fixed inset-0 bg-black/50  '
-                        style={{ zIndex: 50 }}
-                      ></div>
-                    )}
-                  </FormProvider>
-                </MenuProvider>
-              </ThemeDropDownContextProvider>
-            </EditorContextProvider>
-          </DateProvider>
-        </HeaderProvider>
+        <EventsProvider>
+          <HeaderProvider>
+            <DateProvider>
+              <EditorContextProvider>
+                <ThemeDropDownContextProvider>
+                  <MenuProvider>
+                    <FormProvider>
+                      {page === "bookmarks" && <Home />}
+                      {page === "edit" && <EditBookmark />}
+                      {page === "history" && <HistoryPage />}
+                      {page === "extensions" && <ExtensionPage />}
+                      {page === "downloads" && <Downloads />}
+                      {page === "notes" && <Notes />}
+                      {page === "grid" && <GridLayoutPage />}
+                      {dialogOpen && (
+                        <div
+                          className='fixed inset-0 bg-black/50  '
+                          style={{ zIndex: 50 }}
+                        ></div>
+                      )}
+                    </FormProvider>
+                  </MenuProvider>
+                </ThemeDropDownContextProvider>
+              </EditorContextProvider>
+            </DateProvider>
+          </HeaderProvider>
+        </EventsProvider>
       </ExtensionProvider>
     </BookmarkProvider>
   );

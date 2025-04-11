@@ -16,11 +16,9 @@ import MovieWidget from "./MovieWidget";
 import CryptoWidget from "./crypto/CryptoWidget";
 import WideCryptoWidget from "./crypto/WideCryptoWidget";
 import LargeCryptoWidget from "./crypto/LargeCryptoWidget";
-import SmallCalendar from "./calender/SmCalendar";
-import MainCalendar from "./calender/CalenderWidget";
-import WideCalendar from "./calender/WideCalendar";
 import NewsWidget from "./news/NewsWidget";
 import { useEditorContext } from "@/context/EditorContext";
+import EventCalendar from "./calender/DisplayCalendar";
 
 const Widget = ({ type }: { type?: string }) => {
   const { filteredNotes: notes } = useEditorContext();
@@ -49,11 +47,11 @@ const Widget = ({ type }: { type?: string }) => {
       ) : type === "large-cryptoCard" ? (
         <LargeCryptoWidget />
       ) : type === "sm-calendar" ? (
-        <SmallCalendar />
+        <EventCalendar type='small' />
       ) : type === "large-calendar" ? (
-        <MainCalendar />
+        <EventCalendar type='large' />
       ) : type === "wide-calendar" ? (
-        <WideCalendar />
+        <EventCalendar type='wide' />
       ) : type === "sm-news" ? (
         <NewsWidget height={200} width={200} />
       ) : type === "wide-news" ? (

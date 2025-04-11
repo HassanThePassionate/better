@@ -1,251 +1,178 @@
 "use client";
 
-import { useState } from "react";
-import {
-  format,
-  addMonths,
-  subMonths,
-  startOfMonth,
-  endOfMonth,
-  eachDayOfInterval,
-  isSameDay,
-  isToday,
-  parseISO,
-  getDay,
-} from "date-fns";
-import { ChevronLeft, ChevronRight, Video } from "lucide-react";
+import { memo, useCallback, useMemo } from "react";
+import { format, addDays, startOfMonth } from "date-fns";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useEvents } from "@/context/EventContext";
 
-import {
-  events,
-  formatEventTime,
-  getEventColorsForDay,
-} from "@/lib/calendar-utils";
+interface MiniCalendarProps {
+  currentDate: Date;
+  selectedDate: Date;
+  onDateSelect: (date: Date) => void;
+  onMonthChange: (date: Date) => void;
+  onAddEvent: () => void;
+  onOpenCalendar: () => void;
+}
 
-export default function MainCalendar() {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(new Date("2025-04-08")); // Set to April 8th to show multiple events
+function MiniCalendarComponent({
+  currentDate,
+  selectedDate,
+  onDateSelect,
+  onMonthChange,
+  onAddEvent,
+  onOpenCalendar,
+}: MiniCalendarProps) {
+  const { getEventColorsForDay } = useEvents();
 
-  // Get days for the current month
-  const monthStart = startOfMonth(currentDate);
-  const monthEnd = endOfMonth(currentDate);
-  const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
+  // Generate calendar days efficiently
+  const calendarDays = useMemo(() => {
+    const firstDayOfMonth = startOfMonth(currentDate);
+    const daysOffset = -5; // Start 5 days before the first day of the month
 
-  // Filter events for the selected date
-  const filteredEvents = events
-    .filter((event) => {
-      const eventDate = parseISO(event.date);
-      return isSameDay(eventDate, selectedDate);
-    })
-    .sort((a, b) => {
-      // Sort events by time
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    return Array.from({ length: 35 }).map((_, i) => {
+      return addDays(firstDayOfMonth, daysOffset + i);
     });
+  }, [currentDate]);
 
-  // Handle month navigation
-  const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
-  const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
+  const handlePrevMonth = useCallback(() => {
+    const newDate = new Date(currentDate);
+    newDate.setMonth(newDate.getMonth() - 1);
+    onMonthChange(newDate);
+  }, [currentDate, onMonthChange]);
 
-  // Handle date selection
-  const handleDateClick = (date: Date) => {
-    setSelectedDate(date);
-  };
+  const handleNextMonth = useCallback(() => {
+    const newDate = new Date(currentDate);
+    newDate.setMonth(newDate.getMonth() + 1);
+    onMonthChange(newDate);
+  }, [currentDate, onMonthChange]);
 
-  // Reset to today
-  const goToToday = () => {
+  const handleTodayClick = useCallback(() => {
     const today = new Date();
-    setCurrentDate(today);
-    setSelectedDate(today);
-  };
+    onMonthChange(today);
+    onDateSelect(today);
+  }, [onMonthChange, onDateSelect]);
+
+  const handleAddEventClick = useCallback(() => {
+    onOpenCalendar();
+    onAddEvent();
+  }, [onOpenCalendar, onAddEvent]);
 
   return (
-    <>
-      <div className='w-full  h-full overflow-hidden rounded-2xl shadow-sm bg-card border-0 '>
-        <div className='p-0 h-full'>
-          <div className='flex h-full'>
-            {/* Calendar Section */}
-            <div className='w-1/2 border-r border-border h-full overflow-hidden flex flex-col'>
-              <div className='p-3'>
-                <div className='flex items-center justify-between mb-3'>
-                  <h2 className='text-sm font-semibold text-text'>
-                    {format(currentDate, "MMMM")}
-                  </h2>
-                  <div className='flex items-center space-x-2'>
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      className='rounded-full h-6 w-6 p-0 text-foreground hover:text-text hover:bg-gray-100'
-                      onClick={prevMonth}
-                    >
-                      <ChevronLeft className='h-3 w-3' />
-                    </Button>
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      className='rounded-full h-6 w-6 p-0 text-foreground hover:text-text hover:bg-gray-100'
-                      onClick={nextMonth}
-                    >
-                      <ChevronRight className='h-3 w-3' />
-                    </Button>
-                  </div>
-                </div>
+    <div className='w-1/2 border-r border-border bg-card overflow-hidden flex flex-col'>
+      <div className='p-3'>
+        <div className='flex items-center justify-between mb-3'>
+          <h2 className='text-sm font-semibold text-text'>
+            {format(currentDate, "MMMM")}
+          </h2>
+          <div className='flex items-center space-x-2'>
+            <Button
+              variant='ghost'
+              size='sm'
+              className='rounded-full h-6 w-6 p-0 text-foreground hover:text-text hover:bg-hover'
+              onClick={handlePrevMonth}
+            >
+              <ChevronLeft className='h-3 w-3' />
+            </Button>
+            <Button
+              variant='ghost'
+              size='sm'
+              className='rounded-full h-6 w-6 p-0 text-foreground hover:text-text hover:bg-hover'
+              onClick={handleNextMonth}
+            >
+              <ChevronRight className='h-3 w-3' />
+            </Button>
+          </div>
+        </div>
 
-                {/* Weekday headers */}
-                <div className='grid grid-cols-7 mb-1'>
-                  {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
-                    <div
-                      key={index}
-                      className='text-center text-[10px] text-text font-medium'
-                    >
-                      {day}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Calendar grid */}
-                <div className='grid grid-cols-7 gap-0.5'>
-                  {Array.from({ length: getDay(monthStart) }, (_, i) => {
-                    const prevMonthDay =
-                      subMonths(monthEnd, 1).getDate() -
-                      getDay(monthStart) +
-                      i +
-                      1;
-                    return (
-                      <div
-                        key={`prev-${i}`}
-                        className='h-7 flex items-center justify-center text-foreground text-[10px]'
-                      >
-                        {prevMonthDay}
-                      </div>
-                    );
-                  })}
-
-                  {monthDays.map((day, i) => {
-                    // Get event colors for this day
-                    const eventColors = getEventColorsForDay(day);
-                    const hasEvents = eventColors.length > 0;
-
-                    return (
-                      <div
-                        key={i}
-                        className={cn(
-                          "h-7 flex flex-col items-center justify-center relative cursor-pointer",
-                          isToday(day) &&
-                            !isSameDay(day, selectedDate) &&
-                            "font-semibold text-blue-500"
-                        )}
-                        onClick={() => handleDateClick(day)}
-                      >
-                        <div
-                          className={cn(
-                            "flex items-center justify-center w-6 h-6 rounded-full text-xs",
-                            isSameDay(day, selectedDate) &&
-                              "bg-brand text-text-primary font-medium",
-                            !isSameDay(day, selectedDate) && "hover:bg-hover"
-                          )}
-                        >
-                          {format(day, "d")}
-                        </div>
-
-                        {/* iOS-style event indicators */}
-                        {hasEvents && (
-                          <div className='flex space-x-0.5 absolute -bottom-1'>
-                            {eventColors.map((color, index) => (
-                              <div
-                                key={index}
-                                className={`h-1 w-1 rounded-full bg-${color}`}
-                                aria-hidden='true'
-                              />
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-
-                  {Array.from({ length: 6 - getDay(monthEnd) }, (_, i) => (
-                    <div
-                      key={`next-${i}`}
-                      className='h-7 flex items-center justify-center text-foreground text-[10px]'
-                    >
-                      {i + 1}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Footer with Today button */}
-              <div className='mt-auto border-t border-border p-2 flex justify-center'>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={goToToday}
-                  className='text-[10px] h-6 rounded-full border-border text-text hover:bg-hover px-4'
-                >
-                  Today
-                </Button>
-              </div>
+        {/* Mini Calendar (simplified) */}
+        <div className='grid grid-cols-7 mb-1'>
+          {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
+            <div
+              key={index}
+              className='text-center text-[10px] text-foreground font-medium'
+            >
+              {day}
             </div>
+          ))}
+        </div>
 
-            {/* Events Section with fixed header and scrollable content */}
-            <div className='w-1/2 bg-hover flex flex-col h-full'>
-              {/* Fixed header */}
-              <div className='p-3 pb-2 border-b border-border'>
-                <h2 className='text-xs font-semibold text-text'>
-                  {format(selectedDate, "MMMM d")}
-                </h2>
-              </div>
+        <div className='grid grid-cols-7 gap-0.5'>
+          {calendarDays.map((day, i) => {
+            const isCurrentMonth = day.getMonth() === currentDate.getMonth();
+            const isSelected =
+              day.getDate() === selectedDate.getDate() &&
+              day.getMonth() === selectedDate.getMonth() &&
+              day.getFullYear() === selectedDate.getFullYear();
 
-              {/* Scrollable events container - simplified for better compatibility */}
+            const eventColors = isCurrentMonth ? getEventColorsForDay(day) : [];
+            const hasEvents = eventColors.length > 0;
+
+            return (
               <div
-                className='overflow-y-auto h-[230px]  px-3 py-2'
-                style={{
-                  scrollbarWidth: "thin",
-                  scrollbarColor: "rgba(209, 213, 219, 0.5) transparent",
+                key={i}
+                className={cn(
+                  "h-7 flex flex-col items-center justify-center relative cursor-pointer",
+                  !isCurrentMonth && "text-foreground"
+                )}
+                onClick={() => {
+                  if (isCurrentMonth) {
+                    onDateSelect(day);
+                  }
                 }}
               >
-                {filteredEvents.length > 0 ? (
-                  <div className='space-y-2'>
-                    {filteredEvents.map((event) => (
+                <div
+                  className={cn(
+                    "flex items-center justify-center w-6 h-6 rounded-full text-xs",
+                    isSelected && "bg-brand text-text-primary font-medium",
+                    !isSelected && isCurrentMonth && "hover:bg-hover"
+                  )}
+                >
+                  {day.getDate()}
+                </div>
+
+                {/* iOS-style event indicators */}
+                {hasEvents && (
+                  <div className='flex space-x-0.5 absolute -bottom-1 left-1/2 transform -translate-x-1/2'>
+                    {eventColors.map((color, index) => (
                       <div
-                        key={event.id}
-                        className='p-2 rounded-xl bg-background shadow-sm border border-border'
-                      >
-                        <div className='flex items-start'>
-                          <div
-                            className={`w-1 h-full min-h-[24px] ${event.color} rounded-full mr-2 mt-0.5`}
-                          ></div>
-                          <div className='flex-1'>
-                            <h3 className='font-medium text-xs text-text'>
-                              {event.title}
-                            </h3>
-                            <p className='text-[10px] text-foreground mt-0.5 line-clamp-1'>
-                              {event.description}
-                            </p>
-                            <div className='flex items-center mt-1'>
-                              <div className='text-[10px] font-normal bg-hover text-text rounded-full px-1.5 py-0 border-0'>
-                                {formatEventTime(event.date)}
-                              </div>
-                              {event.isVideo && (
-                                <Video className='h-3 w-3 ml-1 text-text' />
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                        key={index}
+                        className={`h-1 w-1 rounded-full bg-${color}`}
+                        aria-hidden='true'
+                      />
                     ))}
-                  </div>
-                ) : (
-                  <div className='text-center py-6 text-foreground opacity-80 text-[10px]'>
-                    No events scheduled
                   </div>
                 )}
               </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
-    </>
+
+      {/* Footer with Today and Add Event buttons */}
+      <div className='mt-auto border-t border-border  p-2 flex justify-center space-x-2'>
+        <Button
+          variant='outline'
+          size='sm'
+          onClick={handleTodayClick}
+          className='text-[10px] h-6 rounded-full border-border text-gray-700 hover:bg-hover text-text px-3'
+        >
+          Today
+        </Button>
+        <Button
+          variant='outline'
+          size='sm'
+          onClick={handleAddEventClick}
+          className='text-[10px] h-6 rounded-full border-border text-brand hover:bg-hover px-3 flex items-center'
+        >
+          <Plus className='h-3 w-3 mr-1' />
+          Add Event
+        </Button>
+      </div>
+    </div>
   );
 }
+
+// Memoize the component to prevent unnecessary re-renders
+export const MiniCalendar = memo(MiniCalendarComponent);
