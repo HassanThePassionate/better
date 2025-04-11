@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import type React from "react";
@@ -22,7 +20,13 @@ import {
 } from "@/hooks/use-crypto-data";
 import EnhancedChart from "./CryptoChart";
 import CoinIcon from "./CoinIcon";
-
+type coin = {
+  symbol: string;
+  name: string;
+  shortName: string;
+  iconColor: string;
+  baseAsset?: string;
+};
 // Replace the AVAILABLE_COINS constant with a smaller set of featured coins
 const FEATURED_COINS = [
   {
@@ -76,6 +80,12 @@ const getCoinIconColor = (symbol: string): string => {
 
   return coinColors[baseAsset] || "#64748b";
 };
+type selectedCoin = {
+  symbol: string;
+  name: string | undefined;
+  shortName: string | undefined;
+  iconColor: string;
+};
 
 export default function CryptoWidget() {
   // ===== STATE & REFS =====
@@ -92,13 +102,19 @@ export default function CryptoWidget() {
     visible: false,
   });
   const [timeRange, setTimeRange] = useState<TimeRange>("1D");
+  console.log(setTimeRange);
+
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [hasValidData, setHasValidData] = useState(false);
   const [showCoinDropdown, setShowCoinDropdown] = useState(false);
-  const [selectedCoin, setSelectedCoin] = useState(FEATURED_COINS[0]);
+  const [selectedCoin, setSelectedCoin] = useState<selectedCoin>(
+    FEATURED_COINS[0]
+  );
   // Update the component state
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  console.log(isSearchFocused);
+
   const [filteredCoins, setFilteredCoins] = useState<CoinData[]>([]);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -148,60 +164,9 @@ export default function CryptoWidget() {
   // Update the component to display the data source
   // First, add a new state to track the data source
   const [dataSource, setDataSource] = useState<string>("Loading...");
-
+  console.log(dataSource);
   // Add a new state for tracking request status
   const [requestStatus, setRequestStatus] = useState<string>("");
-
-  // Add this new function to generate fallback data for coins with no API data
-  const generateFallbackData = (symbol: string, range: TimeRange): number[] => {
-    // Get the coin data if available
-    const coin = coins.find((c) => c.symbol === symbol);
-
-    // Default values if coin not found
-    const basePrice = coin?.lastPrice || 100;
-    const trend = coin?.priceChangePercent || 0;
-    const volatility = Math.abs(trend) / 10 + 0.02;
-
-    // Number of points based on time range
-    let points = 24;
-    switch (range) {
-      case "1D":
-        points = 24;
-        break;
-      case "1W":
-        points = 7;
-        break;
-      case "1M":
-        points = 30;
-        break;
-      case "3M":
-        points = 90;
-        break;
-      case "1Y":
-        points = 365;
-        break;
-    }
-
-    // Generate synthetic data
-    return Array(points)
-      .fill(0)
-      .map((_, i) => {
-        const progress = i / (points - 1);
-        // Use symbol characters to create a unique but consistent pattern
-        const seed = symbol
-          .split("")
-          .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        const pseudoRandom = Math.sin(seed * i) * 0.5 + 0.5;
-        const randomFactor = (pseudoRandom * 2 - 1) * volatility;
-
-        // Create a trend that follows the price change direction
-        const trendFactor = Math.pow(progress, 1.2) * (trend / 100);
-
-        return (
-          basePrice * (1 + trendFactor + randomFactor * (1 - progress * 0.7))
-        );
-      });
-  };
 
   // ===== DATA FETCHING =====
   // Fetch data function
@@ -240,7 +205,6 @@ export default function CryptoWidget() {
         setRequestStatus(`Trying: ${triedApis.join(" → ")}...`);
 
         const {
-          coin: coinData,
           chartData: coinChartData,
           success: apiSuccess,
           source,
@@ -353,7 +317,6 @@ export default function CryptoWidget() {
 
     try {
       const {
-        coin: coinData,
         chartData: coinChartData,
         success,
         source,
@@ -407,71 +370,6 @@ export default function CryptoWidget() {
       }
       fetchingRef.current = false;
     }
-  };
-
-  // Handle time range change
-  const handleTimeRangeChange = (range: TimeRange) => {
-    setIsRefreshing(true);
-    setTimeRange(range);
-    setTooltip((prev) => ({ ...prev, visible: false }));
-
-    const fetchTimeRangeData = async () => {
-      try {
-        const {
-          coin: coinData,
-          chartData: coinChartData,
-          success,
-          source,
-        } = await getCoinData(selectedCoin.symbol, range);
-
-        if (success && coinChartData && coinChartData.length > 0) {
-          setChartData(coinChartData);
-          if (!lastSuccessfulChartDataRef.current[selectedCoin.symbol]) {
-            lastSuccessfulChartDataRef.current[selectedCoin.symbol] =
-              {} as Record<TimeRange, number[]>;
-          }
-          lastSuccessfulChartDataRef.current[selectedCoin.symbol][range] =
-            coinChartData;
-          dataSourceRef.current = source || "Unknown";
-          setDataSource(source || "Unknown");
-          setHasValidData(true);
-        } else if (
-          !success &&
-          lastSuccessfulChartDataRef.current[selectedCoin.symbol]?.[range]
-            ?.length > 0
-        ) {
-          setChartData(
-            lastSuccessfulChartDataRef.current[selectedCoin.symbol][range]
-          );
-          dataSourceRef.current = "Cached";
-          setDataSource("Cached");
-          setHasValidData(true);
-        } else {
-          setHasValidData(false);
-        }
-      } catch (error) {
-        console.error("Error fetching chart data:", error);
-        if (
-          lastSuccessfulChartDataRef.current[selectedCoin.symbol]?.[range]
-            ?.length > 0
-        ) {
-          setChartData(
-            lastSuccessfulChartDataRef.current[selectedCoin.symbol][range]
-          );
-          dataSourceRef.current = "Cached";
-          setDataSource("Cached");
-          setHasValidData(true);
-        } else {
-          setHasValidData(false);
-        }
-      } finally {
-        if (hasValidData) {
-          setIsRefreshing(false);
-        }
-      }
-    };
-
-    fetchTimeRangeData();
   };
 
   // Handle chart hover with debouncing
@@ -591,7 +489,7 @@ export default function CryptoWidget() {
   };
 
   // Update the handleCoinChange function
-  const handleCoinChange = (coin: any) => {
+  const handleCoinChange = (coin: coin) => {
     // Create a standardized coin object
     const standardizedCoin = {
       symbol: coin.symbol,
