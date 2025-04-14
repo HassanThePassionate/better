@@ -21,6 +21,10 @@ import { useEditorContext } from "@/context/EditorContext";
 import EventCalendar from "./calender/DisplayCalendar";
 import TopCoinsWidget from "./crypto/TopCoinWidget";
 import AdvancedCoinsWidget from "./crypto/AdvanceCoinWidget";
+import SmallConverterWidget from "./converters/widgets/SmallConvertWidget";
+import ConverterWidget from "./converters/widgets/ConverterWidget";
+import CurrencyWidgetSmall from "./converters/widgets/SmallCurrencyWidget";
+import CurrencyWidgetMedium from "./converters/widgets/WideCurrencyWidget";
 
 const Widget = ({ type }: { type?: string }) => {
   const { filteredNotes: notes } = useEditorContext();
@@ -64,6 +68,14 @@ const Widget = ({ type }: { type?: string }) => {
         <NewsWidget height={200} width={300} />
       ) : type === "large-news" ? (
         <NewsWidget height={300} width={300} />
+      ) : type === "sm-converter" ? (
+        <SmallConverterWidget />
+      ) : type === "large-converter" ? (
+        <ConverterWidget />
+      ) : type === "sm-currency" ? (
+        <CurrencyWidgetSmall />
+      ) : type === "wide-currency" ? (
+        <CurrencyWidgetMedium />
       ) : null}
     </>
   );

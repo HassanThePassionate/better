@@ -37,6 +37,10 @@ export function GridStackComponent() {
     { id: 16, width: 3, height: 3, type: "large-news" },
     { id: 17, width: 3, height: 3, type: "top-coin" },
     { id: 18, width: 4, height: 3, type: "adv-crypto" },
+    { id: 19, width: 2, height: 2, type: "sm-converter" },
+    { id: 20, width: 4, height: 2, type: "large-converter" },
+    { id: 21, width: 2, height: 2, type: "sm-currency" },
+    { id: 22, width: 3, height: 3, type: "wide-currency" },
   ]);
 
   const itemsRef = useRef(new Map());

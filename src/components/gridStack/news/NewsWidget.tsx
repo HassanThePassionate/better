@@ -174,7 +174,7 @@ export default function NewsWidget({
         {/* Widget Header */}
         <div className='px-4 pt-3.5 pb-1.5 flex items-center justify-between'>
           <div className='flex items-center gap-1.5'>
-            <div className='w-5 h-5 rounded-[6px] bg-gradient-to-br from-[#FF2D55] to-[#FF3B30] flex items-center justify-center shadow-sm'>
+            <div className='w-5 h-5 rounded-[6px] bg-brand flex items-center justify-center shadow-sm'>
               <Newspaper className='w-3 h-3 ' />
             </div>
             <span className='text-[13px] font-semibold text-text'>{title}</span>

@@ -272,7 +272,7 @@ export default function TopCoinsWidget() {
   // Memoized column header components
   const ColumnHeaders = useMemo(
     () => (
-      <div className='flex text-xs text-[#64748b] mb-2 border-b border-[#1e293b] pb-2 px-1'>
+      <div className='flex text-xs text-foreground mb-2 border-b border-border pb-2 px-1'>
         <SortButton
           field='name'
           currentField={sortField}
@@ -317,10 +317,10 @@ export default function TopCoinsWidget() {
 
   // Render component
   return (
-    <div className='w-[300px] h-[300px] bg-[#0f172a] text-white rounded-[20px] overflow-hidden p-3 border-0 font-sans'>
+    <div className='w-[300px] h-[300px] bg-card text-text ounded-[20px] overflow-hidden p-3 border-0 font-sans'>
       {/* Header */}
       <div className='flex items-center justify-between mb-2'>
-        <h2 className='text-lg font-medium tracking-wide text-[#e2e8f0]'>
+        <h2 className='text-lg font-medium tracking-wide text-text'>
           Top Cryptocurrencies
         </h2>
         <div className='flex gap-2'>
@@ -332,7 +332,7 @@ export default function TopCoinsWidget() {
           </div>
           <button
             onClick={handleRefresh}
-            className='p-1 rounded-full bg-[#1e293b] hover:bg-[#334155] transition-colors duration-200'
+            className='p-1 rounded-full bg-badge hover:bg-hover transition-colors duration-200'
             aria-label='Refresh data'
             disabled={isRefreshing}
           >
@@ -382,7 +382,7 @@ export default function TopCoinsWidget() {
             />
           ))
         ) : (
-          <div className='flex items-center justify-center h-full text-[#64748b]'>
+          <div className='flex items-center justify-center h-full text-foreground'>
             No data available
           </div>
         )}
@@ -426,8 +426,8 @@ function SortButton({
 
   return (
     <button
-      className={`flex items-center gap-0.5 hover:text-white transition-colors duration-200 ${
-        isActive ? "text-white" : ""
+      className={`flex items-center gap-0.5 hover:text-text transition-colors duration-200 ${
+        isActive ? "text-text" : ""
       } ${className || ""}`}
       onClick={() => onClick(field)}
     >
@@ -448,7 +448,7 @@ function SortButton({
 function LoadingSpinner() {
   return (
     <div className='flex items-center justify-center h-full'>
-      <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-white'></div>
+      <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-border'></div>
     </div>
   );
 }
@@ -475,8 +475,8 @@ function CoinRow({
 
   return (
     <div
-      className={`flex items-center justify-between py-2 border-b border-[#1e293b] last:border-0 transition-colors duration-200 ${
-        isHovered ? "bg-[#1e293b]" : "hover:bg-[#1e293b]/50"
+      className={`flex items-center justify-between py-2 border-b border-border hover:bg-hover last:border-0 transition-colors duration-200 ${
+        isHovered ? "bg-card" : "hover:bg-hover"
       } cursor-pointer rounded px-1`}
       onMouseEnter={() => onHoverChange(true)}
       onMouseLeave={() => onHoverChange(false)}
@@ -486,7 +486,7 @@ function CoinRow({
         <CoinIcon symbol={coin.symbol} size={24} />
         <div>
           <div className='text-sm font-medium truncate'>{coin.baseAsset}</div>
-          <div className='text-xs text-[#64748b] truncate'>
+          <div className='text-xs text-foreground truncate'>
             {coin.quoteAsset}
           </div>
         </div>
@@ -498,7 +498,7 @@ function CoinRow({
 
       <div
         className={`text-xs font-medium w-[70px] ${
-          isPriceUp ? "text-[#22c55e]" : "text-[#ef4444]"
+          isPriceUp ? "text-[#22c55e]" : "text-error"
         }`}
       >
         {isPriceUp ? "+" : ""}
@@ -506,7 +506,7 @@ function CoinRow({
       </div>
 
       <div className='w-[80px]'>
-        <div className='text-xs text-[#64748b]'>
+        <div className='text-xs text-foreground'>
           ${formatNumber(coin.quoteVolume)}
         </div>
       </div>

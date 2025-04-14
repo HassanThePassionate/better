@@ -37,7 +37,7 @@ export function RectangularWidget({
           <Button
             variant='destructive'
             size='icon'
-            className='h-6 w-6 rounded-full p-0 shadow-sm bg-error hover:bg-error'
+            className='h-6 w-6 rounded-full p-0 shadow-sm  hover:bg-hover'
             onClick={onAddEvent}
           >
             <Plus className='h-4 w-4' />

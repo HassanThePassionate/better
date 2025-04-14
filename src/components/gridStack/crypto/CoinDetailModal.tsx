@@ -10,6 +10,7 @@ import {
 
 import CoinIcon from "./CoinIcon";
 import EnhancedChart from "./CryptoChart";
+import { cn } from "@/lib/utils";
 
 type CoinDetailModalProps = {
   isOpen: boolean;
@@ -440,11 +441,11 @@ export default function CoinDetailModal({
     >
       <div
         ref={modalRef}
-        className='relative bg-[#0a0a0a] text-white max-h-[580px] overflow-y-auto rounded-xl w-full max-w-3xl overflow-hidden flex flex-col shadow-2xl border border-gray-800/30'
+        className='relative bg-card text-text max-h-[580px] overflow-y-auto rounded-xl w-full max-w-3xl overflow-hidden flex flex-col shadow-2xl border border-gray-800/30'
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header - Improved with better spacing and visual hierarchy */}
-        <div className='flex justify-between items-center px-6 py-4 border-b border-gray-800/50 bg-gradient-to-r from-[#0f0f0f] to-[#111]'>
+        <div className='flex justify-between items-center px-6 py-4 border-b border-border bg-card'>
           <div className='flex items-center gap-3'>
             <CoinIcon
               symbol={selectedCoin.symbol}
@@ -453,7 +454,7 @@ export default function CoinDetailModal({
             />
             <div className='flex flex-col'>
               <div className='flex items-center gap-2'>
-                <h2 className='text-xl font-semibold tracking-tight text-white'>
+                <h2 className='text-xl font-semibold tracking-tight text-text'>
                   {selectedCoin.baseAsset}/{selectedCoin.quoteAsset}
                 </h2>
                 <button
@@ -468,7 +469,7 @@ export default function CoinDetailModal({
                   <Star size={18} fill={isBookmarked ? "#facc15" : "none"} />
                 </button>
               </div>
-              <span className='text-gray-400 text-sm'>
+              <span className='text-foreground text-sm'>
                 {selectedCoin.baseAsset} {selectedCoin.quoteAsset}
               </span>
             </div>
@@ -477,7 +478,7 @@ export default function CoinDetailModal({
           <div className='flex items-center gap-2'>
             <button
               onClick={() => fetchData(true)}
-              className='p-2 rounded-full hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-700'
+              className='p-2 rounded-full hover:bg-hover transition-colors duration-200 focus:outline-none '
               aria-label='Refresh data'
               title='Refresh data'
               disabled={isLoading}
@@ -491,7 +492,7 @@ export default function CoinDetailModal({
                 strokeWidth='2'
                 strokeLinecap='round'
                 strokeLinejoin='round'
-                className={`text-gray-400 hover:text-white ${
+                className={`text-foreground hover:text-text ${
                   isLoading ? "animate-spin" : ""
                 }`}
               >
@@ -503,21 +504,21 @@ export default function CoinDetailModal({
             </button>
             <button
               onClick={onClose}
-              className='p-2 rounded-full hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-700'
+              className='p-2 rounded-full hover:bg-hover transition-colors duration-200 focus:outline-none '
               aria-label='Close modal'
             >
-              <X size={20} className='text-gray-400' />
+              <X size={20} className='text-foreground' />
             </button>
           </div>
         </div>
 
         {/* Tabs - Improved with better visual feedback */}
-        <div className='flex border-b border-gray-800/50 px-6 bg-[#0c0c0c]'>
+        <div className='flex border-b border-border px-6 bg-card'>
           <button
             className={`px-4 py-3 text-sm font-medium relative ${
               tab === "chart"
-                ? "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-500"
-                : "text-gray-400 hover:text-gray-200"
+                ? "text-text after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-brand"
+                : "text-foreground hover:text-foreground"
             } transition-colors duration-200`}
             onClick={() => setTab("chart")}
           >
@@ -526,8 +527,8 @@ export default function CoinDetailModal({
           <button
             className={`px-4 py-3 text-sm font-medium relative ${
               tab === "stats"
-                ? "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-500"
-                : "text-gray-400 hover:text-gray-200"
+                ? "text-text after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-brand"
+                : "text-foreground hover:text-foreground"
             } transition-colors duration-200`}
             onClick={() => setTab("stats")}
           >
@@ -543,7 +544,7 @@ export default function CoinDetailModal({
             </div>
             <div
               className={`flex items-center text-sm ${
-                isPriceUp ? "text-green-500" : "text-red-500"
+                isPriceUp ? "text-green-500" : "text-error"
               } mt-0.5`}
             >
               <span className='flex items-center'>
@@ -574,13 +575,13 @@ export default function CoinDetailModal({
                 )}
                 {Math.abs(priceChangePercent).toFixed(2)}%
               </span>
-              <span className='text-gray-400 text-xs ml-2'>24h</span>
+              <span className='text-foreground text-xs ml-2'>24h</span>
             </div>
           </div>
           <div className='flex items-center gap-2'>
             <button
               onClick={downloadChart}
-              className='p-2 text-gray-400 hover:text-white rounded-full hover:bg-gray-800 transition-colors'
+              className='p-2 text-foreground hover:text-foreground rounded-full hover:bg-hover transition-colors'
               title='Download Chart'
             >
               <svg
@@ -600,7 +601,7 @@ export default function CoinDetailModal({
             </button>
             <button
               onClick={shareCoin}
-              className='p-2 text-gray-400 hover:text-white rounded-full hover:bg-gray-800 transition-colors'
+              className='p-2 text-foreground hover:text-text rounded-full hover:bg-hover transition-colors'
               title='Share'
             >
               <svg
@@ -627,7 +628,7 @@ export default function CoinDetailModal({
           <>
             {/* Chart Controls - Improved with better visual design */}
             <div className='flex justify-between items-center px-6 mt-2'>
-              <div className='flex gap-1 bg-[#111] p-1 rounded-lg'>
+              <div className='flex gap-1 bg-badge p-1 rounded-lg'>
                 {(
                   [
                     "1D",
@@ -644,8 +645,8 @@ export default function CoinDetailModal({
                     key={range}
                     className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
                       timeRange === range
-                        ? "bg-blue-600 text-white shadow-md"
-                        : "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+                        ? "bg-brand text-text-primary shadow-md"
+                        : "text-foreground hover:bg-hover hover:text-foreground"
                     }`}
                     onClick={() => setTimeRange(range)}
                   >
@@ -657,12 +658,12 @@ export default function CoinDetailModal({
 
             {/* Chart - Improved with better styling */}
             <div className='relative h-[280px] px-6 mt-3'>
-              <div className='absolute inset-0 bg-[#0f0f0f] rounded-lg overflow-hidden border border-gray-800/20'>
+              <div className='absolute inset-0 bg-card rounded-lg overflow-hidden border border-border'>
                 {isLoading ? (
-                  <div className='absolute inset-0 flex items-center justify-center bg-[#0f0f0f]/80 backdrop-blur-sm z-10'>
+                  <div className='absolute inset-0 flex items-center justify-center bg-card backdrop-blur-sm z-10'>
                     <div className='flex flex-col items-center'>
-                      <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500'></div>
-                      <div className='mt-2 text-sm text-gray-400'>
+                      <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-brand'></div>
+                      <div className='mt-2 text-sm text-foreground'>
                         Loading chart data...
                       </div>
                     </div>
@@ -670,7 +671,7 @@ export default function CoinDetailModal({
                 ) : chartData.length > 0 ? (
                   <>
                     {/* Vertical price labels on the left side */}
-                    <div className='absolute left-4 top-0 h-full flex flex-col justify-between text-[10px] text-gray-500 py-2 font-medium'>
+                    <div className='absolute left-4 top-0 h-full flex flex-col justify-between text-[10px] text-foreground py-2 font-medium'>
                       <span>
                         {chartMax > 1000
                           ? chartMax.toLocaleString("en-US", {
@@ -735,7 +736,7 @@ export default function CoinDetailModal({
                       <EnhancedChart
                         data={chartData}
                         width={700}
-                        height={220}
+                        height={100}
                         lineColor={isPriceUp ? "#22c55e" : "#ef4444"}
                         fillColor={
                           isPriceUp
@@ -754,10 +755,10 @@ export default function CoinDetailModal({
 
                       {tooltip.visible && (
                         <div
-                          className={`absolute bg-[#1e293b]/90 backdrop-blur-sm text-white text-xs py-1.5 px-3 rounded-lg pointer-events-none z-50 font-medium shadow-xl transition-all duration-100 ease-out border ${
+                          className={`absolute bg-card backdrop-blur-sm text-text text-xs py-1.5 px-3 rounded-lg pointer-events-none z-50 font-medium shadow-xl transition-all duration-100 ease-out border ${
                             isPriceUp
                               ? "border-green-500/30"
-                              : "border-red-500/30"
+                              : "border-error/30"
                           }`}
                           style={{
                             left: `${tooltip.x}px`,
@@ -796,7 +797,7 @@ export default function CoinDetailModal({
                     </div>
 
                     {/* Horizontal time labels at the bottom of the chart */}
-                    <div className='absolute bottom-0 left-12 right-4 flex justify-between text-[10px] text-gray-500 pb-1'>
+                    <div className='absolute bottom-0 left-12 right-4 flex justify-between text-[10px] text-foreground pb-1'>
                       {(() => {
                         // Generate appropriate date labels based on time range
                         const today = new Date();
@@ -927,10 +928,10 @@ export default function CoinDetailModal({
                     </div>
                   </>
                 ) : (
-                  <div className='absolute inset-0 flex items-center justify-center text-gray-500 text-sm'>
+                  <div className='absolute inset-0 flex items-center justify-center text-foreground text-sm'>
                     <div className='flex flex-col items-center'>
                       <svg
-                        className='w-12 h-12 mb-2 text-gray-700'
+                        className='w-12 h-12 mb-2 text-text'
                         fill='none'
                         viewBox='0 0 24 24'
                         stroke='currentColor'
@@ -954,23 +955,23 @@ export default function CoinDetailModal({
         {tab === "stats" && (
           <div className='p-6'>
             {/* Conversion Calculator - Improved with better styling */}
-            <div className='mb-5 p-3 bg-[#111] rounded-lg border border-gray-800/30'>
-              <div className='text-sm font-medium mb-2 text-gray-300'>
+            <div className='mb-5 p-3 bg-card rounded-lg border border-border'>
+              <div className='text-sm font-medium mb-2 text-text'>
                 Conversion Calculator
               </div>
               <div className='flex gap-3 items-center'>
                 <input
                   type='number'
-                  className='w-24 bg-[#1a1a1a] text-white border border-gray-800 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+                  className='w-24  px-3 py-2 text-sm input'
                   placeholder='Amount'
                   value={conversionAmount}
                   onChange={(e) => setConversionAmount(e.target.value)}
                 />
-                <span className='text-sm flex items-center text-gray-300'>
+                <span className='text-sm flex items-center text-foreground'>
                   {selectedCoin.baseAsset} =
                 </span>
                 <div className='flex-1 text-sm flex items-center font-medium'>
-                  <span className='text-white'>
+                  <span className='text-text'>
                     {calculateConversion(
                       conversionAmount,
                       selectedCoin.lastPrice,
@@ -978,7 +979,7 @@ export default function CoinDetailModal({
                     )}
                   </span>
                   <select
-                    className='ml-2 bg-[#1a1a1a] border border-gray-800 rounded-md px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500'
+                    className='ml-2 bg-card border border-border rounded-md px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand'
                     value={currency}
                     onChange={(e) =>
                       setCurrency(
@@ -998,72 +999,74 @@ export default function CoinDetailModal({
 
             {/* Stats Grid - Improved with better styling */}
             <div className='grid grid-cols-2 md:grid-cols-4 gap-3 text-sm'>
-              <div className='bg-[#111] p-3 rounded-lg border border-gray-800/20 hover:border-gray-700/40 transition-colors'>
-                <div className='text-gray-500 mb-1 text-xs'>Open</div>
+              <div className='bg-card p-3 rounded-lg border border-hover hover:border-hover transition-colors'>
+                <div className='text-foreground mb-1 text-xs'>Open</div>
                 <div className='font-medium'>
                   {formatPrice(selectedCoin.lastPrice * 1.05)}
                 </div>
               </div>
-              <div className='bg-[#111] p-3 rounded-lg border border-gray-800/20 hover:border-gray-700/40 transition-colors'>
-                <div className='text-gray-500 mb-1 text-xs'>High (24h)</div>
+              <div className='bg-card p-3 rounded-lg border border-hover hover:border-hover transition-colors'>
+                <div className='text-foreground mb-1 text-xs'>High (24h)</div>
                 <div className='font-medium'>
                   {formatPrice(selectedCoin.highPrice)}
                 </div>
               </div>
-              <div className='bg-[#111] p-3 rounded-lg border border-gray-800/20 hover:border-gray-700/40 transition-colors'>
-                <div className='text-gray-500 mb-1 text-xs'>Low (24h)</div>
+              <div className='bg-card p-3 rounded-lg border border-hover hover:border-hover transition-colors'>
+                <div className='text-foreground mb-1 text-xs'>Low (24h)</div>
                 <div className='font-medium'>
                   {formatPrice(selectedCoin.lowPrice)}
                 </div>
               </div>
-              <div className='bg-[#111] p-3 rounded-lg border border-gray-800/20 hover:border-gray-700/40 transition-colors'>
-                <div className='text-gray-500 mb-1 text-xs'>Volume (24h)</div>
+              <div className='bg-card p-3 rounded-lg border border-hover hover:border-hover transition-colors'>
+                <div className='text-foreground mb-1 text-xs'>Volume (24h)</div>
                 <div className='font-medium'>
                   ${(selectedCoin.quoteVolume / 1e9).toFixed(2)}B
                 </div>
               </div>
 
-              <div className='bg-[#111] p-3 rounded-lg border border-gray-800/20 hover:border-gray-700/40 transition-colors'>
-                <div className='text-gray-500 mb-1 text-xs'>52W High</div>
+              <div className='bg-card p-3 rounded-lg border border-hover hover:border-hover transition-colors'>
+                <div className='text-foreground mb-1 text-xs'>52W High</div>
                 <div className='font-medium'>{formatPrice(weekHigh)}</div>
               </div>
-              <div className='bg-[#111] p-3 rounded-lg border border-gray-800/20 hover:border-gray-700/40 transition-colors'>
-                <div className='text-gray-500 mb-1 text-xs'>52W Low</div>
+              <div className='bg-card p-3 rounded-lg border border-hover hover:border-hover transition-colors'>
+                <div className='text-foreground mb-1 text-xs'>52W Low</div>
                 <div className='font-medium'>{formatPrice(weekLow)}</div>
               </div>
-              <div className='bg-[#111] p-3 rounded-lg border border-gray-800/20 hover:border-gray-700/40 transition-colors'>
-                <div className='text-gray-500 mb-1 text-xs'>Avg Volume</div>
+              <div className='bg-card p-3 rounded-lg border border-hover hover:border-hover transition-colors'>
+                <div className='text-foreground mb-1 text-xs'>Avg Volume</div>
                 <div className='font-medium'>
                   ${(avgVolume / 1e9).toFixed(2)}B
                 </div>
               </div>
-              <div className='bg-[#111] p-3 rounded-lg border border-gray-800/20 hover:border-gray-700/40 transition-colors'>
-                <div className='text-gray-500 mb-1 text-xs'>Market Cap</div>
+              <div className='bg-card p-3 rounded-lg border border-hover hover:border-hover transition-colors'>
+                <div className='text-foreground mb-1 text-xs'>Market Cap</div>
                 <div className='font-medium'>${marketCapFormatted}</div>
               </div>
 
-              <div className='bg-[#111] p-3 rounded-lg border border-gray-800/20 hover:border-gray-700/40 transition-colors'>
-                <div className='text-gray-500 mb-1 text-xs'>
+              <div className='bg-card p-3 rounded-lg border border-hover hover:border-hover transition-colors'>
+                <div className='text-foreground mb-1 text-xs'>
                   Circulating Supply
                 </div>
                 <div className='font-medium'>
                   {(marketCap / selectedCoin.lastPrice).toFixed(0)}
                 </div>
               </div>
-              <div className='bg-[#111] p-3 rounded-lg border border-gray-800/20 hover:border-gray-700/40 transition-colors'>
-                <div className='text-gray-500 mb-1 text-xs'>Max Supply</div>
+              <div className='bg-card p-3 rounded-lg border border-hover hover:border-hover transition-colors'>
+                <div className='text-foreground mb-1 text-xs'>Max Supply</div>
                 <div className='font-medium'>
                   {selectedCoin.baseAsset === "BTC" ? "21,000,000" : "∞"}
                 </div>
               </div>
-              <div className='bg-[#111] p-3 rounded-lg border border-gray-800/20 hover:border-gray-700/40 transition-colors'>
-                <div className='text-gray-500 mb-1 text-xs'>All-Time High</div>
+              <div className='bg-card p-3 rounded-lg border border-hover hover:border-hover transition-colors'>
+                <div className='text-foreground mb-1 text-xs'>
+                  All-Time High
+                </div>
                 <div className='font-medium'>
                   {formatPrice(selectedCoin.lastPrice * 2.5)}
                 </div>
               </div>
-              <div className='bg-[#111] p-3 rounded-lg border border-gray-800/20 hover:border-gray-700/40 transition-colors'>
-                <div className='text-gray-500 mb-1 text-xs'>All-Time Low</div>
+              <div className='bg-card p-3 rounded-lg border border-hover hover:border-hover transition-colors'>
+                <div className='text-foreground mb-1 text-xs'>All-Time Low</div>
                 <div className='font-medium'>
                   {formatPrice(selectedCoin.lastPrice * 0.05)}
                 </div>
@@ -1073,23 +1076,23 @@ export default function CoinDetailModal({
             {/* Trading Volume by Exchange - Improved with better styling */}
             <div className='mt-5'>
               <button
-                className='flex justify-between items-center w-full px-4 py-3 bg-[#111] rounded-lg text-sm font-medium border border-gray-800/20 hover:border-gray-700/40 transition-colors'
+                className='flex justify-between items-center w-full px-4 py-3 bg-card rounded-lg text-sm font-medium border border-hover hover:border-hover transition-colors'
                 onClick={() => setExchangesVisible(!exchangesVisible)}
               >
                 <span>Trading Volume by Exchange</span>
-                <span className='text-gray-400'>
+                <span className='text-foreground'>
                   {exchangesVisible ? "▲" : "▼"}
                 </span>
               </button>
 
               {exchangesVisible && (
-                <div className='mt-3 bg-[#0f0f0f] rounded-lg p-3 border border-gray-800/20'>
-                  <div className='flex justify-between text-xs text-gray-500 mb-2 px-2 pb-2 border-b border-gray-800/30'>
+                <div className='mt-3 bg-card rounded-lg p-3 border border-hover'>
+                  <div className='flex justify-between text-xs text-foreground mb-2 px-2 pb-2 border-b border-gray-800/30'>
                     <span>Exchange</span>
                     <span>Volume (24h)</span>
                   </div>
                   <div className='space-y-1 text-sm'>
-                    <div className='flex justify-between items-center p-2 hover:bg-[#1a1a1a] rounded-md transition-colors'>
+                    <div className='flex justify-between items-center p-2 hover:bg-background rounded-md transition-colors'>
                       <div className='flex items-center'>
                         <div className='w-5 h-5 bg-[#F0B90B] rounded-full mr-2 flex items-center justify-center text-[8px] font-bold text-black'>
                           B
@@ -1100,9 +1103,9 @@ export default function CoinDetailModal({
                         ${((selectedCoin.quoteVolume * 0.4) / 1e9).toFixed(2)}B
                       </span>
                     </div>
-                    <div className='flex justify-between items-center p-2 hover:bg-[#1a1a1a] rounded-md transition-colors'>
+                    <div className='flex justify-between items-center p-2 hover:bg-background rounded-md transition-colors'>
                       <div className='flex items-center'>
-                        <div className='w-5 h-5 bg-[#0052FF] rounded-full mr-2 flex items-center justify-center text-[8px] font-bold text-white'>
+                        <div className='w-5 h-5 bg-brand rounded-full mr-2 flex items-center justify-center text-[8px] font-bold text-text-primary'>
                           C
                         </div>
                         <span>Coinbase</span>
@@ -1111,9 +1114,9 @@ export default function CoinDetailModal({
                         ${((selectedCoin.quoteVolume * 0.25) / 1e9).toFixed(2)}B
                       </span>
                     </div>
-                    <div className='flex justify-between items-center p-2 hover:bg-[#1a1a1a] rounded-md transition-colors'>
+                    <div className='flex justify-between items-center p-2 hover:bg-background rounded-md transition-colors'>
                       <div className='flex items-center'>
-                        <div className='w-5 h-5 bg-[#5741D9] rounded-full mr-2 flex items-center justify-center text-[8px] font-bold text-white'>
+                        <div className='w-5 h-5 bg-brand rounded-full mr-2 flex items-center justify-center text-[8px] font-bold text-text-primary'>
                           K
                         </div>
                         <span>Kraken</span>
@@ -1122,9 +1125,9 @@ export default function CoinDetailModal({
                         ${((selectedCoin.quoteVolume * 0.15) / 1e9).toFixed(2)}B
                       </span>
                     </div>
-                    <div className='flex justify-between items-center p-2 hover:bg-[#1a1a1a] rounded-md transition-colors'>
+                    <div className='flex justify-between items-center p-2 hover:bg-background rounded-md transition-colors'>
                       <div className='flex items-center'>
-                        <div className='w-5 h-5 bg-[#31D7A0] rounded-full mr-2 flex items-center justify-center text-[8px] font-bold text-white'>
+                        <div className='w-5 h-5 bg-[#31D7A0] rounded-full mr-2 flex items-center justify-center text-[8px] font-bold text-text-primary'>
                           K
                         </div>
                         <span>KuCoin</span>
@@ -1133,9 +1136,9 @@ export default function CoinDetailModal({
                         ${((selectedCoin.quoteVolume * 0.1) / 1e9).toFixed(2)}B
                       </span>
                     </div>
-                    <div className='flex justify-between items-center p-2 hover:bg-[#1a1a1a] rounded-md transition-colors'>
+                    <div className='flex justify-between items-center p-2 hover:bg-background rounded-md transition-colors'>
                       <div className='flex items-center'>
-                        <div className='w-5 h-5 bg-[#444] rounded-full mr-2 flex items-center justify-center text-[8px] font-bold text-white'>
+                        <div className='w-5 h-5 bg-[#444] rounded-full mr-2 flex items-center justify-center text-[8px] font-bold text-text-text-primary'>
                           +
                         </div>
                         <span>Others</span>
@@ -1152,8 +1155,8 @@ export default function CoinDetailModal({
         )}
 
         {/* Currency selector and other coins - Improved with better styling */}
-        <div className='mt-auto border-t border-gray-800/50'>
-          <div className='flex justify-between px-6 py-3 bg-[#0c0c0c]'>
+        <div className='mt-auto border-t border-border'>
+          <div className='flex justify-between px-6 py-3 bg-background'>
             <div className='flex gap-1'>
               {(
                 Object.keys(currencySymbols) as Array<
@@ -1162,31 +1165,30 @@ export default function CoinDetailModal({
               ).map((curr) => (
                 <button
                   key={curr}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                    currency === curr
-                      ? "bg-blue-600 text-white"
-                      : "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
-                  }`}
+                  className={cn(
+                    "px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-foreground hover:bg-hover hover:text-text",
+                    currency === curr && "bg-brand text-text-primary"
+                  )}
                   onClick={() => setCurrency(curr)}
                 >
                   {curr}
                 </button>
               ))}
             </div>
-            <div className='text-xs text-gray-500 flex items-center'>
+            <div className='text-xs text-foreground flex items-center'>
               <span className='mr-1'>Data source:</span>
-              <span className='text-gray-300 font-medium'>{dataSource}</span>
+              <span className='text-foreground font-medium'>{dataSource}</span>
             </div>
           </div>
 
           {/* Related coins section - Improved with better styling */}
-          <div className='px-6 py-3 bg-[#0a0a0a]'>
+          <div className='px-6 py-3 bg-background'>
             <div className='flex justify-between items-center mb-2'>
-              <div className='text-sm font-medium text-gray-300'>
+              <div className='text-sm font-medium text-foreground'>
                 Also check
               </div>
               {bookmarkedCoins.length > 0 && (
-                <div className='text-xs text-gray-500 bg-gray-800/50 px-2 py-0.5 rounded-full'>
+                <div className='text-xs text-foreground bg-card px-2 py-0.5 rounded-full'>
                   {bookmarkedCoins.length} bookmarked
                 </div>
               )}
@@ -1202,7 +1204,7 @@ export default function CoinDetailModal({
                     .map((coin) => (
                       <button
                         key={`bookmarked-${coin.symbol}`}
-                        className='flex items-center gap-1.5 px-3 py-1.5 bg-[#1a1a1a] hover:bg-[#252525] rounded-lg whitespace-nowrap border border-yellow-800/20 transition-colors'
+                        className='flex items-center gap-1.5 px-3 py-1.5 bg-badge hover:bg-hover rounded-lg whitespace-nowrap border border-border transition-colors'
                         onClick={() => {
                           setSelectedCoin(coin);
                           if (onSelectCoin) onSelectCoin(coin);
@@ -1215,18 +1217,14 @@ export default function CoinDetailModal({
                         <span
                           className={`text-xs px-1.5 py-0.5 rounded-full ${
                             coin.priceChangePercent >= 0
-                              ? "bg-green-900/20 text-green-500"
-                              : "bg-red-900/20 text-red-500"
+                              ? "bg-background text-green-500"
+                              : "bg-background text-error"
                           }`}
                         >
                           {coin.priceChangePercent >= 0 ? "+" : ""}
                           {coin.priceChangePercent.toFixed(1)}%
                         </span>
-                        <Star
-                          size={10}
-                          className='text-yellow-500'
-                          fill='#eab308'
-                        />
+                        <Star size={10} />
                       </button>
                     ))}
                 </div>
@@ -1244,7 +1242,7 @@ export default function CoinDetailModal({
                   .map((coin) => (
                     <button
                       key={`top-${coin.symbol}`}
-                      className='flex items-center gap-1.5 px-3 py-1.5 bg-[#1a1a1a] hover:bg-[#252525] rounded-lg whitespace-nowrap transition-colors'
+                      className='flex items-center gap-1.5 px-3 py-1.5 bg-badge hover:bg-hover rounded-lg whitespace-nowrap transition-colors'
                       onClick={() => {
                         setSelectedCoin(coin);
                         if (onSelectCoin) onSelectCoin(coin);
@@ -1257,8 +1255,8 @@ export default function CoinDetailModal({
                       <span
                         className={`text-xs px-1.5 py-0.5 rounded-full ${
                           coin.priceChangePercent >= 0
-                            ? "bg-green-900/20 text-green-500"
-                            : "bg-red-900/20 text-red-500"
+                            ? "bg-background text-green-500"
+                            : "bg-background text-error"
                         }`}
                       >
                         {coin.priceChangePercent >= 0 ? "+" : ""}

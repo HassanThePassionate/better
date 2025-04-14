@@ -415,7 +415,7 @@ export default function CryptoWidget() {
       case 0:
         return "text-gray-500"; // closed
       case -1:
-        return "text-red-500"; // error
+        return "text-error"; // error
       default:
         return "text-gray-500";
     }
@@ -508,18 +508,18 @@ export default function CryptoWidget() {
 
   // ===== RENDER =====
   return (
-    <div className='w-full h-full bg-[#0f172a] text-white rounded-[20px] overflow-hidden p-3 border-0 font-sans'>
+    <div className='w-full h-full bg-card text-text rounded-[20px] overflow-hidden p-3 border-0 font-sans'>
       {/* Header */}
       <div className='flex justify-between items-start mb-2'>
         {/* Replace the coin dropdown UI in the render section with this improved version */}
         <div className='flex items-center gap-2 relative'>
           <button
             onClick={() => setShowCoinDropdown(!showCoinDropdown)}
-            className='flex items-center gap-2 hover:bg-[#1e293b] rounded-full p-1'
+            className='flex items-center gap-2 hover:bg-hover rounded-full p-1'
           >
             <CoinIcon symbol={selectedCoin.symbol} size={24} />
             <div>
-              <h2 className='text-base font-normal tracking-wide text-[#e2e8f0]'>
+              <h2 className='text-base font-normal tracking-wide text-text'>
                 {selectedCoin.shortName}
               </h2>
             </div>
@@ -528,15 +528,12 @@ export default function CryptoWidget() {
 
           {showCoinDropdown && (
             <div className='fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center'>
-              <div className='bg-[#1e293b] rounded-lg shadow-xl w-[90%] max-w-md max-h-[80vh] overflow-hidden'>
-                <div className='p-4 border-b border-[#334155] flex justify-between items-center'>
-                  <h3 className='text-lg font-medium text-white'>
+              <div className='bg-background rounded-lg shadow-xl w-[90%] max-w-md max-h-[80vh] overflow-hidden'>
+                <div className='p-4 border-b border-border flex justify-between items-center'>
+                  <h3 className='text-lg font-medium text-text'>
                     Select Cryptocurrency
                   </h3>
-                  <button
-                    onClick={() => setShowCoinDropdown(false)}
-                    className='text-gray-400 hover:text-white'
-                  >
+                  <button onClick={() => setShowCoinDropdown(false)}>
                     <X size={20} />
                   </button>
                 </div>
@@ -544,14 +541,14 @@ export default function CryptoWidget() {
                 <div className='p-4'>
                   <div className='relative mb-4'>
                     <Search
-                      className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+                      className='absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground'
                       size={18}
                     />
                     <input
                       ref={searchInputRef}
                       type='text'
                       placeholder='Search all coins...'
-                      className='w-full bg-[#334155] text-white border-none rounded-md pl-10 pr-10 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500'
+                      className='w-full  border-none rounded-md pl-10 pr-10 py-3 text-base input'
                       value={searchQuery}
                       onChange={handleSearchChange}
                       onFocus={() => setIsSearchFocused(true)}
@@ -559,7 +556,7 @@ export default function CryptoWidget() {
                     />
                     {searchQuery && (
                       <button
-                        className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white'
+                        className='absolute right-3 top-1/2 transform -translate-y-1/2 '
                         onClick={() => setSearchQuery("")}
                       >
                         <X size={18} />
@@ -567,9 +564,9 @@ export default function CryptoWidget() {
                     )}
                   </div>
 
-                  <div className='border-b border-[#334155] pb-2 mb-2'>
-                    <h4 className='text-sm font-medium text-gray-300 flex items-center'>
-                      <Flame className='mr-1 text-orange-500' size={16} />
+                  <div className='border-b border-border pb-2 mb-2'>
+                    <h4 className='text-sm font-medium text-foreground flex items-center'>
+                      <Flame className='mr-1 ' size={16} />
                       Trending Crypto
                     </h4>
                   </div>
@@ -581,7 +578,7 @@ export default function CryptoWidget() {
                         {FEATURED_COINS.map((coin) => (
                           <button
                             key={coin.symbol}
-                            className='flex items-center justify-between px-4 py-3 text-sm w-full text-left hover:bg-[#334155] border-b border-[#334155] last:border-b-0 rounded-md'
+                            className='flex items-center justify-between px-4 py-3 text-sm w-full text-left hover:bg-hover border-b border-border last:border-b-0 rounded-md'
                             onClick={() => {
                               handleCoinChange(coin);
                               setShowCoinDropdown(false);
@@ -591,7 +588,7 @@ export default function CryptoWidget() {
                               <CoinIcon symbol={coin.symbol} size={24} />
                               <div>
                                 <div className='font-medium'>{coin.name}</div>
-                                <div className='text-xs text-gray-400'>
+                                <div className='text-xs text-text'>
                                   {coin.shortName}
                                 </div>
                               </div>
@@ -621,7 +618,7 @@ export default function CryptoWidget() {
                                       : isPriceUp;
                                   })()
                                     ? "text-[#22c55e]"
-                                    : "text-[#ef4444]"
+                                    : "text-error"
                                 }`}
                               >
                                 {(() => {
@@ -644,7 +641,7 @@ export default function CryptoWidget() {
                     ) : filteredCoins.length > 0 ? (
                       // Show search results
                       <>
-                        <div className='px-4 py-2 text-xs text-gray-400'>
+                        <div className='px-4 py-2 text-xs text-foreground'>
                           {filteredCoins.length} results found
                         </div>
                         {filteredCoins.map((coin) => {
@@ -655,7 +652,7 @@ export default function CryptoWidget() {
                           return (
                             <button
                               key={coin.symbol}
-                              className='flex items-center justify-between px-4 py-3 text-sm w-full text-left hover:bg-[#334155] border-b border-[#334155] last:border-b-0 rounded-md'
+                              className='flex items-center justify-between px-4 py-3 text-sm w-full text-left hover:bg-hover border-b border-border last:border-b-0 rounded-md'
                               onClick={() => {
                                 handleCoinChange(formattedCoin);
                                 setShowCoinDropdown(false);
@@ -667,7 +664,7 @@ export default function CryptoWidget() {
                                   <div className='font-medium'>
                                     {formattedCoin.name}
                                   </div>
-                                  <div className='text-xs text-gray-400'>
+                                  <div className='text-xs text-text'>
                                     {coin.symbol}
                                   </div>
                                 </div>
@@ -681,7 +678,7 @@ export default function CryptoWidget() {
                                   className={`text-xs ${
                                     isCoinPriceUp
                                       ? "text-[#22c55e]"
-                                      : "text-[#ef4444]"
+                                      : "text-error"
                                   }`}
                                 >
                                   {isCoinPriceUp ? "+" : ""}
@@ -694,7 +691,7 @@ export default function CryptoWidget() {
                       </>
                     ) : (
                       // No results found
-                      <div className='px-4 py-6 text-sm text-gray-400 text-center'>
+                      <div className='px-4 py-6 text-sm text-foreground text-center'>
                         No coins found
                       </div>
                     )}
@@ -713,7 +710,7 @@ export default function CryptoWidget() {
           </div>
           <button
             onClick={handleRefresh}
-            className='p-1 rounded-full bg-[#1e293b] hover:bg-[#334155]'
+            className='p-1 rounded-full bg-badge hover:bg-hover'
             aria-label='Refresh data'
             disabled={isRefreshing}
           >
@@ -727,12 +724,12 @@ export default function CryptoWidget() {
 
       {/* Price and Change */}
       <div className='flex items-center gap-3 mb-2'>
-        <div className='text-lg font-semibold text-[#f8fafc]'>
+        <div className='text-lg font-semibold text-text'>
           ${Number.parseFloat(currentPrice.toString())}
         </div>
         <div
           className={`text-xs ${
-            isPriceUp ? "text-[#22c55e]" : "text-red-500"
+            isPriceUp ? "text-[#22c55e]" : "text-error"
           } font-medium`}
         >
           {isPriceUp ? "+" : ""}
@@ -742,7 +739,7 @@ export default function CryptoWidget() {
 
       {/* Chart */}
       <div className='mt-1 relative'>
-        <div className='absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-[#64748b] py-1 font-medium'>
+        <div className='absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-foreground py-1 font-medium'>
           <span>
             {chartMax > 1000
               ? chartMax.toLocaleString("en-US", {
@@ -795,11 +792,11 @@ export default function CryptoWidget() {
         <div className='ml-6 relative' ref={containerRef}>
           {isRefreshing ? (
             <div className='flex items-center justify-center h-[80px]'>
-              <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-white'></div>
+              <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-border'></div>
             </div>
           ) : !hasValidData || chartData.length === 0 ? (
             <div className='flex items-center justify-center h-[80px] text-center'>
-              <div className='text-[#64748b] text-sm'>
+              <div className='text-foreground text-sm'>
                 No historical data found
               </div>
             </div>
@@ -807,14 +804,12 @@ export default function CryptoWidget() {
             <EnhancedChart
               data={chartData}
               width={156}
-              height={80}
+              height={60}
               lineColor={isPriceUp ? "#22c55e" : "#ef4444"}
               fillColor={
                 isPriceUp ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)"
               }
-              gridColor='#1a2635'
-              isDarkMode={true}
-              showGrid={true}
+              showGrid={false}
               showTooltip={true}
               animate={true}
               onHover={handleChartHover}
@@ -823,8 +818,8 @@ export default function CryptoWidget() {
 
           {tooltip.visible && hasValidData && !isRefreshing && (
             <div
-              className={`absolute bg-[#1e293b] text-white text-xs py-1 px-2 rounded pointer-events-none z-50 font-medium shadow-lg transition-all duration-100 ease-out border ${
-                isPriceUp ? "border-[#22c55e]" : "border-[#ef4444]"
+              className={`absolute bg-card text-text text-xs py-1 px-2 rounded pointer-events-none z-50 font-medium shadow-lg transition-all duration-100 ease-out border ${
+                isPriceUp ? "border-[#22c55e]" : "border-error"
               }`}
               style={{
                 left: `${tooltip.x}px`,
@@ -858,7 +853,7 @@ export default function CryptoWidget() {
       </div>
 
       {/* Date Labels */}
-      <div className='flex justify-between text-[10px] text-[#64748b] mt-1 px-1 font-medium'>
+      <div className='flex justify-between text-[10px] text-foreground mt-1 px-1 font-medium'>
         {dateLabels.map((date, index) => (
           <div key={index} className='flex flex-col items-center'>
             <span>{date}</span>
@@ -868,7 +863,7 @@ export default function CryptoWidget() {
 
       {/* Footer hidden as requested */}
       {/* Footer with request status */}
-      <div className='mt-1 text-[9px] text-[#64748b] text-center border-t border-[#1e293b] pt-1'>
+      <div className='mt-1 text-[8px] text-foreground text-center border-t border-border pt-1'>
         {requestStatus}
       </div>
     </div>

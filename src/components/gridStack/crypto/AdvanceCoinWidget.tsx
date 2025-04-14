@@ -19,6 +19,7 @@ import {
 import MiniChart from "./MiniChart";
 import CoinIcon from "./CoinIcon";
 import CoinDetailModal from "./CoinDetailModal";
+import { cn } from "@/lib/utils";
 
 type ViewMode = "top" | "bookmarked";
 
@@ -538,11 +539,11 @@ export default function AdvancedCoinsWidget() {
   };
 
   return (
-    <div className='w-full h-full bg-[#0f172a] text-white rounded-[20px] overflow-hidden border-0 font-sans relative'>
+    <div className='w-full h-full bg-card text-text rounded-[20px] overflow-hidden border-0  relative'>
       {/* Update the header section for a more ISO-style look with smaller fonts */}
-      <div className='flex items-center justify-between p-2 px-3 border-b border-[#1a1a1a]'>
+      <div className='flex items-center justify-between p-2 px-3 border-b border-border'>
         <div className='flex items-center gap-1.5 '>
-          <h2 className='text-lg font-medium tracking-wide text-[#e2e8f0]'>
+          <h2 className='text-lg font-medium tracking-wide text-text'>
             Cryptocurrency Market
           </h2>
         </div>
@@ -556,17 +557,17 @@ export default function AdvancedCoinsWidget() {
               {status === 2 ? <Wifi size={12} /> : <WifiOff size={12} />}
             </div>
             {isSearchActive ? (
-              <div className='flex items-center bg-[#1a1a1a] rounded w-[180px]'>
+              <div className='flex items-center bg-badge rounded w-[180px]'>
                 <input
                   type='text'
-                  className='bg-transparent border-none outline-none px-2 py-1 text-xs w-full'
+                  className='bg-transparent border-none outline-none px-2 py-1 text-xs w-full input'
                   placeholder='Search coins...'
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   autoFocus
                 />
                 <button
-                  className='text-gray-400 hover:text-white px-1.5'
+                  className='text-foreground hover:text-text px-1.5'
                   onClick={() => {
                     setIsSearchActive(false);
                     setSearchQuery("");
@@ -577,7 +578,7 @@ export default function AdvancedCoinsWidget() {
               </div>
             ) : (
               <button
-                className='p-1 rounded bg-[#1a1a1a] hover:bg-[#252525]'
+                className='p-1 rounded bg-badge hover:bg-hover'
                 onClick={() => setIsSearchActive(true)}
               >
                 <Search size={12} />
@@ -587,7 +588,7 @@ export default function AdvancedCoinsWidget() {
 
           <button
             onClick={handleRefresh}
-            className='p-1 rounded bg-[#1a1a1a] hover:bg-[#252525]'
+            className='p-1 rounded bg-badge hover:bg-hover'
             aria-label='Refresh data'
             disabled={isRefreshing}
           >
@@ -599,40 +600,38 @@ export default function AdvancedCoinsWidget() {
         </div>
       </div>
 
-      <div className='flex border-b border-[#1a1a1a]'>
+      <div className='flex border-b border-border'>
         <button
-          className={`px-3 py-1.5 text-xs ${
-            viewMode === "top"
-              ? "text-white border-b border-gray-500"
-              : "text-gray-400"
-          }`}
+          className={cn(
+            "px-3 py-1.5 text-xs text-foreground",
+            viewMode === "top" && "text-text border-b border-border"
+          )}
           onClick={() => setViewMode("top")}
         >
           Top Coins
         </button>
         <button
-          className={`px-3 py-1.5 text-xs flex items-center gap-1 ${
-            viewMode === "bookmarked"
-              ? "text-white border-b border-gray-500"
-              : "text-gray-400"
-          }`}
+          className={cn(
+            "px-3 py-1.5 text-xs flex items-center gap-1 text-foreground",
+            viewMode === "bookmarked" && "text-text border-b border-border"
+          )}
           onClick={() => setViewMode("bookmarked")}
         >
           Bookmarked
           {bookmarkedCount > 0 && (
-            <span className='bg-gray-800 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center'>
+            <span className='bg-background text-text text-[10px] rounded-full w-4 h-4 flex items-center justify-center'>
               {bookmarkedCount}
             </span>
           )}
         </button>
       </div>
 
-      <div className='flex items-center text-[10px] text-gray-500 px-3 py-1.5 border-b border-[#1a1a1a]'>
+      <div className='flex items-center text-[10px] text-foreground px-3 py-1.5 border-b border-border'>
         <div className='w-[24px]'></div>
         <div className='w-[110px]'>
           <button
             className={`flex items-center gap-0.5 ${
-              sortField === "name" ? "text-white" : ""
+              sortField === "name" ? "text-text" : ""
             }`}
             onClick={() => handleSort("name")}
           >
@@ -649,7 +648,7 @@ export default function AdvancedCoinsWidget() {
         <div className='w-[100px] text-left'>
           <button
             className={`flex items-center gap-0.5 ${
-              sortField === "price" ? "text-white" : ""
+              sortField === "price" ? "text-text" : ""
             }`}
             onClick={() => handleSort("price")}
           >
@@ -665,7 +664,7 @@ export default function AdvancedCoinsWidget() {
         <div className='w-[70px] text-left'>
           <button
             className={`flex items-center gap-0.5 ${
-              sortField === "change" ? "text-white" : ""
+              sortField === "change" ? "text-text" : ""
             }`}
             onClick={() => handleSort("change")}
           >
@@ -682,7 +681,7 @@ export default function AdvancedCoinsWidget() {
           <div className='w-[90px] text-left'>
             <button
               className={`flex items-center gap-0.5 ${
-                sortField === "marketCap" ? "text-white" : ""
+                sortField === "marketCap" ? "text-text" : ""
               }`}
               onClick={() => handleSort("marketCap")}
             >
@@ -702,7 +701,7 @@ export default function AdvancedCoinsWidget() {
       <div className='overflow-y-auto h-[190px] scrollbar-thin scrollbar-thumb-[#334155] scrollbar-track-transparent'>
         {isRefreshing ? (
           <div className='flex items-center justify-center h-full'>
-            <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-white'></div>
+            <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-border'></div>
           </div>
         ) : displayedCoins.length > 0 ? (
           // Update the coin row rendering for a more ISO-style look with smaller fonts
@@ -713,7 +712,7 @@ export default function AdvancedCoinsWidget() {
             return (
               <div
                 key={coin.symbol}
-                className='flex items-center px-3 py-1.5 border-b border-[#1a1a1a] last:border-0 hover:bg-[#1a1a1a] cursor-pointer'
+                className='flex items-center px-3 py-1.5 border-b border-border last:border-0 hover:bg-hover cursor-pointer'
                 onClick={() => handleCoinClick(coin)}
               >
                 <div className='w-[24px]'>
@@ -751,7 +750,7 @@ export default function AdvancedCoinsWidget() {
 
                 <div
                   className={`text-[10px] font-medium w-[70px] text-left ${
-                    isPriceUp ? "text-[#22c55e]" : "text-[#ef4444]"
+                    isPriceUp ? "text-[#22c55e]" : "text-error"
                   }`}
                 >
                   {isPriceUp ? "+" : ""}
@@ -759,7 +758,7 @@ export default function AdvancedCoinsWidget() {
                 </div>
 
                 {showMarketCap && (
-                  <div className='text-[10px] text-gray-500 w-[90px] text-left'>
+                  <div className='text-[10px] text-foreground w-[90px] text-left'>
                     ${formatNumber(calculateMarketCap(coin, index))}
                   </div>
                 )}
@@ -776,7 +775,7 @@ export default function AdvancedCoinsWidget() {
                       />
                     </div>
                     {/* Add a subtle label */}
-                    <div className='absolute top-0 right-0 text-[8px] text-gray-500 opacity-50'>
+                    <div className='absolute top-0 right-0 text-[8px] text-foreground opacity-50'>
                       24h
                     </div>
                   </div>
@@ -785,7 +784,7 @@ export default function AdvancedCoinsWidget() {
             );
           })
         ) : (
-          <div className='flex flex-col items-center justify-center h-full text-[#64748b] p-4'>
+          <div className='flex flex-col items-center justify-center h-full text-foreground p-4'>
             {viewMode === "bookmarked" ? (
               <>
                 <Star size={24} className='mb-2' />

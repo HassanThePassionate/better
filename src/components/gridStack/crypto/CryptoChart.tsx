@@ -26,8 +26,7 @@ export default function EnhancedChart({
   lineColor = "#4f8eff",
   fillColor = "rgba(79, 142, 255, 0.2)",
   gridColor = "#1a2635",
-  isDarkMode = true,
-  showGrid = true,
+  showGrid = false,
   showTooltip = true,
   animate = true,
   onHover,
@@ -35,6 +34,7 @@ export default function EnhancedChart({
   refreshInterval = 20000, // Default to 20 seconds
 }: ChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const isDarkMode = document.body.classList.contains("dark");
   const [animationProgress, setAnimationProgress] = useState(animate ? 0 : 1);
   const [hoveredPoint, setHoveredPoint] = useState<{
     x: number;
@@ -90,7 +90,7 @@ export default function EnhancedChart({
     }
 
     // Clear canvas with background color to prevent flickering
-    ctx.fillStyle = isDarkMode ? "#0f172a" : "#ffffff";
+    ctx.fillStyle = isDarkMode ? "#171C1F" : "#F6F7F8";
     ctx.fillRect(0, 0, width, height);
 
     // Skip drawing if no data or points
