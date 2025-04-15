@@ -317,7 +317,7 @@ export default function TopCoinsWidget() {
 
   // Render component
   return (
-    <div className='w-[300px] h-[300px] bg-card text-text ounded-[20px] overflow-hidden p-3 border-0 font-sans'>
+    <div className='w-full h-full bg-card text-text rounded-[20px] overflow-hidden p-3 border-0 font-sans'>
       {/* Header */}
       <div className='flex items-center justify-between mb-2'>
         <h2 className='text-lg font-medium tracking-wide text-text'>

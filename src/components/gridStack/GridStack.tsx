@@ -62,7 +62,18 @@ export function GridStackComponent() {
     grid.compact();
   };
   useEffect(() => {
-    grid = GridStack.init({ float: true });
+    grid = GridStack.init({
+      float: true,
+      column: 12,
+      columnOpts: {
+        breakpoints: [
+          {
+            w: 768,
+            c: 1,
+          },
+        ],
+      },
+    });
   }, []);
 
   return (
