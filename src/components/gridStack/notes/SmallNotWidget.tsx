@@ -2,6 +2,7 @@ import { PlusIcon } from "lucide-react";
 import { ScrollArea } from "../../ui/scroll-area";
 
 import { formatDistanceToNow } from "date-fns";
+import { useEditorContext } from "@/context/EditorContext";
 
 type Notes = {
   id: number;
@@ -17,6 +18,7 @@ interface SmallNotesWidgetProps {
 }
 
 export default function SmallNotesWidget({ notes }: SmallNotesWidgetProps) {
+  const { addNewNote } = useEditorContext();
   return (
     <div className='w-full h-full  shadow-sm bg-card border-0 rounded-2xl overflow-hidden'>
       <div className='py-2 px-3 flex flex-row items-center justify-between'>
@@ -26,7 +28,10 @@ export default function SmallNotesWidget({ notes }: SmallNotesWidgetProps) {
             {notes.length}
           </span>
         </div>
-        <button className='text-amber-700 w-6 h-6 rounded-full flex items-center justify-center hover:bg-hover transition-colors duration-200'>
+        <button
+          className=' w-6 h-6 rounded-full flex items-center justify-center hover:bg-hover transition-colors duration-200'
+          onClick={addNewNote}
+        >
           <PlusIcon className='h-3.5 w-3.5' />
           <span className='sr-only'>Add note</span>
         </button>
