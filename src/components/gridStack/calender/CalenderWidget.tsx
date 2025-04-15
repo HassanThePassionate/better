@@ -87,18 +87,18 @@ function MiniCalendarComponent({
         </div>
 
         {/* Mini Calendar (simplified) */}
-        <div className='grid grid-cols-7 mb-1'>
+        <div className='grid grid-cols-7 max-[1600px]:mb-1 mb-4'>
           {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
             <div
               key={index}
-              className='text-center text-[10px] text-foreground font-medium'
+              className='text-center max-[1600px]:text-[10px]  text-xs text-foreground font-medium'
             >
               {day}
             </div>
           ))}
         </div>
 
-        <div className='grid grid-cols-7 gap-0.5'>
+        <div className='grid grid-cols-7 max-[1600px]:gap-0.5 gap-4'>
           {calendarDays.map((day, i) => {
             const isCurrentMonth = day.getMonth() === currentDate.getMonth();
             const isSelected =
@@ -113,7 +113,7 @@ function MiniCalendarComponent({
               <div
                 key={i}
                 className={cn(
-                  "h-7 flex flex-col items-center justify-center relative cursor-pointer",
+                  "max-[1600px]:h-7 h-8 flex flex-col items-center justify-center relative cursor-pointer",
                   !isCurrentMonth && "text-foreground"
                 )}
                 onClick={() => {
@@ -124,7 +124,7 @@ function MiniCalendarComponent({
               >
                 <div
                   className={cn(
-                    "flex items-center justify-center w-6 h-6 rounded-full text-xs",
+                    "flex items-center justify-center w-6 h-6 rounded-full max-[1600px]:text-xs text-sm",
                     isSelected && "bg-brand text-text-primary font-medium",
                     !isSelected && isCurrentMonth && "hover:bg-hover"
                   )}
@@ -151,12 +151,12 @@ function MiniCalendarComponent({
       </div>
 
       {/* Footer with Today and Add Event buttons */}
-      <div className='mt-auto border-t border-border  p-2 flex justify-center space-x-2'>
+      <div className='mt-auto border-t border-border  max-[1600px]:p-2 p-4 flex justify-center space-x-2'>
         <Button
           variant='outline'
           size='sm'
           onClick={handleTodayClick}
-          className='text-[10px] h-6 rounded-full border-border text-gray-700 hover:bg-hover text-text px-3'
+          className='max-[1600px]:text-[10px] max-[1600px]:h-6  h-8 text-xs rounded-full border-border text-gray-700 hover:bg-hover text-text px-3'
         >
           Today
         </Button>
@@ -164,7 +164,7 @@ function MiniCalendarComponent({
           variant='outline'
           size='sm'
           onClick={handleAddEventClick}
-          className='text-[10px] h-6 rounded-full border-border text-brand hover:bg-hover px-3 flex items-center'
+          className='max-[1600px]:text-[10px] max-[1600px]:h-6  h-8 text-xs rounded-full border-border text-brand hover:bg-hover px-3 flex items-center'
         >
           <Plus className='h-3 w-3 mr-1' />
           Add Event

@@ -53,7 +53,7 @@ function EventsListComponent({
       </div>
 
       {/* Scrollable events container */}
-      <ScrollArea className='overflow-y-auto h-[230px] px-3 py-2'>
+      <ScrollArea className='overflow-y-auto max-[1600px]:h-[230px] h-[400px] px-3 py-2'>
         {events.length > 0 ? (
           <div className='space-y-2 pr-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent'>
             {events.map((event) => (

@@ -120,7 +120,24 @@ export default function WideCryptoWidget() {
 
   // Data state
   const [chartData, setChartData] = useState<number[]>([]);
+  const [chartSize, setChartSize] = useState({ width: 260, height: 65 });
 
+  useEffect(() => {
+    const updateSize = () => {
+      const screenWidth = window.innerWidth;
+
+      if (screenWidth > 1600) {
+        setChartSize({ width: 390, height: 150 });
+      } else {
+        setChartSize({ width: 260, height: 65 });
+      }
+    };
+
+    updateSize(); // initial run
+    window.addEventListener("resize", updateSize); // on resize
+
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
   // Refs
   const containerRef = useRef<HTMLDivElement>(null);
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -803,8 +820,8 @@ export default function WideCryptoWidget() {
           ) : (
             <EnhancedChart
               data={chartData}
-              width={260}
-              height={65}
+              width={chartSize.width}
+              height={chartSize.height}
               lineColor={isPriceUp ? "#22c55e" : "#ef4444"}
               fillColor={
                 isPriceUp ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)"

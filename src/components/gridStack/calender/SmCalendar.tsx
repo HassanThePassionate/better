@@ -57,7 +57,7 @@ export function SquareWidget({
               <ScrollArea
                 className={cn(
                   "space-y-2 ",
-                  events.length > 3 && "pr-1 h-[120px]  "
+                  events.length > 3 && "pr-1 max-[1600px]:h-[120px] h-[200px]  "
                 )}
               >
                 {events.map((event) => (

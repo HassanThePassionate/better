@@ -219,7 +219,9 @@ export default function WideWeatherWidget({
           </div>
           <div className='flex flex-col w-full'>
             <div className='flex items-center gap-2'>
-              <h3 className='text-lg font-bold'>{currentCity}</h3>
+              <h3 className='max-[1600px]:text-lg text-xl font-bold'>
+                {currentCity}
+              </h3>
               <Button
                 variant='ghost'
                 size='icon'
@@ -234,20 +236,20 @@ export default function WideWeatherWidget({
               <p className='text-sm text-text font-medium mt-1'>
                 {data.description}
               </p>
-              <p className='text-xs text-text font-medium mt-1'>
+              <p className='max-[1600px]:text-xs text-sm text-text font-medium mt-1'>
                 {formattedToday}
               </p>
             </div>
             <div className='flex items-center justify-between w-full'>
-              <div className='flex items-center gap-2 mt-2'>
-                <div className='text-3xl font-bold leading-none'>
+              <div className='flex items-center gap-2 mt-2 min-[1600px]:mb-6'>
+                <div className='max-[1600px]:text-3xl text-[56px] font-bold leading-none'>
                   {displayTemperature}
                   <span className='text-lg align-top'>{temperatureUnit}</span>
                 </div>
                 <img
                   src={`http://openweathermap.org/img/wn/${data.icon}.png`}
                   alt='Weather icon'
-                  className='h-12 w-12'
+                  className='max-[1600px]:h-12 max-[1600px]:w-12 h-[4rem] w-[4rem]'
                 />
               </div>
               <div className=' text-sm mt-2'>
@@ -299,9 +301,11 @@ export default function WideWeatherWidget({
                 <img
                   src={`http://openweathermap.org/img/wn/${hour.icon}.png`}
                   alt='Weather icon'
-                  className='h-8 w-8'
+                  className='max-[1600px]:h-8 max-[1600px]:w-8 w-11 h-11'
                 />
-                <span className='text-[10px] text-gray-600'>{hour.time}</span>
+                <span className='max-[1600px]:text-[10px] text-xs text-gray-600'>
+                  {hour.time}
+                </span>
               </div>
             ))}
           </div>

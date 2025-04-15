@@ -110,6 +110,24 @@ export default function LargeCryptoWidget() {
   const [selectedCoin, setSelectedCoin] = useState<selectedCoin>(
     FEATURED_COINS[0]
   );
+  const [chartSize, setChartSize] = useState({ width: 260, height: 150 });
+
+  useEffect(() => {
+    const updateSize = () => {
+      const screenWidth = window.innerWidth;
+
+      if (screenWidth > 1600) {
+        setChartSize({ width: 390, height: 305 });
+      } else {
+        setChartSize({ width: 260, height: 150 });
+      }
+    };
+
+    updateSize(); // initial run
+    window.addEventListener("resize", updateSize); // on resize
+
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
   // Update the component state
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -803,8 +821,8 @@ export default function LargeCryptoWidget() {
           ) : (
             <EnhancedChart
               data={chartData}
-              width={260}
-              height={150}
+              width={chartSize.width}
+              height={chartSize.height}
               lineColor={isPriceUp ? "#22c55e" : "#ef4444"}
               fillColor={
                 isPriceUp ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)"

@@ -714,7 +714,14 @@ export default function Widgets({ size = "small" }: { size?: WidgetSize }) {
           </div>
         </div>
 
-        <ScrollArea className={cn("pr-4", isSmall ? "h-[90px]" : "h-[230px]")}>
+        <ScrollArea
+          className={cn(
+            "pr-4",
+            isSmall
+              ? "max-[1600px]:h-[90px] h-[220px]"
+              : "max-[1600px]:h-[230px] h-[360px]"
+          )}
+        >
           {pendingTasks.length > 0 && displayPendingTasks && (
             <>
               <div className='flex items-center gap-2 mb-2'>

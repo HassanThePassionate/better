@@ -38,7 +38,7 @@ export default function SmallNotesWidget({ notes }: SmallNotesWidgetProps) {
       </div>
 
       <div className='p-0'>
-        <ScrollArea className=' h-[calc(3*3.2rem)] '>
+        <ScrollArea className=' max-[1600px]:h-[calc(3*3.2rem)] h-[235px] '>
           {notes.map((note) => (
             <div
               key={note.id}

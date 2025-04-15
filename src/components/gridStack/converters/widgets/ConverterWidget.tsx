@@ -44,6 +44,7 @@ const allConverterTools: ConverterTool[] = [
   { id: "temperature", name: "Temperature unit", icon: Thermometer },
   { id: "speed", name: "Speed Unit", icon: Gauge },
   { id: "number", name: "Number base conversion", icon: Binary },
+
   // Page 2
   { id: "energy", name: "Energy", icon: Flame },
   { id: "pressure", name: "Pressure", icon: Droplet },
@@ -180,7 +181,7 @@ export default function ConverterWidget() {
         </div>
 
         {/* Tools Grid */}
-        <div className='relative h-[calc(200px-40px)] overflow-hidden'>
+        <div className='relative h-[calc(200px-40px)] overflow-hidden min-[1600px]:mt-6'>
           <div
             className='absolute w-full h-full transition-transform duration-300 ease-in-out scrollbar-hide'
             style={{ transform: `translateX(-${currentPage * 100}%)` }}

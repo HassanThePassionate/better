@@ -698,7 +698,7 @@ export default function AdvancedCoinsWidget() {
         {showSparklines && <div className='w-[70px]'></div>}
       </div>
 
-      <div className='overflow-y-auto h-[190px] scrollbar-thin scrollbar-thumb-[#334155] scrollbar-track-transparent'>
+      <div className='overflow-y-auto max-[1600px]:h-[190px] h-[320px] scrollbar-thin scrollbar-thumb-[#334155] scrollbar-track-transparent'>
         {isRefreshing ? (
           <div className='flex items-center justify-center h-full'>
             <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-border'></div>

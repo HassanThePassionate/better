@@ -349,7 +349,7 @@ export default function TopCoinsWidget() {
 
       {/* Coin list */}
       <div
-        className='overflow-y-auto h-[210px] pr-1'
+        className='overflow-y-auto max-[1600px]:h-[210px] h-[320px] pr-1'
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
