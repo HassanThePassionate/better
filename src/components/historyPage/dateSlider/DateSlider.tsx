@@ -1,7 +1,7 @@
 "use client";
 
 import { createDateItem, isSameDayAsDate } from "@/lib/date-utils";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import DateSliderBtn from "./DateSliderBtn";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import DateSliderItem from "./DateSliderItem";
@@ -10,22 +10,19 @@ import { useDateContext } from "@/context/DateContext";
 const DateSlider = () => {
   const { selectedDate, setSelectedDate } = useDateContext();
 
-  // Generate dates in sequence: today, yesterday, and backward
-  const allDates = generateDateSequence(365); // 365 days in the past
+  const allDates = generateDateSequence(365); // past 365 days
   const dateItems = allDates.map((date) => createDateItem(date));
 
-  // Set initial visible range to show today and some days after it
   const [visibleStartIndex, setVisibleStartIndex] = useState(0);
+  const shouldAutoCenter = useRef(true); // 🔁 control auto scroll
 
-  // Update visible range when selectedDate changes
   useEffect(() => {
-    if (!selectedDate) return;
+    if (!selectedDate || !shouldAutoCenter.current) return;
 
     const selectedIndex = dateItems.findIndex((item) =>
       isSameDayAsDate(item.date, selectedDate)
     );
 
-    // Check if selected index is already visible
     const isAlreadyVisible =
       selectedIndex >= visibleStartIndex &&
       selectedIndex < visibleStartIndex + 7;
@@ -46,16 +43,19 @@ const DateSlider = () => {
   const canScrollRight = visibleStartIndex < dateItems.length - 7;
 
   const handleDateSelect = (date: Date) => {
+    shouldAutoCenter.current = true; // ✅ allow auto scroll on manual select
     setSelectedDate(date);
   };
 
   const scrollLeft = () => {
+    shouldAutoCenter.current = false; // ❌ disable auto center
     if (canScrollLeft) {
       setVisibleStartIndex((prev) => prev - 1);
     }
   };
 
   const scrollRight = () => {
+    shouldAutoCenter.current = false; // ❌ disable auto center
     if (canScrollRight) {
       setVisibleStartIndex((prev) => prev + 1);
     }
