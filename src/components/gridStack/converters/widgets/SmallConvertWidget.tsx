@@ -135,7 +135,7 @@ export default function SmallConverterWidget() {
   return (
     <>
       {/* Widget */}
-      <div className='w-[200px] h-[200px] rounded-2xl overflow-hidden shadow-lg bg-card text-text  transition-shadow'>
+      <div className='w-full h-full rounded-2xl overflow-hidden shadow-lg bg-card text-text  transition-shadow'>
         {/* Header */}
         <div className='flex items-center justify-between px-3 py-2 bg-badge'>
           <button
