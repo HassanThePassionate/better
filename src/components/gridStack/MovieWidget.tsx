@@ -555,7 +555,7 @@ export default function MovieWidget() {
       </div>
 
       {/* iOS-style scrollable grid with improved scroll UI */}
-      <div className='px-3 pb-3 max-[1600px]:h-[190px] h-[345px] overflow-hidden relative'>
+      <div className='px-3 pb-3 max-[1600px]:h-[190px] h-[220px] overflow-hidden relative'>
         {/* Scroll container with iOS-style scrollbar */}
         <ScrollArea className='h-full overflow-y-auto pr-3 pb-4 '>
           <div className='grid grid-cols-3 gap-2 pt-2 '>

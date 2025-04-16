@@ -201,9 +201,7 @@ export default function WeatherWidget({
           )}
         </div>
         <div className='flex gap-2 items-center mt-1'>
-          <h3 className='max-[1600px]:text-base text-xl font-bold'>
-            {currentCity}
-          </h3>
+          <h3 className='text-base  font-bold'>{currentCity}</h3>
           <Button
             variant='ghost'
             size='icon'
@@ -214,36 +212,30 @@ export default function WeatherWidget({
           </Button>
         </div>
 
-        <p className='max-[1600px]:text-sm text-base text-text font-medium mt-1'>
+        <p className='text-sm  text-text font-medium mt-1'>
           {data.description}
         </p>
-        <p className='max-[1600px]:text-xs text-sm text-text font-medium mt-1'>
-          {formattedToday}
-        </p>
+        <p className='text-xs text-text font-medium mt-1'>{formattedToday}</p>
         {/* Temperature and Icon */}
-        <div className='flex gap-2 items-center max-[1600px]:mt-1.5 mt-3 min-[1600px]:mb-4'>
-          <div className='max-[1600px]:text-3xl text-5xl font-bold leading-none'>
+        <div className='flex gap-2 items-center mt-1.5  '>
+          <div className='text-3xl  font-bold leading-none'>
             {displayTemperature}
             <span className='text-lg align-top'>{temperatureUnit}</span>
           </div>
           <img
             src={`http://openweathermap.org/img/wn/${data.icon}.png`}
             alt='Weather icon'
-            className='max-[1600px]:h-12 max-[1600px]:w-12 h-[3.5rem] w-[3.5rem]'
+            className='h-12 w-12 '
           />
         </div>
 
         {/* Measurements */}
         <Separator className='mt-1' />
         <div className='grid grid-cols-2 gap-x-2 mt-3 px-1 text-sm'>
-          <span className='text-gray-500 min-[1600px]:text-base'>Humidity</span>
-          <span className='text-right min-[1600px]:text-base'>
-            {data.humidity}
-          </span>
-          <span className='text-gray-500 min-[1600px]:text-base min-[1600px]:mt-1'>
-            Wind
-          </span>
-          <span className='text-right min-[1600px]:text-base min-[1600px]:mt-1'>
+          <span className='text-gray-500 '>Humidity</span>
+          <span className='text-right '>{data.humidity}</span>
+          <span className='text-gray-500  min-[1600px]:mt-1'>Wind</span>
+          <span className='text-right  min-[1600px]:mt-1'>
             {data.windSpeed}
           </span>
         </div>

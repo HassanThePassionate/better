@@ -717,9 +717,7 @@ export default function Widgets({ size = "small" }: { size?: WidgetSize }) {
         <ScrollArea
           className={cn(
             "pr-4",
-            isSmall
-              ? "max-[1600px]:h-[90px] h-[220px]"
-              : "max-[1600px]:h-[230px] h-[360px]"
+            isSmall ? "max-[1600px]:h-[90px] h-[150px]" : "h-[230px] "
           )}
         >
           {pendingTasks.length > 0 && displayPendingTasks && (

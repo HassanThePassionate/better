@@ -65,6 +65,7 @@ export function GridStackComponent() {
     grid = GridStack.init({
       float: true,
       column: 12,
+      cellHeight: "115px",
       columnOpts: {
         breakpoints: [
           {

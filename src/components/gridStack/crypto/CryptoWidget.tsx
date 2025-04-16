@@ -117,7 +117,7 @@ export default function CryptoWidget() {
       const screenWidth = window.innerWidth;
 
       if (screenWidth > 1600) {
-        setChartSize({ width: 240, height: 152 });
+        setChartSize({ width: 230, height: 70 });
       } else {
         setChartSize({ width: 156, height: 60 });
       }

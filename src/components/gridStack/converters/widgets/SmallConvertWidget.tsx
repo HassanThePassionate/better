@@ -178,7 +178,7 @@ export default function SmallConverterWidget() {
         </div>
 
         {/* Tools Grid with Animation */}
-        <div className='relative h-[calc(200px-32px)] overflow-hidden min-[1600px]:mt-6'>
+        <div className='relative h-[calc(200px-32px)] overflow-hidden '>
           <div
             className='absolute w-full h-full transition-transform duration-300 ease-in-out scrollbar-hide'
             style={{ transform: `translateX(-${currentPage * 100}%)` }}

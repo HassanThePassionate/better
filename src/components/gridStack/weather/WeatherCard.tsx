@@ -247,9 +247,7 @@ export default function WeatherWidget3x3({
           )}
         </div>
         <div className='flex gap-2 items-center mt-1'>
-          <h3 className='text-xl min-[1600px]:text-2xl font-bold'>
-            {currentCity}
-          </h3>
+          <h3 className='text-xl  font-bold'>{currentCity}</h3>
 
           <Button
             variant='ghost'
@@ -266,8 +264,8 @@ export default function WeatherWidget3x3({
         <p className='text-sm text-text font-medium mt-1'>{formattedToday}</p>
 
         {/* Temperature and Icon */}
-        <div className='flex gap-2 items-center mt-1 min-[1600px]:mt-3 min-[1600px]:mb-3'>
-          <div className='text-5xl min-[1600px]:text-6xl font-bold leading-none'>
+        <div className='flex gap-2 items-center mt-1 '>
+          <div className='text-5xl  font-bold leading-none'>
             {displayTemperature}
             <span className='text-2xl  align-top'>{temperatureUnit}</span>
           </div>
@@ -277,7 +275,7 @@ export default function WeatherWidget3x3({
             className='h-16 w-16'
           />
         </div>
-        <div className='grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-sm min-[1600px]:mb-3'>
+        <div className='grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-sm '>
           <span className='text-gray-500'>Humidity</span>
           <span className='text-right'>{data.humidity}</span>
           <span className='text-gray-500'>Wind</span>
@@ -286,18 +284,16 @@ export default function WeatherWidget3x3({
 
         {/* Daily Forecast */}
         <>
-          <Separator className='my-2 min-[1600px]:mb-4' />
-          <div className='flex justify-between items-center min-[1600px]:mt-4 '>
+          <Separator className='my-2 ' />
+          <div className='flex justify-between items-center  '>
             {data.daily.slice(0, 5).map((hour, index) => (
               <div key={index} className='flex flex-col items-center'>
                 <img
                   src={`http://openweathermap.org/img/wn/${hour.icon}.png`}
                   alt='Weather icon'
-                  className='h-9 w-9 min-[1600px]:h-[4rem] min-[1600px]:w-[4rem]'
+                  className='h-9 w-9 '
                 />
-                <span className='text-[11px] min-[1600px]:text-sm text-text'>
-                  {hour.time}
-                </span>
+                <span className='text-[11px]  text-text'>{hour.time}</span>
               </div>
             ))}
           </div>

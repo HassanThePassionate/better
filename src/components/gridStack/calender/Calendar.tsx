@@ -136,19 +136,6 @@ export function Calendar({
     onMonthChange(newDate.getMonth());
   };
 
-  // Handle year navigation
-  //   const prevYear = () => {
-  //     const newDate = subYears(currentDate, 1);
-  //     setCurrentDate(newDate);
-  //     onYearChange(newDate.getFullYear());
-  //   };
-
-  //   const nextYear = () => {
-  //     const newDate = addYears(currentDate, 1);
-  //     setCurrentDate(newDate);
-  //     onYearChange(newDate.getFullYear());
-  //   };
-
   // Reset to today
   const goToToday = () => {
     const today = new Date();
